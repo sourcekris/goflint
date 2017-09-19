@@ -9,6 +9,11 @@ This project is heavily influenced by and in the same pattern as Golang's [GMP w
  * `NewFmpz(x int64) *Fmpz` allocates a new Fpmz and sets it to x
  * `(z *Fmpz) SetInt64(x int64) *Fmpz` Sets Fpmz z to slong x and returns z
  * `(z *Fmpz) SetUint64(x uint64) *Fmpz` Sets Fpmz z to ulong x and returns z
+ * `(z *Fmpz) Int64() (y int64)` Lowers z to type int64
+ * `(z *Fmpz) Cmp(y *Fmpz) (r int)` Compares z to y and returns -1, 0, or 1
+ * `(z *Fmpz) Sign() (r int)` Returns the sign of z returns -1, 0, or 1
+ * `(z *Fmpz) String() string` Returns a base 10 string representaiton of z
+ * `(z *Fmpz) BitLen() int` Returns the length of z in bits
  
 ## Types
 ```
@@ -20,10 +25,12 @@ type Fmpz struct {
 
 ## Examples
 
-Very little is implemented yet. I've only spent 30 minutes on this!
+Very little is implemented yet.
 
 ```
 a := NewFmpz(1)
+
+fmt.Println(a.String())
 ```
 
 
