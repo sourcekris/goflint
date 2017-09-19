@@ -116,6 +116,20 @@ func (z *Fmpz) Int64() (y int64) {
   return
 }
 
+// Uint64 returns the uint64 representation of z.
+// If z cannot be represented in a uint64, the result is undefined.
+func (z *Fmpz) Uint64() (y uint64) {
+  if !z.init {
+    return
+  }
+  if z.BitLen() <= 64 {
+    return uint64(C.fmpz_get_ui(&z.i[0]))  
+  }
+  
+  return
+}
+
+
 // BitLen returns the length of the absolute value of z in bits.
 // The bit length of 0 is 0.
 func (z *Fmpz) BitLen() int {
@@ -135,4 +149,114 @@ func (z *Fmpz) BitLen() int {
 func (z *Fmpz) Sign() int {
   z.doinit()
   return int(C.fmpz_sgn(&z.i[0]))
+}
+
+// Set sets z to x and returns z.
+func (z *Fmpz) Set(x *Fmpz) *Fmpz {
+  z.doinit()
+  C.fmpz_set(&z.i[0], &x.i[0])
+  return z
+}
+
+// Abs sets z to |x| (the absolute value of x) and returns z.
+func (z *Fmpz) Abs(x *Fmpz) *Fmpz {
+  x.doinit()
+  z.doinit()
+  C.fmpz_abs(&z.i[0], &x.i[0])
+  return z
+}
+
+// Neg sets z to -x and returns z.
+func (z *Fmpz) Neg(x *Fmpz) *Fmpz {
+  x.doinit()
+  z.doinit()
+  C.fmpz_neg(&z.i[0], &x.i[0])
+  return z
+}
+
+// Add sets z to the sum x+y and returns z.
+func (z *Fmpz) Add(x, y *Fmpz) *Fmpz {
+  x.doinit()
+  y.doinit()
+  z.doinit()
+  C.fmpz_add(&z.i[0], &x.i[0], &y.i[0])
+  return z
+}
+
+// Sub sets z to the difference x-y and returns z.
+func (z *Fmpz) Sub(x, y *Fmpz) *Fmpz {
+  x.doinit()
+  y.doinit()
+  z.doinit()
+  C.fmpz_sub(&z.i[0], &x.i[0], &y.i[0])
+  return z
+}
+
+// Mul sets z to the product x*y and returns z.
+func (z *Fmpz) Mul(x, y *Fmpz) *Fmpz {
+  x.doinit()
+  y.doinit()
+  z.doinit()
+  C.fmpz_mul(&z.i[0], &x.i[0], &y.i[0])
+  return z
+}
+
+// Quo sets z to the quotient x/y for y != 0 and returns z.
+// If y == 0, a division-by-zero run-time panic occurs.
+// Quo implements truncated division (like Go); see QuoRem for more details.
+func (z *Fmpz) Quo(x, y *Fmpz) *Fmpz {
+  x.doinit()
+  y.doinit()
+  z.doinit()
+  C.fmpz_tdiv_q(&z.i[0], &x.i[0], &y.i[0])
+  return z
+}
+
+// QuoRem sets z to the quotient x/y and r to the remainder x%y
+// and returns the pair (z, r) for y != 0.
+// If y == 0, a division-by-zero run-time panic occurs.
+//
+// QuoRem implements T-division and modulus (like Go):
+//
+//  q = x/y      with the result truncated to zero
+//  r = x - y*q
+//
+// (See Daan Leijen, ``Division and Modulus for Computer Scientists''.)
+// See DivMod for Euclidean division and modulus (unlike Go).
+//
+func (z *Fmpz) QuoRem(x, y, r *Fmpz) (*Fmpz, *Fmpz) {
+  x.doinit()
+  y.doinit()
+  r.doinit()
+  z.doinit()
+  C.fmpz_tdiv_qr(&z.i[0], &r.i[0], &x.i[0], &y.i[0])
+  return z, r
+}
+
+// Div sets z to the quotient x/y for y != 0 and returns z.
+// If y == 0, a division-by-zero run-time panic occurs.
+// Div implements Euclidean division (unlike Go); see DivMod for more details.
+func (z *Fmpz) Div(x, y *Fmpz) *Fmpz {
+  x.doinit()
+  y.doinit()
+  z.doinit()
+  switch y.Sign() {
+  case 1:
+    C.fmpz_fdiv_q(&z.i[0], &x.i[0], &y.i[0])
+  case -1:
+    C.fmpz_cdiv_q(&z.i[0], &x.i[0], &y.i[0])
+  case 0:
+    panic("Division by zero")
+  }
+  return z
+}
+
+// Mod sets z to the modulus x%y for y != 0 and returns z.
+func (z *Fmpz) Mod(x, y *Fmpz) *Fmpz {
+  x.doinit()
+  y.doinit()
+  z.doinit()
+
+  C.fmpz_mod(&z.i[0], &x.i[0], &y.i[0])
+  return z
 }

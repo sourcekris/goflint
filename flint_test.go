@@ -73,3 +73,73 @@ func TestBitLen(t *testing.T) {
     t.Errorf("Expected a.BitLen() == 17 but got something else: %d.\n", b)
   } 
 }
+
+func TestMod(t *testing.T) {
+  a := NewFmpz(64)
+  b := NewFmpz(5)
+  c := NewFmpz(0)
+  expected := NewFmpz(4)
+  
+  if c.Mod(a,b).Cmp(expected) != 0 {
+    t.Errorf("Expected a % b == 5 but got something else: %d\n", a)
+  } 
+}
+
+func TestAbs(t *testing.T) {
+  a := NewFmpz(-64)
+  expected := NewFmpz(64)
+  
+  if a.Abs(a).Cmp(expected) != 0 {
+    t.Errorf("Expected a.Abs(a) == 64 but got something else: %d\n", a)
+  } 
+}
+
+func TestAdd(t *testing.T) {
+  a := NewFmpz(60)
+  b := NewFmpz(4)
+  expected := NewFmpz(64)
+  
+  if a.Add(a, b).Cmp(expected) != 0 {
+    t.Errorf("Expected a.Add(a, b) == 64 but got something else: %d\n", a)
+  } 
+}
+
+func TestSub(t *testing.T) {
+  a := NewFmpz(68)
+  b := NewFmpz(4)
+  expected := NewFmpz(64)
+  
+  if a.Sub(a, b).Cmp(expected) != 0 {
+    t.Errorf("Expected a.Sub(a, b) == 64 but got something else: %d\n", a)
+  } 
+}
+
+func TestMul(t *testing.T) {
+  a := NewFmpz(8)
+  b := NewFmpz(8)
+  expected := NewFmpz(64)
+  
+  if a.Mul(a, b).Cmp(expected) != 0 {
+    t.Errorf("Expected a.Mul(a, b) == 64 but got something else: %d\n", a)
+  } 
+}
+
+func TestDiv(t *testing.T) {
+  num := NewFmpz(64)
+  den := NewFmpz(8)
+  expected := NewFmpz(8)
+  
+  if expected.Div(num,den).Cmp(expected) != 0 {
+    t.Errorf("Expected num / den == 8 but got something else: %d\n", expected)
+  } 
+}
+
+func TestQuo(t *testing.T) {
+  num := NewFmpz(65)
+  den := NewFmpz(8)
+  expected := NewFmpz(8)
+  
+  if expected.Quo(num,den).Cmp(expected) != 0 {
+    t.Errorf("Expected expectected.Quo(num, den) == 8 but got something else: %d\n", expected)
+  } 
+}
