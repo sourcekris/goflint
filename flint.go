@@ -251,6 +251,10 @@ func (z *Fmpz) Div(x, y *Fmpz) *Fmpz {
   return z
 }
 
+/*
+ * Modular Arithmatic
+ */ 
+
 // Mod sets z to the modulus x%y for y != 0 and returns z.
 func (z *Fmpz) Mod(x, y *Fmpz) *Fmpz {
   x.doinit()
@@ -259,4 +263,92 @@ func (z *Fmpz) Mod(x, y *Fmpz) *Fmpz {
 
   C.fmpz_mod(&z.i[0], &x.i[0], &y.i[0])
   return z
+}
+
+// Sets z to the inverse of x modulo y and returns z. 
+// The value of y may not be 0 otherwise an exception results. If the 
+// inverse exists the return value will be non-zero, otherwise the return value
+// will be 0 and the value of f undefined.
+func (z *Fmpz) InvMod(x, y *Fmpz) *Fmpz {
+  x.doinit()
+  y.doinit()
+  z.doinit()
+
+  C.fmpz_invmod(&z.i[0], &x.i[0], &y.i[0])
+  return z
+}
+
+// Sets z to −x (mod y), assuming x is reduced modulo y
+func (z *Fmpz) NegMod(x, y *Fmpz) *Fmpz {
+  x.doinit()
+  y.doinit()
+  z.doinit()
+
+  C.fmpz_negmod(&z.i[0], &x.i[0], &y.i[0])
+  return z
+}
+
+// Computes the Jacobi symbol of a modulo p, where p is a prime and a is reduced modulo p
+func (a *Fmpz) Jacobi(p *Fmpz) int {
+  a.doinit()
+  p.doinit()
+
+  return int(C.fmpz_jacobi(&a.i[0], &p.i[0]))
+}
+
+/*
+ * Greatest Common Divisor
+ */ 
+
+// Sets f to the greatest common divisor of g and h. The result is always positive, even if
+// one of g and h is negative
+func (f *Fmpz) Gcd(g, h *Fmpz) *Fmpz {
+  g.doinit()
+  h.doinit()
+  f.doinit()
+
+  C.fmpz_gcd(&f.i[0], &g.i[0], &h.i[0])
+  return f
+}
+
+// Sets f to the least common multiple of g and h. The result is always nonnegative, even
+// if one of g and h is negative.
+func (f *Fmpz) Lcm(g, h *Fmpz) *Fmpz {
+  g.doinit()
+  h.doinit()
+  f.doinit()
+
+  C.fmpz_lcm(&f.i[0], &g.i[0], &h.i[0])
+  return f
+}
+
+// Given integers f, g with 0 ≤ f < g, computes the greatest common divisor d = gcd(f, g)
+// and the modular inverse a = f^-1 (mod g), whenever f != 0
+// void fmpz_gcdinv (fmpz_t d , fmpz_t a , const fmpz_t f , const fmpz_t g )
+func (f *Fmpz) GcdInv(g *Fmpz) (*Fmpz, *Fmpz) {
+
+  d := new(Fmpz)
+  a := new(Fmpz)
+  f.doinit()
+  g.doinit()
+  d.doinit()
+  a.doinit()  
+  C.fmpz_gcdinv(&d.i[0], &a.i[0], &f.i[0], &g.i[0])
+  return d, a
+}
+
+// fmpz_xgcd ( fmpz_t d , fmpz_t a , fmpz_t b , const fmpz_t f , const fmpz_t g )
+// Computes the extended GCD of f and g, i.e. values a and b such that af + bg = d,
+// where d = gcd(f, g).
+func (f *Fmpz) XGcd(g *Fmpz) (*Fmpz, *Fmpz) {
+  d := new(Fmpz)
+  a := new(Fmpz)
+  b := new(Fmpz)
+  a.doinit()
+  b.doinit()
+  d.doinit()
+  f.doinit()
+  g.doinit()  
+  C.fmpz_xgcd(&d.i[0], &a.i[0], &b.i[0], &f.i[0], &g.i[0])
+  return a, b
 }

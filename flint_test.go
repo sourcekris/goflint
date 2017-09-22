@@ -143,3 +143,24 @@ func TestQuo(t *testing.T) {
     t.Errorf("Expected expectected.Quo(num, den) == 8 but got something else: %d\n", expected)
   } 
 }
+
+func TestGcd(t *testing.T) {
+  a := NewFmpz(15)
+  b := NewFmpz(155)
+  expected := NewFmpz(5)
+  
+  if expected.Gcd(a,b).Cmp(expected) != 0 {
+    t.Errorf("Expected expectected.Gcd(a, b) == 5 but got something else: %d\n", expected)
+  } 
+}
+
+/*func TestXGcd(t *testing.T) {
+  a := NewFmpz(15)
+  b := NewFmpz(155)
+  c := NewFmpz(-10)
+  
+  x, y := a.XGcd(b)
+  if x.Cmp(c) != 0 || y.Cmp(c) != 0 {
+    t.Errorf("Expected a.XGcd(b) == 5 but got something else: %d %d %d\n", a, x, y)
+  } 
+} */
