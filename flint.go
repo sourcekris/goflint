@@ -385,7 +385,6 @@ func (z *Fmpz) Mod(x, y *Fmpz) *Fmpz {
   return z
 }
 
-
 // DivMod sets z to the quotient x div y and m to the modulus x mod y
 // and returns the pair (z, m) for y != 0.
 // If y == 0, a division-by-zero run-time panic occurs.
@@ -464,6 +463,26 @@ func (a *Fmpz) Jacobi(p *Fmpz) int {
   p.doinit()
 
   return int(C.fmpz_jacobi(&a.i[0], &p.i[0]))
+}
+
+// Exp sets z = x**y mod |m| (i.e. the sign of m is ignored), and returns z.
+// If y <= 0, the result is 1; if m == nil or m == 0, z = x**y.
+// See Knuth, volume 2, section 4.6.3.
+func (z *Fmpz) Exp(x, y, m *Fmpz) *Fmpz {
+  x.doinit()
+  y.doinit()
+  z.doinit()
+  if y.Sign() <= 0 {
+    z.SetInt64(1)
+    return z
+  }
+  if m == nil || m.Sign() == 0 {
+    C.fmpz_pow_ui(&z.i[0], &x.i[0], C.fmpz_get_ui(&y.i[0]))
+  } else {
+    m.doinit()
+    C.fmpz_powm(&z.i[0], &x.i[0], &y.i[0], &m.i[0])
+  }
+  return z
 }
 
 /*

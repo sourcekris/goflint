@@ -212,3 +212,17 @@ func TestSetBytes(t *testing.T) {
     t.Errorf("Expected %d but got %d\n", c, b)
   }
 }
+
+func TestExp(t *testing.T) {
+  a := NewFmpz(11231231)
+  b := NewFmpz(55)
+  n := NewFmpz(6611116)
+
+  expected := NewFmpz(4221059)
+
+ z := a.Exp(a, b, n)
+
+ if z.Cmp(expected) != 0 {
+  t.Errorf("Expected %d but got %d\n", expected, z)
+ }
+}
