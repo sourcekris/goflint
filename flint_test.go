@@ -135,6 +135,32 @@ func TestDiv(t *testing.T) {
   } 
 }
 
+func TestDivMod(t *testing.T) {
+  a := NewFmpz(11231231)
+  b := NewFmpz(14541)
+  n := NewFmpz(666)
+
+  x_e := NewFmpz(772)
+  y_e := NewFmpz(5579)
+
+  x, y := a.DivMod(a, b, n)
+
+  if x.Cmp(x_e) != 0 && y.Cmp(y_e) != 0 {
+    t.Errorf("Expected %d and %d but got %d and %d\n", x_e, y_e, x, y)
+  }
+
+  a.SetInt64(11231231)
+  b.SetInt64(-984)
+  x_e.SetInt64(-11413)
+  y_e.SetInt64(839)
+
+  x, y = a.DivMod(a, b, n)
+
+  if x.Cmp(x_e) != 0 && y.Cmp(y_e) != 0 {
+    t.Errorf("Expected %d and %d but got %d and %d\n", x_e, y_e, x, y)
+  }
+}
+
 func TestQuo(t *testing.T) {
   num := NewFmpz(65)
   den := NewFmpz(8)

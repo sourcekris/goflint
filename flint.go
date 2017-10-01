@@ -385,11 +385,61 @@ func (z *Fmpz) Mod(x, y *Fmpz) *Fmpz {
   return z
 }
 
+
+// DivMod sets z to the quotient x div y and m to the modulus x mod y
+// and returns the pair (z, m) for y != 0.
+// If y == 0, a division-by-zero run-time panic occurs.
+//
+// DivMod implements Euclidean division and modulus (unlike Go):
+//
+//  q = x div y  such that
+//  m = x - y*q  with 0 <= m < |q|
+//
+// (See Raymond T. Boute, ``The Euclidean definition of the functions
+// div and mod''. ACM Transactions on Programming Languages and
+// Systems (TOPLAS), 14(2):127-144, New York, NY, USA, 4/1992.
+// ACM press.)
+// See QuoRem for T-division and modulus (like Go).
+//
+func (z *Fmpz) DivMod(x, y, m *Fmpz) (*Fmpz, *Fmpz) {
+  x.doinit()
+  y.doinit()
+  m.doinit()
+  z.doinit()
+  switch y.Sign() {
+  case 1:
+    C.fmpz_fdiv_qr(&z.i[0], &m.i[0], &x.i[0], &y.i[0])
+  case -1:
+    xm := new(Mpz)
+    ym := new(Mpz)
+    mm := new(Mpz)
+    zm := new(Mpz)
+
+    xm.GetMpz(x)
+    ym.GetMpz(y)
+    mm.GetMpz(m)
+    zm.GetMpz(z)
+
+    xm.mpzdoinit()
+    ym.mpzdoinit()
+    mm.mpzdoinit()
+    zm.mpzdoinit()
+
+    C.mpz_cdiv_qr(&zm.i[0], &mm.i[0], &xm.i[0], &ym.i[0])
+
+    z.SetMpz(zm)
+    m.SetMpz(mm)
+  case 0:
+    panic("Division by zero")
+  }
+  return z, m
+}
+
 // Sets z to the inverse of x modulo y and returns z. 
 // The value of y may not be 0 otherwise an exception results. If the 
 // inverse exists the return value will be non-zero, otherwise the return value
 // will be 0 and the value of f undefined.
-func (z *Fmpz) InvMod(x, y *Fmpz) *Fmpz {
+func (z *Fmpz) ModInverse(x, y *Fmpz) *Fmpz {
   x.doinit()
   y.doinit()
   z.doinit()
