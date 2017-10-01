@@ -25,6 +25,11 @@ type Fmpz struct {
 	init bool
 }
 
+type Mpz struct {
+  i    C.mpz_t
+  init bool
+}
+
 // Finalizer - release the memory allocated to the fmpz
 func fmpzFinalize(z *Fmpz) {
 	if z.init {
@@ -34,6 +39,14 @@ func fmpzFinalize(z *Fmpz) {
 	}
 }
 
+func mpzFinalize(z *Mpz) {
+  if z.init {
+    runtime.SetFinalizer(z, nil)
+    C.mpz_clear(&z.i[0])
+    z.init = false
+  }
+}
+
 func (z *Fmpz) doinit() {
 	if z.init {
 		return
@@ -41,6 +54,15 @@ func (z *Fmpz) doinit() {
 	z.init = true
 	C.fmpz_init(&z.i[0])
 	runtime.SetFinalizer(z, fmpzFinalize)
+}
+
+func (z *Mpz) mpzdoinit() {
+  if z.init {
+    return
+  }
+  z.init = true
+  C.mpz_init(&z.i[0])
+  runtime.SetFinalizer(z, mpzFinalize)
 }
 
 // SetUint64 sets z to x and returns z.
@@ -59,9 +81,22 @@ func (z *Fmpz) SetInt64(x int64) *Fmpz {
   return z
 }
 
+// SetInt64 sets z to x and returns z.
+func (z *Mpz) SetMpzInt64(x int64) *Mpz {
+  z.mpzdoinit()
+  y := C.long(x)
+  C.mpz_set_si(&z.i[0], y)
+  return z
+}
+
 // NewFmpz allocates and returns a new Fmpz set to x.
 func NewFmpz(x int64) *Fmpz {
   return new(Fmpz).SetInt64(x)
+}
+
+// NewFmpz allocates and returns a new Fmpz set to x.
+func NewMpz(x int64) *Mpz {
+  return new(Mpz).SetMpzInt64(x)
 }
 
 // Cmp compares z and y and returns:
@@ -199,6 +234,26 @@ func (z *Fmpz) SetString(s string, base int) (*Fmpz, bool) {
   }
   return z, true // err == io.EOF => scan consumed all of s
 }
+
+func (z *Fmpz) SetMpz(x *Mpz) {
+  x.mpzdoinit()
+  z.doinit()
+
+  C.fmpz_set_mpz(&z.i[0], &x.i[0]) 
+}
+
+// SetBytes interprets buf as the bytes of a big-endian unsigned
+// integer, sets z to that value, and returns z.
+func (z *Mpz) SetBytes(buf []byte) *Mpz {
+  z.mpzdoinit()
+  if len(buf) == 0 {
+    z.SetMpzInt64(0)
+  } else {
+    C.mpz_import(&z.i[0], C.size_t(len(buf)), 1, 1, 1, 0, unsafe.Pointer(&buf[0]))
+  }
+  return z
+}
+
 
 // Abs sets z to |x| (the absolute value of x) and returns z.
 func (z *Fmpz) Abs(x *Fmpz) *Fmpz {
