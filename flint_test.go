@@ -144,20 +144,23 @@ func TestQuo(t *testing.T) {
   } 
 }
 
-func TestGcd(t *testing.T) {
+func TestGCD(t *testing.T) {
   a := NewFmpz(15)
   b := NewFmpz(155)
   expected := NewFmpz(5)
   
-  if expected.Gcd(a,b).Cmp(expected) != 0 {
-    t.Errorf("Expected expectected.Gcd(a, b) == 5 but got something else: %d\n", expected)
+  if expected.GCD(a,b).Cmp(expected) != 0 {
+    t.Errorf("Expected expectected.GCD(a, b) == 5 but got something else: %d\n", expected)
   } 
 }
 
 func TestSetString(t *testing.T) {
   expected := NewFmpz(65293409233)
-  num, result := SetString("65293409233",10)
-  
+  num, result := new(Fmpz).SetString("65293409233",10)
+  if !result {
+    t.Error("SetString just failed completely. Oh noes.")
+  }
+
   if num.Cmp(expected) != 0 {
     t.Errorf("Expected 65293409233 but got something else: %d\n", num)
   } 
