@@ -99,6 +99,47 @@ func (z *Fmpz) String() string {
   return z.string(10)
 }
 
+// BitLen returns the length of the absolute value of z in bits.
+// The bit length of 0 is 0.
+func (z *Fmpz) BitLen() int {
+  z.doinit()
+  if z.Sign() == 0 {
+    return 0
+  }
+  return int(C.fmpz_sizeinbase(&z.i[0], 2))
+}
+
+// Sign returns:
+//
+//  -1 if x <  0
+//   0 if x == 0
+//  +1 if x >  0
+//
+func (z *Fmpz) Sign() int {
+  z.doinit()
+  return int(C.fmpz_sgn(&z.i[0]))
+}
+
+// Set sets z to x and returns z.
+func (z *Fmpz) Set(x *Fmpz) *Fmpz {
+  z.doinit()
+  C.fmpz_set(&z.i[0], &x.i[0])
+  return z
+}
+
+/*
+ * Conversion
+ */
+func (f *Fmpz) GetInt() int {
+  f.doinit()
+  return int(C.fmpz_get_si(&f.i[0]))
+}
+
+func (f *Fmpz) GetUInt() uint {
+  f.doinit()
+  return uint(C.fmpz_get_ui(&f.i[0]))
+}
+
 // Int64 returns the int64 representation of z.
 // If z cannot be represented in an int64, the result is undefined.
 func (z *Fmpz) Int64() (y int64) {
@@ -129,33 +170,34 @@ func (z *Fmpz) Uint64() (y uint64) {
   return
 }
 
-
-// BitLen returns the length of the absolute value of z in bits.
-// The bit length of 0 is 0.
-func (z *Fmpz) BitLen() int {
+// SetString sets z to the value of s, interpreted in the given base,
+// and returns z and a boolean indicating success. If SetString fails,
+// the value of z is undefined but the returned value is nil.
+//
+// The base argument must be 0 or a value from 2 through MaxBase. If the base
+// is 0, the string prefix determines the actual conversion base. A prefix of
+// ``0x'' or ``0X'' selects base 16; the ``0'' prefix selects base 8, and a
+// ``0b'' or ``0B'' prefix selects base 2. Otherwise the selected base is 10.
+//
+func (z *Fmpz) SetString(s string, base int) (*Fmpz, bool) {
   z.doinit()
-  if z.Sign() == 0 {
-    return 0
+  if base != 0 && (base < 2 || base > 36) {
+    return nil, false
   }
-  return int(C.fmpz_sizeinbase(&z.i[0], 2))
-}
-
-// Sign returns:
-//
-//  -1 if x <  0
-//   0 if x == 0
-//  +1 if x >  0
-//
-func (z *Fmpz) Sign() int {
-  z.doinit()
-  return int(C.fmpz_sgn(&z.i[0]))
-}
-
-// Set sets z to x and returns z.
-func (z *Fmpz) Set(x *Fmpz) *Fmpz {
-  z.doinit()
-  C.fmpz_set(&z.i[0], &x.i[0])
-  return z
+  // Skip leading + as mpz_set_str doesn't understand them
+  if len(s) > 1 && s[0] == '+' {
+    s = s[1:]
+  }
+  // mpz_set_str incorrectly parses "0x" and "0b" as valid
+  if base == 0 && len(s) == 2 && s[0] == '0' && (s[1] == 'x' || s[1] == 'X' || s[1] == 'b' || s[1] == 'B') {
+    return nil, false
+  }
+  p := C.CString(s)
+  defer C.free(unsafe.Pointer(p))
+  if C.fmpz_set_str(&z.i[0], p, C.int(base)) < 0 {
+    return nil, false
+  }
+  return z, true // err == io.EOF => scan consumed all of s
 }
 
 // Abs sets z to |x| (the absolute value of x) and returns z.
@@ -302,7 +344,7 @@ func (a *Fmpz) Jacobi(p *Fmpz) int {
 
 // Sets f to the greatest common divisor of g and h. The result is always positive, even if
 // one of g and h is negative
-func (f *Fmpz) Gcd(g, h *Fmpz) *Fmpz {
+func (f *Fmpz) GCD(g, h *Fmpz) *Fmpz {
   g.doinit()
   h.doinit()
   f.doinit()
@@ -325,7 +367,7 @@ func (f *Fmpz) Lcm(g, h *Fmpz) *Fmpz {
 // Given integers f, g with 0 ≤ f < g, computes the greatest common divisor d = gcd(f, g)
 // and the modular inverse a = f^-1 (mod g), whenever f != 0
 // void fmpz_gcdinv (fmpz_t d , fmpz_t a , const fmpz_t f , const fmpz_t g )
-func (f *Fmpz) GcdInv(g *Fmpz) (*Fmpz, *Fmpz) {
+func (f *Fmpz) GCDInv(g *Fmpz) (*Fmpz, *Fmpz) {
 
   d := new(Fmpz)
   a := new(Fmpz)
@@ -337,18 +379,3 @@ func (f *Fmpz) GcdInv(g *Fmpz) (*Fmpz, *Fmpz) {
   return d, a
 }
 
-// fmpz_xgcd ( fmpz_t d , fmpz_t a , fmpz_t b , const fmpz_t f , const fmpz_t g )
-// Computes the extended GCD of f and g, i.e. values a and b such that af + bg = d,
-// where d = gcd(f, g).
-func (f *Fmpz) XGcd(g *Fmpz) (*Fmpz, *Fmpz) {
-  d := new(Fmpz)
-  a := new(Fmpz)
-  b := new(Fmpz)
-  a.doinit()
-  b.doinit()
-  d.doinit()
-  f.doinit()
-  g.doinit()  
-  C.fmpz_xgcd(&d.i[0], &a.i[0], &b.i[0], &f.i[0], &g.i[0])
-  return a, b
-}

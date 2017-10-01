@@ -154,13 +154,11 @@ func TestGcd(t *testing.T) {
   } 
 }
 
-/*func TestXGcd(t *testing.T) {
-  a := NewFmpz(15)
-  b := NewFmpz(155)
-  c := NewFmpz(-10)
+func TestSetString(t *testing.T) {
+  expected := NewFmpz(65293409233)
+  num, result := SetString("65293409233",10)
   
-  x, y := a.XGcd(b)
-  if x.Cmp(c) != 0 || y.Cmp(c) != 0 {
-    t.Errorf("Expected a.XGcd(b) == 5 but got something else: %d %d %d\n", a, x, y)
+  if num.Cmp(expected) != 0 {
+    t.Errorf("Expected 65293409233 but got something else: %d\n", num)
   } 
-} */
+}
