@@ -534,3 +534,19 @@ func (z *Fmpz) And(x, y *Fmpz) *Fmpz {
   C.fmpz_and(&z.i[0], &x.i[0], &y.i[0])
   return z
 }
+
+// Sqrt sets x to the truncated integer part of the square root of x
+func (z *Fmpz) Sqrt(x *Fmpz) *Fmpz {
+  x.doinit()
+  z.doinit()
+  C.fmpz_sqrt(&z.i[0], &x.i[0])
+  return z
+}
+
+// Root sets x to the truncated integer part of the yth root of x
+func (z *Fmpz) Root(x *Fmpz, y int32) *Fmpz {
+  x.doinit()
+  z.doinit()
+  C.fmpz_root(&z.i[0], &x.i[0], C.slong(y))
+  return z
+}

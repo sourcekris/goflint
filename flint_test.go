@@ -238,3 +238,27 @@ func TestAnd(t *testing.T) {
     t.Errorf("Expected %d but got %d\n", expected, z)
   }
 }
+
+func TestSqrt(t *testing.T) {
+  a := NewFmpz(4096)
+  expected := NewFmpz(64)
+  b := new(Fmpz)
+  b.doinit()
+  b.Sqrt(a)
+
+  if b.Cmp(expected) != 0 {
+    t.Errorf("Expected %d but got %d\n", expected, b)
+  }
+}
+
+func TestRoot(t *testing.T) {
+  a := NewFmpz(4096)
+  expected := NewFmpz(64)
+
+  b := new(Fmpz)
+  b.Root(a, 2)
+
+  if b.Cmp(expected) != 0 {
+    t.Errorf("Expected %d but got %d\n", expected, b)
+  }
+}
