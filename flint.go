@@ -235,6 +235,7 @@ func (z *Fmpz) SetString(s string, base int) (*Fmpz, bool) {
   return z, true // err == io.EOF => scan consumed all of s
 }
 
+// Transform x into an Fmpz z
 func (z *Fmpz) SetMpz(x *Mpz) {
   x.mpzdoinit()
   z.doinit()
@@ -242,16 +243,38 @@ func (z *Fmpz) SetMpz(x *Mpz) {
   C.fmpz_set_mpz(&z.i[0], &x.i[0]) 
 }
 
+// Transform x into an Mpz z
+func (z *Mpz) GetMpz(x *Fmpz) {
+  z.mpzdoinit()
+  x.doinit()
+
+  C.fmpz_get_mpz(&z.i[0], &x.i[0]) 
+}
+
 // SetBytes interprets buf as the bytes of a big-endian unsigned
 // integer, sets z to that value, and returns z.
-func (z *Mpz) SetBytes(buf []byte) *Mpz {
-  z.mpzdoinit()
+func (z *Fmpz) SetBytes(buf []byte) *Fmpz {
+  zm := new(Mpz)
+  zm.mpzdoinit()
   if len(buf) == 0 {
-    z.SetMpzInt64(0)
+    z.SetInt64(0)
   } else {
-    C.mpz_import(&z.i[0], C.size_t(len(buf)), 1, 1, 1, 0, unsafe.Pointer(&buf[0]))
+    C.mpz_import(&zm.i[0], C.size_t(len(buf)), 1, 1, 1, 0, unsafe.Pointer(&buf[0]))
   }
+
+  z.SetMpz(zm)
+
   return z
+}
+
+// Bytes returns the absolute value of z as a big-endian byte slice.
+func (z *Fmpz) Bytes() []byte {
+  zm := new(Mpz)
+  zm.GetMpz(z)
+  b := make([]byte, 1+(z.BitLen()+7)/8)
+  n := C.size_t(len(b))
+  C.mpz_export(unsafe.Pointer(&b[0]), &n, 1, 1, 1, 0, &zm.i[0])
+  return b[0:n]
 }
 
 

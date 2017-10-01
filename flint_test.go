@@ -1,6 +1,7 @@
 package goflint
 
 import (
+  "bytes"
   "testing"
 )
 
@@ -164,4 +165,24 @@ func TestSetString(t *testing.T) {
   if num.Cmp(expected) != 0 {
     t.Errorf("Expected 65293409233 but got something else: %d\n", num)
   } 
+}
+
+func TestBytes(t *testing.T) {
+  a := NewFmpz(8746238)
+  b := []byte{0x85,0x74,0xfe}
+  c := a.Bytes()
+
+  if !bytes.Equal(b, c) {
+    t.Errorf("Expected %x but got %x.\n", b, c)
+  }
+}
+
+func TestSetBytes(t *testing.T) {
+  a := []byte{0x85,0x74,0xfe}
+  b := new(Fmpz).SetBytes(a)
+  c := NewFmpz(8746238)
+
+  if b.Cmp(c) != 0 {
+    t.Errorf("Expected %d but got %d\n", c, b)
+  }
 }
