@@ -226,3 +226,15 @@ func TestExp(t *testing.T) {
   t.Errorf("Expected %d but got %d\n", expected, z)
  }
 }
+
+func TestAnd(t *testing.T) {
+  a := NewFmpz(11231231)
+  b := NewFmpz(52115)
+  expected := NewFmpz(19347)
+
+  z := a.And(a, b)
+
+  if z.Cmp(expected) != 0 {
+    t.Errorf("Expected %d but got %d\n", expected, z)
+  }
+}

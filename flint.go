@@ -526,3 +526,11 @@ func (f *Fmpz) GCDInv(g *Fmpz) (*Fmpz, *Fmpz) {
   return d, a
 }
 
+// And sets z = x & y and returns z.
+func (z *Fmpz) And(x, y *Fmpz) *Fmpz {
+  x.doinit()
+  y.doinit()
+  z.doinit()
+  C.fmpz_and(&z.i[0], &x.i[0], &y.i[0])
+  return z
+}
