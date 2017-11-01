@@ -262,3 +262,50 @@ func TestRoot(t *testing.T) {
     t.Errorf("Expected %d but got %d\n", expected, b)
   }
 }
+
+// TestNewFmpq tests assigning rationals and that the Stringer for the Fmpq type works
+func TestNewFmpq(t *testing.T) {
+  a := NewFmpq(3, 2)
+  b := a.String()
+  expected := "3/2"
+  
+  if b != expected {
+    t.Errorf("Expected %s but got %s\n",expected,b)
+  }
+}
+
+// TestSetFmpqFraction tests that assigning rationals with Fmpz numerators and denominators
+// works as expected.
+func TestSetFmpqFraction(t *testing.T) {
+  a := NewFmpz(3)
+  b := NewFmpz(2)
+  c := new(Fmpq)
+
+  c.SetFmpqFraction(a, b)
+
+  s := c.String()
+
+  expected := "3/2"
+  
+  if s != expected {
+    t.Errorf("Expected %s but got %s\n",expected,s)
+  }
+}
+
+func TestGetFmpqFraction(t *testing.T) {
+  a := NewFmpz(3)
+  b := NewFmpz(2)
+  c := new(Fmpq)
+
+  c.SetFmpqFraction(a, b)
+
+  num  := new(Fmpz)
+  den  := new(Fmpz)
+
+  c.GetFmpqFraction(num, den)
+  
+  if a.Cmp(num) != 0 || b.Cmp(den) != 0 {
+    t.Errorf("Expected %s/%s but got %s/%s\n",a, b, num, den)
+  }
+}
+

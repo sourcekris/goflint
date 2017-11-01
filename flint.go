@@ -21,22 +21,31 @@ import (
   "unsafe"
 )
 
-// Fmpz is a arbitrary size integer type
+/* 
+ * Types
+ */
+
+// Fmpz is a arbitrary size integer type.
 type Fmpz struct {
 	i    C.fmpz_t
 	init bool
 }
 
-// Fmpq is an arbitrary size rational type
+// Fmpq is an arbitrary precision rational type.
 type Fmpq struct {
   i    C.fmpq_t
   init bool
 }
 
+// Mpz is an abitrary size integer type from the Gnu Multiprecision Library.
 type Mpz struct {
   i    C.mpz_t
   init bool
 }
+
+/* 
+ * Initializers and Finalizers
+ */
 
 // fmpzFinalize releases the memory allocated to the Fmpz.
 func fmpzFinalize(z *Fmpz) {
@@ -56,6 +65,7 @@ func fmpqFinalize(q *Fmpq) {
   }
 }
 
+// mpzFinalize releases the memory allocated to the Mpz.
 func mpzFinalize(z *Mpz) {
   if z.init {
     runtime.SetFinalizer(z, nil)
@@ -84,7 +94,8 @@ func (q *Fmpq) fmpqDoinit() {
   runtime.SetFinalizer(q, fmpqFinalize)
 }
 
-func (z *Mpz) mpzdoinit() {
+// fmpqDoinit initializes an Mpz type.
+func (z *Mpz) mpzDoinit() {
   if z.init {
     return
   }
@@ -92,6 +103,10 @@ func (z *Mpz) mpzdoinit() {
   C.mpz_init(&z.i[0])
   runtime.SetFinalizer(z, mpzFinalize)
 }
+
+/* 
+ * Assignments
+ */
 
 // SetUint64 sets z to x and returns z.
 func (z *Fmpz) SetUint64(x uint64) *Fmpz {
@@ -111,7 +126,7 @@ func (z *Fmpz) SetInt64(x int64) *Fmpz {
 
 // SetInt64 sets z to x and returns z.
 func (z *Mpz) SetMpzInt64(x int64) *Mpz {
-  z.mpzdoinit()
+  z.mpzDoinit()
   y := C.long(x)
   C.mpz_set_si(&z.i[0], y)
   return z
@@ -122,9 +137,27 @@ func NewFmpz(x int64) *Fmpz {
   return new(Fmpz).SetInt64(x)
 }
 
+// NewFmpq allocates and returns a new Fmpq set to p / q.
+func NewFmpq(p, q int64) *Fmpq {
+  x := C.slong(p)
+  y := C.ulong(q)
+  z := new(Fmpq)
+  z.fmpqDoinit()
+  C.fmpq_set_si(&z.i[0], x, y)
+  return z
+}
+
 // NewFmpz allocates and returns a new Fmpz set to x.
 func NewMpz(x int64) *Mpz {
   return new(Mpz).SetMpzInt64(x)
+}
+
+// SetFmpqFraction sets the value of q to the canonical form of 
+// the fraction num / den and returns q.
+func (q *Fmpq) SetFmpqFraction(num, den *Fmpz) *Fmpq {
+  q.fmpqDoinit()
+  C.fmpq_set_fmpz_frac(&q.i[0], &num.i[0], &den.i[0])
+  return q
 }
 
 // Cmp compares z and y and returns:
@@ -157,9 +190,26 @@ func (z *Fmpz) string(base int) string {
   return s
 }
 
+// string returns a string representation of q in the base given
+func (q *Fmpq) string(base int) string {
+  if q == nil {
+    return "<nil>"
+  }
+  q.fmpqDoinit()
+  p := C.fmpq_get_str(nil, C.int(base), &q.i[0])
+  s := C.GoString(p)
+  C.free(unsafe.Pointer(p))
+  return s
+}
+
 // String returns the decimal representation of z.
 func (z *Fmpz) String() string {
   return z.string(10)
+}
+
+// String returns the decimal representation of z.
+func (q *Fmpq) String() string {
+  return q.string(10)
 }
 
 // BitLen returns the length of the absolute value of z in bits.
@@ -193,11 +243,14 @@ func (z *Fmpz) Set(x *Fmpz) *Fmpz {
 /*
  * Conversion
  */
+
+// GetInt returns the value of the Fmpz type as an int type if possible.
 func (f *Fmpz) GetInt() int {
   f.doinit()
   return int(C.fmpz_get_si(&f.i[0]))
 }
 
+// GetUInt returns the value of the Fmpz type as a uint type if possible.
 func (f *Fmpz) GetUInt() uint {
   f.doinit()
   return uint(C.fmpz_get_ui(&f.i[0]))
@@ -216,8 +269,27 @@ func (z *Fmpz) Int64() (y int64) {
   if z.BitLen() > 64 {
     return
   }
-
   return
+}
+
+// GetFmpqFraction gets the numerator and denomenator of the rational Fmpq q.
+func (q *Fmpq) GetFmpqFraction(num, den *Fmpz) {
+  num.doinit()
+  den.doinit()
+
+  // temporary storage since the API works with Mpz types for some reason
+  a := new(Mpz)
+  b := new(Mpz)
+
+  a.mpzDoinit()
+  b.mpzDoinit()
+
+  // store the num and den into Mpzs
+  C.fmpq_get_mpz_frac(&a.i[0], &b.i[0], &q.i[0])
+
+  // transform the Mpz into Fmpz
+  num.SetMpz(a)
+  den.SetMpz(b)
 }
 
 // Uint64 returns the uint64 representation of z.
@@ -263,17 +335,17 @@ func (z *Fmpz) SetString(s string, base int) (*Fmpz, bool) {
   return z, true // err == io.EOF => scan consumed all of s
 }
 
-// Transform x into an Fmpz z
+// SetMpz transform x into an Fmpz z.
 func (z *Fmpz) SetMpz(x *Mpz) {
-  x.mpzdoinit()
+  x.mpzDoinit()
   z.doinit()
 
   C.fmpz_set_mpz(&z.i[0], &x.i[0]) 
 }
 
-// Transform x into an Mpz z
+// GetMpz transform x into an Mpz z.
 func (z *Mpz) GetMpz(x *Fmpz) {
-  z.mpzdoinit()
+  z.mpzDoinit()
   x.doinit()
 
   C.fmpz_get_mpz(&z.i[0], &x.i[0]) 
@@ -283,7 +355,7 @@ func (z *Mpz) GetMpz(x *Fmpz) {
 // integer, sets z to that value, and returns z.
 func (z *Fmpz) SetBytes(buf []byte) *Fmpz {
   zm := new(Mpz)
-  zm.mpzdoinit()
+  zm.mpzDoinit()
   if len(buf) == 0 {
     z.SetInt64(0)
   } else {
@@ -447,10 +519,10 @@ func (z *Fmpz) DivMod(x, y, m *Fmpz) (*Fmpz, *Fmpz) {
     mm.GetMpz(m)
     zm.GetMpz(z)
 
-    xm.mpzdoinit()
-    ym.mpzdoinit()
-    mm.mpzdoinit()
-    zm.mpzdoinit()
+    xm.mpzDoinit()
+    ym.mpzDoinit()
+    mm.mpzDoinit()
+    zm.mpzDoinit()
 
     C.mpz_cdiv_qr(&zm.i[0], &mm.i[0], &xm.i[0], &ym.i[0])
 
@@ -462,7 +534,7 @@ func (z *Fmpz) DivMod(x, y, m *Fmpz) (*Fmpz, *Fmpz) {
   return z, m
 }
 
-// Sets z to the inverse of x modulo y and returns z. 
+// ModInverse sets z to the inverse of x modulo y and returns z. 
 // The value of y may not be 0 otherwise an exception results. If the 
 // inverse exists the return value will be non-zero, otherwise the return value
 // will be 0 and the value of f undefined.
@@ -475,7 +547,7 @@ func (z *Fmpz) ModInverse(x, y *Fmpz) *Fmpz {
   return z
 }
 
-// Sets z to −x (mod y), assuming x is reduced modulo y
+// NegMod Sets z to −x (mod y), assuming x is reduced modulo y.
 func (z *Fmpz) NegMod(x, y *Fmpz) *Fmpz {
   x.doinit()
   y.doinit()
@@ -485,7 +557,7 @@ func (z *Fmpz) NegMod(x, y *Fmpz) *Fmpz {
   return z
 }
 
-// Computes the Jacobi symbol of a modulo p, where p is a prime and a is reduced modulo p
+// Jacobi computes the Jacobi symbol of a modulo p, where p is a prime and a is reduced modulo p
 func (a *Fmpz) Jacobi(p *Fmpz) int {
   a.doinit()
   p.doinit()
