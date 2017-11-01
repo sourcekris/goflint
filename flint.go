@@ -10,6 +10,7 @@ package goflint
 #cgo LDFLAGS: -lflint -lgmp
 #include <flint/flint.h>
 #include <flint/fmpz.h>
+#include <flint/fmpq.h>
 #include <gmp.h>
 #include <stdlib.h>
 */
@@ -20,9 +21,16 @@ import (
   "unsafe"
 )
 
+// Fmpz is a arbitrary size integer type
 type Fmpz struct {
 	i    C.fmpz_t
 	init bool
+}
+
+// Fmpq is an arbitrary size rational type
+type Fmpq struct {
+  i    C.fmpq_t
+  init bool
 }
 
 type Mpz struct {
@@ -30,13 +38,22 @@ type Mpz struct {
   init bool
 }
 
-// Finalizer - release the memory allocated to the fmpz
+// fmpzFinalize releases the memory allocated to the Fmpz.
 func fmpzFinalize(z *Fmpz) {
 	if z.init {
 		runtime.SetFinalizer(z, nil)
 		C.fmpz_clear(&z.i[0])
 		z.init = false
 	}
+}
+
+// fmpqFinalize releases the memory allocated to the Fmpq.
+func fmpqFinalize(q *Fmpq) {
+  if q.init {
+    runtime.SetFinalizer(q, nil)
+    C.fmpq_clear(&q.i[0])
+    q.init = false
+  }
 }
 
 func mpzFinalize(z *Mpz) {
@@ -47,6 +64,7 @@ func mpzFinalize(z *Mpz) {
   }
 }
 
+// doinit initializes an Fmpz type.
 func (z *Fmpz) doinit() {
 	if z.init {
 		return
@@ -54,6 +72,16 @@ func (z *Fmpz) doinit() {
 	z.init = true
 	C.fmpz_init(&z.i[0])
 	runtime.SetFinalizer(z, fmpzFinalize)
+}
+
+// fmpqDoinit initializes an Fmpz type.
+func (q *Fmpq) fmpqDoinit() {
+  if q.init {
+    return
+  }
+  q.init = true
+  C.fmpq_init(&q.i[0])
+  runtime.SetFinalizer(q, fmpqFinalize)
 }
 
 func (z *Mpz) mpzdoinit() {
