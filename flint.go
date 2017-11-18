@@ -178,6 +178,24 @@ func (z *Fmpz) Cmp(y *Fmpz) (r int) {
   return
 }
 
+// CmpRational compares rationals z and y and returns:
+//
+//   -1 if z <  y
+//    0 if z == y
+//   +1 if z >  y
+//
+func (z *Fmpq) CmpRational(y *Fmpq) (r int) {
+  z.fmpqDoinit()
+  y.fmpqDoinit()
+  r = int(C.fmpq_cmp(&z.i[0], &y.i[0]))
+  if r < 0 {
+    r = -1
+  } else if r > 0 {
+    r = 1
+  }
+  return
+}
+
 // string returns z in the base given
 func (z *Fmpz) string(base int) string {
   if z == nil {

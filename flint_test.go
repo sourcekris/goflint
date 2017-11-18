@@ -125,6 +125,17 @@ func TestMul(t *testing.T) {
   } 
 }
 
+func TestMulRational(t *testing.T) {
+  a := NewFmpq(2, 3)
+  b := NewFmpz(8)
+  expected := NewFmpq(16, 3)
+  
+  if a.MulRational(a, b).Cmp(expected) != 0 {
+    t.Errorf("Expected a.Mul(a, b) == 64 but got something else: %d\n", a)
+  } 
+}
+
+
 func TestDiv(t *testing.T) {
   num := NewFmpz(64)
   den := NewFmpz(8)
