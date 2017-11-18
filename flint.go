@@ -377,6 +377,9 @@ func (z *Fmpz) Bytes() []byte {
   return b[0:n]
 }
 
+/*
+ * Operators
+ */
 
 // Abs sets z to |x| (the absolute value of x) and returns z.
 func (z *Fmpz) Abs(x *Fmpz) *Fmpz {
@@ -419,6 +422,15 @@ func (z *Fmpz) Mul(x, y *Fmpz) *Fmpz {
   z.doinit()
   C.fmpz_mul(&z.i[0], &x.i[0], &y.i[0])
   return z
+}
+
+// Mul sets q to the product of rational x and integer y and returns q.
+func (q *Fmpq) MulRational(o *Fmpq, x *Fmpz) *Fmpq {
+  x.doinit()
+  o.fmpqDoinit()
+  q.fmpqDoinit()
+  C.fmpq_mul_fmpz(&q.i[0], &o.i[0], &x.i[0])
+  return q
 }
 
 // Quo sets z to the quotient x/y for y != 0 and returns z.
