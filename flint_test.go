@@ -41,6 +41,24 @@ func TestCmp(t *testing.T) {
   }
 }
 
+func TestCmpRational(t *testing.T) {
+  a := NewFmpq(2, 3)
+  b := NewFmpq(2, 3)
+  c := NewFmpq(5, 3)
+
+  if a.CmpRational(b) != 0 {
+    t.Error("Expected a.CmpRational(b) == 0 but it wasnt.\n")
+  } 
+
+  if a.CmpRational(c) > 0 {
+    t.Error("Expected a.CmpRational(c) < 0 (i.e. a < c) but it wasnt.\n")
+  }
+
+  if c.CmpRational(a) < 0 {
+    t.Error("Expected c.CmpRational(a) > 0 (i.e. a > c) but it wasnt.\n")
+  }
+}
+
 func TestNewFmpz(t *testing.T) {
   a := NewFmpz(1)
   if a.Cmp(a) != 0 {
@@ -130,11 +148,10 @@ func TestMulRational(t *testing.T) {
   b := NewFmpz(8)
   expected := NewFmpq(16, 3)
   
-  if a.MulRational(a, b).Cmp(expected) != 0 {
-    t.Errorf("Expected a.Mul(a, b) == 64 but got something else: %d\n", a)
+  if a.MulRational(a, b).CmpRational(expected) != 0 {
+    t.Errorf("Expected a.MulRational(a, b) == %s but got something else: %s\n", expected, a)
   } 
 }
-
 
 func TestDiv(t *testing.T) {
   num := NewFmpz(64)
