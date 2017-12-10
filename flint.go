@@ -11,6 +11,7 @@ package goflint
 #include <flint/flint.h>
 #include <flint/fmpz.h>
 #include <flint/fmpq.h>
+#include <flint/nmod_poly.h>
 #include <gmp.h>
 #include <stdlib.h>
 */
@@ -41,6 +42,17 @@ type Fmpq struct {
 type Mpz struct {
   i    C.mpz_t
   init bool
+}
+
+// NmodPoly type represents elements of Z/nZ[x] for a fixed modulus n.
+type NmodPoly struct {
+  i    C.nmod_poly_t
+  init bool
+}
+
+// MpLimb type is a uint64.
+type MpLimb struct {
+  i    C.mp_limb_t
 }
 
 /* 
@@ -74,6 +86,15 @@ func mpzFinalize(z *Mpz) {
   }
 }
 
+// fmpzFinalize releases the memory allocated to the NmodPoly.
+func nmodPolyFinalize(z *NmodPoly) {
+  if z.init {
+    runtime.SetFinalizer(z, nil)
+    C.nmod_poly_clear(&z.i[0])
+    z.init = false
+  }
+}
+
 // doinit initializes an Fmpz type.
 func (z *Fmpz) doinit() {
 	if z.init {
@@ -102,6 +123,16 @@ func (z *Mpz) mpzDoinit() {
   z.init = true
   C.mpz_init(&z.i[0])
   runtime.SetFinalizer(z, mpzFinalize)
+}
+
+// nmodPolyDoinit initializes an NmodPoly type.
+func (z *NmodPoly) nmodPolyDoinit(n *MpLimb) {
+  if z.init {
+    return
+  }
+  z.init = true
+  C.nmod_poly_init(&z.i[0], n.i)
+  runtime.SetFinalizer(z, nmodPolyFinalize)
 }
 
 /* 
@@ -160,6 +191,17 @@ func (q *Fmpq) SetFmpqFraction(num, den *Fmpz) *Fmpq {
   return q
 }
 
+// Set sets z to x and returns z.
+func (z *Fmpz) Set(x *Fmpz) *Fmpz {
+  z.doinit()
+  C.fmpz_set(&z.i[0], &x.i[0])
+  return z
+}
+
+/*
+ * Comparisons
+ */
+
 // Cmp compares z and y and returns:
 //
 //   -1 if z <  y
@@ -196,6 +238,10 @@ func (z *Fmpq) CmpRational(y *Fmpq) (r int) {
   return
 }
 
+/*
+ * Formatting
+ */
+
 // string returns z in the base given
 func (z *Fmpz) string(base int) string {
   if z == nil {
@@ -230,6 +276,10 @@ func (q *Fmpq) String() string {
   return q.string(10)
 }
 
+/*
+ * Helpers
+ */
+
 // BitLen returns the length of the absolute value of z in bits.
 // The bit length of 0 is 0.
 func (z *Fmpz) BitLen() int {
@@ -249,13 +299,6 @@ func (z *Fmpz) BitLen() int {
 func (z *Fmpz) Sign() int {
   z.doinit()
   return int(C.fmpz_sgn(&z.i[0]))
-}
-
-// Set sets z to x and returns z.
-func (z *Fmpz) Set(x *Fmpz) *Fmpz {
-  z.doinit()
-  C.fmpz_set(&z.i[0], &x.i[0])
-  return z
 }
 
 /*
@@ -290,6 +333,19 @@ func (z *Fmpz) Int64() (y int64) {
   return
 }
 
+// Uint64 returns the uint64 representation of z.
+// If z cannot be represented in a uint64, the result is undefined.
+func (z *Fmpz) Uint64() (y uint64) {
+  if !z.init {
+    return
+  }
+  if z.BitLen() <= 64 {
+    return uint64(C.fmpz_get_ui(&z.i[0]))  
+  }
+  
+  return
+}
+
 // GetFmpqFraction gets the numerator and denomenator of the rational Fmpq q.
 func (q *Fmpq) GetFmpqFraction(num, den *Fmpz) {
   num.doinit()
@@ -308,19 +364,6 @@ func (q *Fmpq) GetFmpqFraction(num, den *Fmpz) {
   // transform the Mpz into Fmpz
   num.SetMpz(a)
   den.SetMpz(b)
-}
-
-// Uint64 returns the uint64 representation of z.
-// If z cannot be represented in a uint64, the result is undefined.
-func (z *Fmpz) Uint64() (y uint64) {
-  if !z.init {
-    return
-  }
-  if z.BitLen() <= 64 {
-    return uint64(C.fmpz_get_ui(&z.i[0]))  
-  }
-  
-  return
 }
 
 // SetString sets z to the value of s, interpreted in the given base,
@@ -396,7 +439,7 @@ func (z *Fmpz) Bytes() []byte {
 }
 
 /*
- * Operators
+ * Arithmetic
  */
 
 // Abs sets z to |x| (the absolute value of x) and returns z.

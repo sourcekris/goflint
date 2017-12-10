@@ -6,25 +6,41 @@ This project is heavily influenced by and in the same pattern as Golang's [GMP w
 
 ## Features
 
+### Assignments
+ * `(z *Fmpz) Set(x *Fmpz) *Fmpz` Set z to the Fmpz x and return z
  * `(z *Fmpz) SetUint64(x uint64) *Fmpz` Sets Fpmz z to ulong x and returns z
  * `(z *Fmpz) SetInt64(x int64) *Fmpz` Sets Fpmz z to slong x and returns z
  * `(z *Mpz) SetMpzInt64(x int64) *Mpz` Sets Mpz z to slong x and returns z
  * `NewFmpz(x int64) *Fmpz` allocates a new Fpmz and sets it to x
  * `NewMpz(x int64) *Mpz` allocates a new GMP Mpz and sets it to x
+ * `NewFmpq(p, q int64) *Fmpq` allocates and returns a new Fmpq set to p / q
+ * `(q *Fmpq) SetFmpqFraction(num, den *Fmpz) *Fmpq` sets the value of q to the fraction num / den and returns q.
+
+### Comparisons
  * `(z *Fmpz) Cmp(y *Fmpz) (r int)` Compares z to y and returns -1, 0, or 1
+ * `(z *Fmpq) CmpRational(y *Fmpq) (r int)` Compares rational z to y and returns -1, 0, or 1
+
+### Formatters
  * `(z *Fmpz) String() string` Returns a base 10 string representaiton of z
+ * `(q *Fmpq) String() string` Returns a base 10 string representation of rational q
+
+### Helpers
  * `(z *Fmpz) BitLen() int` Returns the length of z in bits
  * `(z *Fmpz) Sign() (r int)` Returns the sign of z returns -1, 0, or 1
- * `(z *Fmpz) Set(x *Fmpz) *Fmpz` Set z to the Fmpz x and return z
+
+### Conversions
  * `(f *Fmpz) GetInt() int` Lowers f to type int
  * `(f *Fmpz) GetUInt() uint` Lowers f to type uint
  * `(z *Fmpz) Int64() (y int64)` Lowers z to type int64
  * `(z *Fmpz) Uint64() (y uint64)` Lower z to type uint64
+ * `(q *Fmpq) GetFmpqFraction(num, den *Fmpz)` gets the numerator and denomenator of the rational q
  * `(z *Fmpz) SetString(s string, base int) (*Fmpz, bool)` Sets z to the value in string s using given base 
  * `(z *Fmpz) SetMpz(x *Mpz)` Set z to the value in Mpz x
  * `(z *Mpz) GetMpz(x *Fmpz)` Set Mpz z to the value of the Fmpz x
  * `(z *Fmpz) SetBytes(buf []byte) *Fmpz` Set z to the value stored in byte array buf and return z
  * `(z *Fmpz) Bytes() []byte` Return the bytes of Fmpz z
+
+### Arithmetic
  * `(z *Fmpz) Abs(x *Fmpz) *Fmpz` Set z to the absolute value of x and return z
  * `(z *Fmpz) Neg(x *Fmpz) *Fmpz` Set z to the negated value of x and return z
  * `(z *Fmpz) Add(x, y *Fmpz) *Fmpz` Set z to x + y and return z
@@ -48,15 +64,35 @@ This project is heavily influenced by and in the same pattern as Golang's [GMP w
  
 ## Types
 ```
+// Fmpz is a arbitrary size integer type.
 type Fmpz struct {
   i    C.fmpz_t
   init bool
 }
 
+// Mpz is an abitrary size integer type from the Gnu Multiprecision Library.
 type Mpz struct {
   i    C.mpz_t
   init bool
 }
+
+// Fmpq is an arbitrary precision rational type.
+type Fmpq struct {
+  i    C.fmpq_t
+  init bool
+}
+
+// NmodPoly type represents elements of Z/nZ[x] for a fixed modulus n.
+type NmodPoly struct {
+  i    C.nmod_poly_t
+  init bool
+}
+
+// MpLimb type is a uint64.
+type MpLimb struct {
+  i    C.mp_limb_t
+}
+
 ```
 
 ## Examples
