@@ -55,6 +55,7 @@ This project is heavily influenced by and in the same pattern as Golang's [GMP w
  * `(z *Fmpz) NegMod(x, y *Fmpz) *Fmpz`
  * `(a *Fmpz) Jacobi(p *Fmpz) int`
  * `(z *Fmpz) Exp(x, y, m *Fmpz) *Fmpz` Set z to the value of (x^y)%m and return z
+ * `(z *Fmpz) Pow(x, y, m *Fmpz) *Fmpz` Set z to the value of (x^y)%m and return z
  * `(f *Fmpz) GCD(g, h *Fmpz) *Fmpz` Set z to the value of the greatest common divisor of g and h and return z
  * `(f *Fmpz) Lcm(g, h *Fmpz) *Fmpz` Set z to the value of the lowest common multiple of g and h and return z 
  * `(f *Fmpz) GCDInv(g *Fmpz) (*Fmpz, *Fmpz)`
