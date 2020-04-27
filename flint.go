@@ -800,3 +800,16 @@ func (z *Fmpz) LucasChain(v2, a, m, n *Fmpz) {
 	n.doinit()
 	C.fmpz_lucas_chain(&z.i[0], &v2.i[0], &a.i[0], &m.i[0], &n.i[0])
 }
+
+// Bits returns the number of bits required to store the absolute value of z. If z is 0 then 0 is
+// returned.
+func (z *Fmpz) Bits() int {
+	z.doinit()
+	return int(C.fmpz_bits(&z.i[0]))
+}
+
+// TstBit tests bit index i of z and return 0 or 1, accordingly.
+func (z *Fmpz) TstBit(i int) int {
+	z.doinit()
+	return int(C.fmpz_tstbit(&z.i[0], C.mp_limb_t(i)))
+}

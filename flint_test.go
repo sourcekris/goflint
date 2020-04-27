@@ -545,7 +545,73 @@ func TestIsProbabPrimePseudosquare(t *testing.T) {
 	}
 }
 
-func unsafeString(s string) *Fmpz {
-	u, _ := new(Fmpz).SetString(s, 10)
-	return u
+func TestBits(t *testing.T) {
+	tt := []struct {
+		name string
+		n    string
+		want int
+	}{
+		{
+			name: "zero has zero bits",
+			n:    "0",
+			want: 0,
+		},
+		{
+			name: "one has one bits",
+			n:    "1",
+			want: 1,
+		},
+		{
+			name: "this number has 123 bits according to other sources",
+			n:    "8237492387492374928472987492874913111",
+			want: 123,
+		},
+	}
+	for _, tc := range tt {
+		n, ok := new(Fmpz).SetString(tc.n, 10)
+		if !ok {
+			t.Errorf("TestBits(): %s failed converting n to Fmpz: %v", tc.name, tc.n)
+		}
+		got := n.Bits()
+		if got != tc.want {
+			t.Errorf("Bits(): %s expected %v got %v\n", tc.name, tc.want, got)
+		}
+	}
+}
+func TestTstBit(t *testing.T) {
+	tt := []struct {
+		name string
+		n    string
+		bit  int
+		want int
+	}{
+		{
+			name: "zero has zero bits",
+			n:    "0",
+			bit:  0,
+			want: 0,
+		},
+		{
+			name: "one 1 in the zeroth bit",
+			n:    "1",
+			bit:  0,
+			want: 1,
+		},
+		{
+			name: "this number has 1 at bit 6",
+			n:    "8237492387492374928472987492874913111",
+			bit:  6,
+			want: 1,
+		},
+	}
+	for _, tc := range tt {
+		n, ok := new(Fmpz).SetString(tc.n, 10)
+		if !ok {
+			t.Errorf("TestTstBit(): %s failed converting n to Fmpz: %v", tc.name, tc.n)
+		}
+		got := n.TstBit(tc.bit)
+		if got != tc.want {
+			t.Errorf("TstBit(): %s expected %v got %v\n", tc.name, tc.want, got)
+		}
+	}
 }
