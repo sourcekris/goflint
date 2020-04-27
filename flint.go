@@ -86,7 +86,7 @@ func mpzFinalize(z *Mpz) {
 	}
 }
 
-// fmpzFinalize releases the memory allocated to the NmodPoly.
+// nmodPolyFinalize releases the memory allocated to the NmodPoly.
 func nmodPolyFinalize(z *NmodPoly) {
 	if z.init {
 		runtime.SetFinalizer(z, nil)
@@ -115,7 +115,7 @@ func (q *Fmpq) fmpqDoinit() {
 	runtime.SetFinalizer(q, fmpqFinalize)
 }
 
-// fmpqDoinit initializes an Mpz type.
+// mpzDoinit initializes an Mpz type.
 func (z *Mpz) mpzDoinit() {
 	if z.init {
 		return
@@ -155,7 +155,7 @@ func (z *Fmpz) SetInt64(x int64) *Fmpz {
 	return z
 }
 
-// SetInt64 sets z to x and returns z.
+// SetMpzInt64 sets z to x and returns z.
 func (z *Mpz) SetMpzInt64(x int64) *Mpz {
 	z.mpzDoinit()
 	y := C.long(x)
@@ -178,7 +178,7 @@ func NewFmpq(p, q int64) *Fmpq {
 	return z
 }
 
-// NewFmpz allocates and returns a new Fmpz set to x.
+// NewMpz allocates and returns a new Fmpz set to x.
 func NewMpz(x int64) *Mpz {
 	return new(Mpz).SetMpzInt64(x)
 }
@@ -203,11 +203,9 @@ func (z *Fmpz) Set(x *Fmpz) *Fmpz {
  */
 
 // Cmp compares z and y and returns:
-//
 //   -1 if z <  y
 //    0 if z == y
 //   +1 if z >  y
-//
 func (z *Fmpz) Cmp(y *Fmpz) (r int) {
 	z.doinit()
 	y.doinit()
@@ -221,15 +219,13 @@ func (z *Fmpz) Cmp(y *Fmpz) (r int) {
 }
 
 // CmpRational compares rationals z and y and returns:
-//
 //   -1 if z <  y
 //    0 if z == y
 //   +1 if z >  y
-//
-func (z *Fmpq) CmpRational(y *Fmpq) (r int) {
-	z.fmpqDoinit()
+func (q *Fmpq) CmpRational(y *Fmpq) (r int) {
+	q.fmpqDoinit()
 	y.fmpqDoinit()
-	r = int(C.fmpq_cmp(&z.i[0], &y.i[0]))
+	r = int(C.fmpq_cmp(&q.i[0], &y.i[0]))
 	if r < 0 {
 		r = -1
 	} else if r > 0 {
@@ -306,15 +302,15 @@ func (z *Fmpz) Sign() int {
  */
 
 // GetInt returns the value of the Fmpz type as an int type if possible.
-func (f *Fmpz) GetInt() int {
-	f.doinit()
-	return int(C.fmpz_get_si(&f.i[0]))
+func (z *Fmpz) GetInt() int {
+	z.doinit()
+	return int(C.fmpz_get_si(&z.i[0]))
 }
 
 // GetUInt returns the value of the Fmpz type as a uint type if possible.
-func (f *Fmpz) GetUInt() uint {
-	f.doinit()
-	return uint(C.fmpz_get_ui(&f.i[0]))
+func (z *Fmpz) GetUInt() uint {
+	z.doinit()
+	return uint(C.fmpz_get_ui(&z.i[0]))
 }
 
 // Int64 returns the int64 representation of z.
@@ -485,7 +481,7 @@ func (z *Fmpz) Mul(x, y *Fmpz) *Fmpz {
 	return z
 }
 
-// Mul sets q to the product of rational x and integer y and returns q.
+// MulRational sets q to the product of rational x and integer y and returns q.
 func (q *Fmpq) MulRational(o *Fmpq, x *Fmpz) *Fmpq {
 	x.doinit()
 	o.fmpqDoinit()
@@ -631,11 +627,11 @@ func (z *Fmpz) NegMod(x, y *Fmpz) *Fmpz {
 }
 
 // Jacobi computes the Jacobi symbol of a modulo p, where p is a prime and a is reduced modulo p
-func (a *Fmpz) Jacobi(p *Fmpz) int {
-	a.doinit()
+func (z *Fmpz) Jacobi(p *Fmpz) int {
+	z.doinit()
 	p.doinit()
 
-	return int(C.fmpz_jacobi(&a.i[0], &p.i[0]))
+	return int(C.fmpz_jacobi(&z.i[0], &p.i[0]))
 }
 
 // Exp sets z = x**y mod |m| (i.e. the sign of m is ignored), and returns z.
@@ -667,40 +663,40 @@ func (z *Fmpz) Pow(x, y, m *Fmpz) *Fmpz {
  * Greatest Common Divisor
  */
 
-// Sets f to the greatest common divisor of g and h. The result is always positive, even if
+// GCD sets f to the greatest common divisor of g and h. The result is always positive, even if
 // one of g and h is negative
-func (f *Fmpz) GCD(g, h *Fmpz) *Fmpz {
+func (z *Fmpz) GCD(g, h *Fmpz) *Fmpz {
 	g.doinit()
 	h.doinit()
-	f.doinit()
+	z.doinit()
 
-	C.fmpz_gcd(&f.i[0], &g.i[0], &h.i[0])
-	return f
+	C.fmpz_gcd(&z.i[0], &g.i[0], &h.i[0])
+	return z
 }
 
-// Sets f to the least common multiple of g and h. The result is always nonnegative, even
+// Lcm sets f to the least common multiple of g and h. The result is always nonnegative, even
 // if one of g and h is negative.
-func (f *Fmpz) Lcm(g, h *Fmpz) *Fmpz {
+func (z *Fmpz) Lcm(g, h *Fmpz) *Fmpz {
 	g.doinit()
 	h.doinit()
-	f.doinit()
+	z.doinit()
 
-	C.fmpz_lcm(&f.i[0], &g.i[0], &h.i[0])
-	return f
+	C.fmpz_lcm(&z.i[0], &g.i[0], &h.i[0])
+	return z
 }
 
-// Given integers f, g with 0 ≤ f < g, computes the greatest common divisor d = gcd(f, g)
+// GCDInv given integers f, g with 0 ≤ f < g, computes the greatest common divisor d = gcd(f, g)
 // and the modular inverse a = f^-1 (mod g), whenever f != 0
 // void fmpz_gcdinv (fmpz_t d , fmpz_t a , const fmpz_t f , const fmpz_t g )
-func (f *Fmpz) GCDInv(g *Fmpz) (*Fmpz, *Fmpz) {
+func (z *Fmpz) GCDInv(g *Fmpz) (*Fmpz, *Fmpz) {
 
 	d := new(Fmpz)
 	a := new(Fmpz)
-	f.doinit()
+	z.doinit()
 	g.doinit()
 	d.doinit()
 	a.doinit()
-	C.fmpz_gcdinv(&d.i[0], &a.i[0], &f.i[0], &g.i[0])
+	C.fmpz_gcdinv(&d.i[0], &a.i[0], &z.i[0], &g.i[0])
 	return d, a
 }
 
