@@ -360,3 +360,192 @@ func TestGetFmpqFraction(t *testing.T) {
 		t.Errorf("Expected %s/%s but got %s/%s\n", a, b, num, den)
 	}
 }
+
+func TestIsStrongProbabPrime(t *testing.T) {
+	tt := []struct {
+		name    string
+		test    string
+		want    int
+		wantErr bool
+	}{
+		{
+			name: "large prime is prime",
+			test: "863653476616376575308866344984576466644942572246900013156919",
+			want: 1,
+		},
+		{
+			name:    "large composite is not prime",
+			test:    "833810193564967701912362955539789451139872863794534923259743419423089229206473091408403560311191545764221310666338878019",
+			wantErr: true,
+		},
+	}
+
+	base := NewFmpz(10)
+
+	for _, tc := range tt {
+		p, ok := new(Fmpz).SetString(tc.test, 10)
+		if !ok && !tc.wantErr {
+			t.Errorf("TestIsStrongProbabPrime(): %s failed converting test to Fmpz: %v", tc.name, tc.test)
+		}
+		got := p.IsStrongProbabPrime(base)
+		if got != 1 && !tc.wantErr {
+			t.Errorf("IsStrongProbabPrime(): %s expected prime got %v\n", tc.name, got)
+		}
+
+		if got != 0 && tc.wantErr {
+			t.Errorf("IsStrongProbabPrime(): %s expected not-prime got %v\n", tc.name, got)
+		}
+	}
+}
+
+func TestIsProbabPrimeLucas(t *testing.T) {
+	tt := []struct {
+		name    string
+		test    string
+		want    int
+		wantErr bool
+	}{
+		{
+			name: "large prime is prime",
+			test: "863653476616376575308866344984576466644942572246900013156919",
+			want: 1,
+		},
+		{
+			name:    "large composite is not prime",
+			test:    "833810193564967701912362955539789451139872863794534923259743419423089229206473091408403560311191545764221310666338878019",
+			wantErr: true,
+		},
+	}
+
+	for _, tc := range tt {
+		p, ok := new(Fmpz).SetString(tc.test, 10)
+		if !ok && !tc.wantErr {
+			t.Errorf("IsProbabPrimeLucas(): %s failed converting test to Fmpz: %v", tc.name, tc.test)
+		}
+		got := p.IsProbabPrimeLucas()
+		if got != 1 && !tc.wantErr {
+			t.Errorf("IsProbabPrimeLucas(): %s expected prime got %v\n", tc.name, got)
+		}
+
+		if got != 0 && tc.wantErr {
+			t.Errorf("IsProbabPrimeLucas(): %s expected not-prime got %v\n", tc.name, got)
+		}
+	}
+}
+
+func TestIsProbabPrimeBPSW(t *testing.T) {
+	tt := []struct {
+		name    string
+		test    string
+		want    int
+		wantErr bool
+	}{
+		{
+			name: "large prime is prime",
+			test: "863653476616376575308866344984576466644942572246900013156919",
+			want: 1,
+		},
+		{
+			name:    "large composite is not prime",
+			test:    "833810193564967701912362955539789451139872863794534923259743419423089229206473091408403560311191545764221310666338878019",
+			wantErr: true,
+		},
+	}
+
+	for _, tc := range tt {
+		p, ok := new(Fmpz).SetString(tc.test, 10)
+		if !ok && !tc.wantErr {
+			t.Errorf("TestIsProbabPrimeBPSW(): %s failed converting test to Fmpz: %v", tc.name, tc.test)
+		}
+		got := p.IsProbabPrimeBPSW()
+		if got != 1 && !tc.wantErr {
+			t.Errorf("IsProbabPrimeBPSW(): %s expected prime got %v\n", tc.name, got)
+		}
+
+		if got != 0 && tc.wantErr {
+			t.Errorf("IsProbabPrimeBPSW(): %s expected not-prime got %v\n", tc.name, got)
+		}
+	}
+}
+
+func TestIsProbabPrime(t *testing.T) {
+	tt := []struct {
+		name    string
+		test    string
+		want    int
+		wantErr bool
+	}{
+		{
+			name: "large prime is prime",
+			test: "863653476616376575308866344984576466644942572246900013156919",
+			want: 1,
+		},
+		{
+			name:    "large composite is not prime",
+			test:    "833810193564967701912362955539789451139872863794534923259743419423089229206473091408403560311191545764221310666338878019",
+			wantErr: true,
+		},
+	}
+
+	for _, tc := range tt {
+		p, ok := new(Fmpz).SetString(tc.test, 10)
+		if !ok && !tc.wantErr {
+			t.Errorf("TestIsProbabPrime(): %s failed converting test to Fmpz: %v", tc.name, tc.test)
+		}
+		got := p.IsProbabPrime()
+		if got != 1 && !tc.wantErr {
+			t.Errorf("IsProbabPrime(): %s expected prime got %v\n", tc.name, got)
+		}
+
+		if got != 0 && tc.wantErr {
+			t.Errorf("IsProbabPrime(): %s expected not-prime got %v\n", tc.name, got)
+		}
+	}
+}
+
+func TestIsProbabPrimePseudosquare(t *testing.T) {
+	tt := []struct {
+		name    string
+		test    string
+		want    int
+		wantErr bool
+	}{
+		{
+			name:    "prime is too large to test",
+			test:    "863653476616376575308866344984576466644942572246900013156919",
+			want:    -1,
+			wantErr: true,
+		},
+		{
+			name: "largish prime is prime",
+			test: "18446744073709551557",
+			want: 1,
+		},
+
+		{
+			name:    "composite is not prime",
+			test:    "80009000",
+			wantErr: true,
+		},
+	}
+
+	for _, tc := range tt {
+		p, ok := new(Fmpz).SetString(tc.test, 10)
+		if !ok && !tc.wantErr {
+			t.Errorf("TestIsProbabPrimePseudosquare(): %s failed converting test to Fmpz: %v", tc.name, tc.test)
+		}
+		got := p.IsProbabPrimePseudosquare()
+		if got != 1 && !tc.wantErr {
+			t.Errorf("IsProbabPrimePseudosquare(): %s expected prime got %v\n", tc.name, got)
+		}
+
+		if got < 0 && tc.want != -1 {
+			t.Errorf("IsProbabPrimePseudosquare(): %s expected not-prime got %v\n", tc.name, got)
+		}
+	}
+}
+
+func unsafeString(s string) *Fmpz {
+	u, _ := new(Fmpz).SetString(s, 10)
+	return u
+}

@@ -50,7 +50,7 @@ type NmodPoly struct {
 	init bool
 }
 
-// MpLimb type is a uint64.
+// MpLimb type is a mp_limb_t which is a type alias for ulong which in go is a uint64.
 type MpLimb struct {
 	i C.mp_limb_t
 }
@@ -181,6 +181,11 @@ func NewFmpq(p, q int64) *Fmpq {
 // NewMpz allocates and returns a new Fmpz set to x.
 func NewMpz(x int64) *Mpz {
 	return new(Mpz).SetMpzInt64(x)
+}
+
+// NewMpLimb returns a new MpLimb type from a uint64.
+func NewMpLimb(x uint64) *MpLimb {
+	return &MpLimb{C.mp_limb_t(x)}
 }
 
 // SetFmpqFraction sets the value of q to the canonical form of
@@ -723,4 +728,75 @@ func (z *Fmpz) Root(x *Fmpz, y int32) *Fmpz {
 	z.doinit()
 	C.fmpz_root(&z.i[0], &x.i[0], C.slong(y))
 	return z
+}
+
+// Arbitrary precision primality testing.
+
+// IsStrongProbabPrime returns 1 if z is a strong probable prime to base a, otherwise it returns 0
+func (z *Fmpz) IsStrongProbabPrime(a *Fmpz) int {
+	a.doinit()
+	z.doinit()
+	return int(C.fmpz_is_strong_probabprime(&z.i[0], &a.i[0]))
+}
+
+// IsProbabPrimeLucas performs a Lucas probable prime test with parameters chosen by Selfridge's
+// method A as per [4]. Return 1 if z is a Lucas probable prime, otherwise return 0. This function
+// declares some composites probably prime, but no primes composite.
+func (z *Fmpz) IsProbabPrimeLucas() int {
+	z.doinit()
+	return int(C.fmpz_is_probabprime_lucas(&z.i[0]))
+}
+
+// IsProbabPrimeBPSW performs a Baillie-PSW probable prime test with parameters chosen by
+// Selfridge's method A as per [4]. Return 1 if z is a Lucas probable prime, otherwise return
+// 0. There are no known composites passed as prime by this test, though infinitely many
+// probably exist. The test will declare no primes composite.
+func (z *Fmpz) IsProbabPrimeBPSW() int {
+	z.doinit()
+	return int(C.fmpz_is_probabprime_BPSW(&z.i[0]))
+}
+
+// IsProbabPrime performs some trial division and then some probabilistic primality tests.
+// If z is definitely composite, the function returns 0, otherwise it is declared probably
+// prime, i.e. prime for most practical purposes, and the function returns 1. The chance
+// of declaring a composite prime is very small.
+func (z *Fmpz) IsProbabPrime() int {
+	z.doinit()
+	return int(C.fmpz_is_probabprime(&z.i[0]))
+}
+
+// IsProbabPrimePseudosquare returns 0 is z is composite. If z is too large (greater
+// than about 94 bits) the function fails silently and returns −1, otherwise, if z
+// is proven prime by the pseudosquares method, return 1.
+// Tests if z is a prime according to [28, Theorem 2.7]. We first factor N using trial
+// division up to some limit B. In fact, the number of primes used in the trial factoring
+// is at most FLINT_PSEUDOSQUARES_CUTOFF.
+// Next we compute N/B and find the next pseudosquare Lp above this value, using a
+// static table as per http://research.att.com/~njas/sequences/b002189.txt.
+// As noted in the text, if p is prime then Step 3 will pass. This test rejects many
+// composites, and so by this time we suspect that p is prime. If N is 3 or 7 modulo 8,
+// we are done, and N is prime.
+// We now run a probable prime test, for which no known counterexamples are known, to
+// reject any composites. We then proceed to prove N prime by executing Step 4. In the
+// case that N is 1 modulo 8, if Step 4 fails, we extend the number of primes pi at Step 3
+// and hope to find one which passes Step 4. We take the test one past the largest p for
+// which we have pseudosquares Lp tabulated, as this already corresponds to the next Lp
+// which is bigger than 264 and hence larger than any prime we might be testing.
+// As explained in the text, Condition 4 cannot fail if N is prime.
+// The possibility exists that the probable prime test declares a composite prime. However
+// in that case an error is printed, as that would be of independent interest.
+func (z *Fmpz) IsProbabPrimePseudosquare() int {
+	z.doinit()
+	return int(C.fmpz_is_prime_pseudosquare(&z.i[0]))
+}
+
+// LucasChain Given V0 = 2, V1 = A compute Vm, Vm+1 (mod n) from the recurrences Vj = AVj−1 −
+// Vj−2 (mod n).
+func (z *Fmpz) LucasChain(v2, a, m, n *Fmpz) {
+	z.doinit() // v1
+	v2.doinit()
+	a.doinit()
+	m.doinit()
+	n.doinit()
+	C.fmpz_lucas_chain(&z.i[0], &v2.i[0], &a.i[0], &m.i[0], &n.i[0])
 }
