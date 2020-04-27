@@ -89,7 +89,7 @@ func TestBitLen(t *testing.T) {
 	b := a.BitLen()
 
 	if b != 17 {
-		t.Errorf("Expected a.BitLen() == 17 but got something else: %d.\n", b)
+		t.Errorf("Expected a.BitLen() == 17 but got something else: %v.\n", b)
 	}
 }
 
@@ -100,7 +100,7 @@ func TestMod(t *testing.T) {
 	expected := NewFmpz(4)
 
 	if c.Mod(a, b).Cmp(expected) != 0 {
-		t.Errorf("Expected a % b == 5 but got something else: %d\n", a)
+		t.Errorf("Expected a mod b == 5 but got something else: %v\n", a)
 	}
 }
 
@@ -109,7 +109,7 @@ func TestAbs(t *testing.T) {
 	expected := NewFmpz(64)
 
 	if a.Abs(a).Cmp(expected) != 0 {
-		t.Errorf("Expected a.Abs(a) == 64 but got something else: %d\n", a)
+		t.Errorf("Expected a.Abs(a) == 64 but got something else: %v\n", a)
 	}
 }
 
@@ -119,7 +119,7 @@ func TestAdd(t *testing.T) {
 	expected := NewFmpz(64)
 
 	if a.Add(a, b).Cmp(expected) != 0 {
-		t.Errorf("Expected a.Add(a, b) == 64 but got something else: %d\n", a)
+		t.Errorf("Expected a.Add(a, b) == 64 but got something else: %v\n", a)
 	}
 }
 
@@ -129,7 +129,7 @@ func TestSub(t *testing.T) {
 	expected := NewFmpz(64)
 
 	if a.Sub(a, b).Cmp(expected) != 0 {
-		t.Errorf("Expected a.Sub(a, b) == 64 but got something else: %d\n", a)
+		t.Errorf("Expected a.Sub(a, b) == 64 but got something else: %v\n", a)
 	}
 }
 
@@ -139,7 +139,7 @@ func TestMul(t *testing.T) {
 	expected := NewFmpz(64)
 
 	if a.Mul(a, b).Cmp(expected) != 0 {
-		t.Errorf("Expected a.Mul(a, b) == 64 but got something else: %d\n", a)
+		t.Errorf("Expected a.Mul(a, b) == 64 but got something else: %v\n", a)
 	}
 }
 
@@ -159,7 +159,7 @@ func TestDiv(t *testing.T) {
 	expected := NewFmpz(8)
 
 	if expected.Div(num, den).Cmp(expected) != 0 {
-		t.Errorf("Expected num / den == 8 but got something else: %d\n", expected)
+		t.Errorf("Expected num / den == 8 but got something else: %v\n", expected)
 	}
 }
 
@@ -168,24 +168,24 @@ func TestDivMod(t *testing.T) {
 	b := NewFmpz(14541)
 	n := NewFmpz(666)
 
-	x_e := NewFmpz(772)
-	y_e := NewFmpz(5579)
+	xE := NewFmpz(772)
+	yE := NewFmpz(5579)
 
 	x, y := a.DivMod(a, b, n)
 
-	if x.Cmp(x_e) != 0 && y.Cmp(y_e) != 0 {
-		t.Errorf("Expected %d and %d but got %d and %d\n", x_e, y_e, x, y)
+	if x.Cmp(xE) != 0 && y.Cmp(yE) != 0 {
+		t.Errorf("Expected %v and %v but got %v and %v\n", xE, yE, x, y)
 	}
 
 	a.SetInt64(11231231)
 	b.SetInt64(-984)
-	x_e.SetInt64(-11413)
-	y_e.SetInt64(839)
+	xE.SetInt64(-11413)
+	yE.SetInt64(839)
 
 	x, y = a.DivMod(a, b, n)
 
-	if x.Cmp(x_e) != 0 && y.Cmp(y_e) != 0 {
-		t.Errorf("Expected %d and %d but got %d and %d\n", x_e, y_e, x, y)
+	if x.Cmp(xE) != 0 && y.Cmp(yE) != 0 {
+		t.Errorf("Expected %v and %v but got %v and %v\n", xE, yE, x, y)
 	}
 }
 
@@ -195,7 +195,7 @@ func TestQuo(t *testing.T) {
 	expected := NewFmpz(8)
 
 	if expected.Quo(num, den).Cmp(expected) != 0 {
-		t.Errorf("Expected expectected.Quo(num, den) == 8 but got something else: %d\n", expected)
+		t.Errorf("Expected expectected.Quo(num, den) == 8 but got something else: %v\n", expected)
 	}
 }
 
@@ -205,7 +205,7 @@ func TestGCD(t *testing.T) {
 	expected := NewFmpz(5)
 
 	if expected.GCD(a, b).Cmp(expected) != 0 {
-		t.Errorf("Expected expectected.GCD(a, b) == 5 but got something else: %d\n", expected)
+		t.Errorf("Expected expectected.GCD(a, b) == 5 but got something else: %v\n", expected)
 	}
 }
 
@@ -217,7 +217,7 @@ func TestSetString(t *testing.T) {
 	}
 
 	if num.Cmp(expected) != 0 {
-		t.Errorf("Expected 65293409233 but got something else: %d\n", num)
+		t.Errorf("Expected 65293409233 but got something else: %v\n", num)
 	}
 }
 
@@ -237,7 +237,7 @@ func TestSetBytes(t *testing.T) {
 	c := NewFmpz(8746238)
 
 	if b.Cmp(c) != 0 {
-		t.Errorf("Expected %d but got %d\n", c, b)
+		t.Errorf("Expected %v but got %v\n", c, b)
 	}
 }
 
@@ -251,12 +251,12 @@ func TestExp(t *testing.T) {
 	z := a.Exp(a, b, n)
 
 	if z.Cmp(expected) != 0 {
-		t.Errorf("Exp(): expected %d but got %d\n", expected, z)
+		t.Errorf("Exp(): expected %v but got %v\n", expected, z)
 	}
 
 	// Exp returns the result but also mutates the receiver.
 	if a.Cmp(expected) != 0 {
-		t.Errorf("Exp(): expected %d but got %d\n", expected, z)
+		t.Errorf("Exp(): expected %v but got %v\n", expected, z)
 	}
 }
 
@@ -270,12 +270,12 @@ func TestPow(t *testing.T) {
 	z := a.Pow(a, b, n)
 
 	if z.Cmp(expected) != 0 {
-		t.Errorf("Pow(): expected %d but got %d\n", expected, z)
+		t.Errorf("Pow(): expected %v but got %v\n", expected, z)
 	}
 
 	// Pow returns the result but also mutates the receiver.
 	if a.Cmp(expected) != 0 {
-		t.Errorf("Pow(): expected %d but got %d\n", expected, z)
+		t.Errorf("Pow(): expected %v but got %v\n", expected, z)
 	}
 }
 
@@ -287,7 +287,7 @@ func TestAnd(t *testing.T) {
 	z := a.And(a, b)
 
 	if z.Cmp(expected) != 0 {
-		t.Errorf("Expected %d but got %d\n", expected, z)
+		t.Errorf("Expected %v but got %v\n", expected, z)
 	}
 }
 
@@ -299,7 +299,7 @@ func TestSqrt(t *testing.T) {
 	b.Sqrt(a)
 
 	if b.Cmp(expected) != 0 {
-		t.Errorf("Expected %d but got %d\n", expected, b)
+		t.Errorf("Expected %v but got %v\n", expected, b)
 	}
 }
 
@@ -311,7 +311,7 @@ func TestRoot(t *testing.T) {
 	b.Root(a, 2)
 
 	if b.Cmp(expected) != 0 {
-		t.Errorf("Expected %d but got %d\n", expected, b)
+		t.Errorf("Expected %v but got %v\n", expected, b)
 	}
 }
 
@@ -322,7 +322,7 @@ func TestNewFmpq(t *testing.T) {
 	expected := "3/2"
 
 	if b != expected {
-		t.Errorf("Expected %s but got %s\n", expected, b)
+		t.Errorf("Expected %v but got %v\n", expected, b)
 	}
 }
 
