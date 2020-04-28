@@ -55,6 +55,12 @@ type MpLimb struct {
 	i C.mp_limb_t
 }
 
+// FlintRandT keeps state for Fmpz random number generation.
+type FlintRandT struct {
+	i    C.flint_rand_t
+	init bool
+}
+
 /*
  * Initializers and Finalizers
  */
@@ -92,6 +98,14 @@ func nmodPolyFinalize(z *NmodPoly) {
 		runtime.SetFinalizer(z, nil)
 		C.nmod_poly_clear(&z.i[0])
 		z.init = false
+	}
+}
+
+func flintRandTFinalize(r *FlintRandT) {
+	if r.init {
+		runtime.SetFinalizer(r, nil)
+		C.flint_randclear(&r.i[0])
+		r.init = false
 	}
 }
 
@@ -133,6 +147,15 @@ func (z *NmodPoly) nmodPolyDoinit(n *MpLimb) {
 	z.init = true
 	C.nmod_poly_init(&z.i[0], n.i)
 	runtime.SetFinalizer(z, nmodPolyFinalize)
+}
+
+func (r *FlintRandT) flintRandTDoinit() {
+	if r.init {
+		return
+	}
+	r.init = true
+	C.flint_randinit(&r.i[0])
+	runtime.SetFinalizer(r, flintRandTFinalize)
 }
 
 /*
@@ -812,4 +835,14 @@ func (z *Fmpz) Bits() int {
 func (z *Fmpz) TstBit(i int) int {
 	z.doinit()
 	return int(C.fmpz_tstbit(&z.i[0], C.mp_limb_t(i)))
+}
+
+// Random number generation.
+
+// Randm sets z to a random integer between 0 and m-1 inclusive.
+func (z *Fmpz) Randm(state *FlintRandT, m *Fmpz) {
+	z.doinit()
+	m.doinit()
+	state.flintRandTDoinit()
+	C.fmpz_randm(&z.i[0], &state.i[0], &m.i[0])
 }
