@@ -304,14 +304,33 @@ func TestSqrt(t *testing.T) {
 }
 
 func TestRoot(t *testing.T) {
-	a := NewFmpz(4096)
-	expected := NewFmpz(64)
+	tt := []struct {
+		name string
+		n    int64
+		r    int32
+		want int64
+	}{
+		{
+			name: "square root of 4096",
+			n:    4096,
+			r:    2,
+			want: 64,
+		},
+		{
+			name: "cube root of 4096",
+			n:    4096,
+			r:    3,
+			want: 16,
+		},
+	}
 
-	b := new(Fmpz)
-	b.Root(a, 2)
+	for _, tc := range tt {
+		got := NewFmpz(tc.n)
+		got.Root(got, tc.r)
 
-	if b.Cmp(expected) != 0 {
-		t.Errorf("Expected %v but got %v\n", expected, b)
+		if got.Cmp(NewFmpz(tc.want)) != 0 {
+			t.Errorf("Root() %s expected %v but got %v", tc.name, tc.want, got)
+		}
 	}
 }
 
