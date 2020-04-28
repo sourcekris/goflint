@@ -840,9 +840,11 @@ func (z *Fmpz) TstBit(i int) int {
 // Random number generation.
 
 // Randm sets z to a random integer between 0 and m-1 inclusive.
-func (z *Fmpz) Randm(state *FlintRandT, m *Fmpz) {
+func (z *Fmpz) Randm(state *FlintRandT, m *Fmpz) *Fmpz {
 	z.doinit()
 	m.doinit()
 	state.flintRandTDoinit()
 	C.fmpz_randm(&z.i[0], &state.i[0], &m.i[0])
+
+	return z
 }
