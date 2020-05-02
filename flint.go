@@ -730,6 +730,33 @@ func (z *Fmpz) Exp(x, y, m *Fmpz) *Fmpz {
 	return z
 }
 
+// ExpXY sets z = x**y and returns z.
+func (z *Fmpz) ExpXY(x, y *Fmpz) *Fmpz {
+	x.doinit()
+	y.doinit()
+	z.doinit()
+	if y.Sign() <= 0 {
+		return z.SetInt64(1)
+	}
+
+	C.fmpz_pow_ui(&z.i[0], &x.i[0], C.fmpz_get_ui(&y.i[0]))
+
+	return z
+}
+
+// ExpXI sets z = x**y where u is an int type and returns z.
+func (z *Fmpz) ExpXI(x *Fmpz, y int) *Fmpz {
+	x.doinit()
+	z.doinit()
+	if y <= 0 {
+		return z.SetInt64(1)
+	}
+
+	C.fmpz_pow_ui(&z.i[0], &x.i[0], C.mp_limb_t(y))
+
+	return z
+}
+
 // ExpZ sets z = z**x and returns z.
 func (z *Fmpz) ExpZ(x *Fmpz) *Fmpz {
 	x.doinit()

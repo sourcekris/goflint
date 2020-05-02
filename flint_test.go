@@ -393,6 +393,74 @@ func TestExpI(t *testing.T) {
 	}
 }
 
+func TestExpXY(t *testing.T) {
+	tt := []struct {
+		name string
+		a    *Fmpz
+		b    *Fmpz
+		want *Fmpz
+	}{
+		{
+			name: "a**b",
+			a:    NewFmpz(80),
+			b:    NewFmpz(3),
+			want: NewFmpz(512000),
+		},
+		{
+			name: "a**0",
+			a:    NewFmpz(11231231),
+			b:    NewFmpz(0),
+			want: NewFmpz(1),
+		},
+		{
+			name: "a**-1",
+			a:    NewFmpz(11231231),
+			b:    NewFmpz(-1),
+			want: NewFmpz(1),
+		},
+	}
+	for _, tc := range tt {
+		got := tc.a.ExpXY(tc.a, tc.b)
+		if got.Cmp(tc.want) != 0 {
+			t.Errorf("TstExpXY(): %s expected %v got %v\n", tc.name, tc.want, got)
+		}
+	}
+}
+
+func TestExpXI(t *testing.T) {
+	tt := []struct {
+		name string
+		a    *Fmpz
+		b    int
+		want *Fmpz
+	}{
+		{
+			name: "a**b",
+			a:    NewFmpz(80),
+			b:    3,
+			want: NewFmpz(512000),
+		},
+		{
+			name: "a**0",
+			a:    NewFmpz(11231231),
+			b:    0,
+			want: NewFmpz(1),
+		},
+		{
+			name: "a**-1",
+			a:    NewFmpz(11231231),
+			b:    -1,
+			want: NewFmpz(1),
+		},
+	}
+	for _, tc := range tt {
+		got := tc.a.ExpXI(tc.a, tc.b)
+		if got.Cmp(tc.want) != 0 {
+			t.Errorf("TstExpXI(): %s expected %v got %v\n", tc.name, tc.want, got)
+		}
+	}
+}
+
 func TestPow(t *testing.T) {
 	a := NewFmpz(11231231)
 	b := NewFmpz(55)
