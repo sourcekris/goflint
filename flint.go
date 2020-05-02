@@ -631,6 +631,15 @@ func (z *Fmpz) Mod(x, y *Fmpz) *Fmpz {
 	return z
 }
 
+// ModZ sets z to the modulus z%y for y != 0 and returns z.
+func (z *Fmpz) ModZ(y *Fmpz) *Fmpz {
+	y.doinit()
+	z.doinit()
+
+	C.fmpz_mod(&z.i[0], &z.i[0], &y.i[0])
+	return z
+}
+
 // DivMod sets z to the quotient x div y and m to the modulus x mod y
 // and returns the pair (z, m) for y != 0.
 // If y == 0, a division-by-zero run-time panic occurs.
@@ -754,6 +763,24 @@ func (z *Fmpz) ExpXI(x *Fmpz, y int) *Fmpz {
 
 	C.fmpz_pow_ui(&z.i[0], &x.i[0], C.mp_limb_t(y))
 
+	return z
+}
+
+// ExpXIM sets z = x**i mod m where u is an int type and returns z.
+func (z *Fmpz) ExpXIM(x *Fmpz, i int, m *Fmpz) *Fmpz {
+	x.doinit()
+	m.doinit()
+	z.doinit()
+	y := NewFmpz(int64(i))
+	if y.Sign() <= 0 {
+		return z.SetInt64(1)
+	}
+	if m == nil || m.Sign() == 0 {
+		C.fmpz_pow_ui(&z.i[0], &x.i[0], C.fmpz_get_ui(&y.i[0]))
+	} else {
+		m.doinit()
+		C.fmpz_powm(&z.i[0], &x.i[0], &y.i[0], &m.i[0])
+	}
 	return z
 }
 

@@ -96,10 +96,19 @@ func TestBitLen(t *testing.T) {
 func TestMod(t *testing.T) {
 	a := NewFmpz(64)
 	b := NewFmpz(5)
-	c := NewFmpz(0)
 	expected := NewFmpz(4)
 
-	if c.Mod(a, b).Cmp(expected) != 0 {
+	if new(Fmpz).Mod(a, b).Cmp(expected) != 0 {
+		t.Errorf("Expected a mod b == 5 but got something else: %v\n", a)
+	}
+}
+
+func TestModZ(t *testing.T) {
+	a := NewFmpz(64)
+	b := NewFmpz(5)
+	expected := NewFmpz(4)
+
+	if new(Fmpz).SetInt64(0).AddZ(a).ModZ(b).Cmp(expected) != 0 {
 		t.Errorf("Expected a mod b == 5 but got something else: %v\n", a)
 	}
 }
