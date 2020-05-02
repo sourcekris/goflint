@@ -133,6 +133,26 @@ func TestSub(t *testing.T) {
 	}
 }
 
+func TestSubZ(t *testing.T) {
+	a := NewFmpz(68)
+	b := NewFmpz(4)
+	expected := NewFmpz(64)
+
+	if a.SubZ(b).Cmp(expected) != 0 {
+		t.Errorf("Expected a.SubZ(b) == 64 but got something else: %v\n", a)
+	}
+}
+
+func TestSubI(t *testing.T) {
+	a := NewFmpz(68)
+	b := 4
+	expected := NewFmpz(64)
+
+	if a.SubI(b).Cmp(expected) != 0 {
+		t.Errorf("Expected a.SubI(b) == 64 but got something else: %v\n", a)
+	}
+}
+
 func TestMul(t *testing.T) {
 	a := NewFmpz(8)
 	b := NewFmpz(8)
@@ -140,6 +160,25 @@ func TestMul(t *testing.T) {
 
 	if a.Mul(a, b).Cmp(expected) != 0 {
 		t.Errorf("Expected a.Mul(a, b) == 64 but got something else: %v\n", a)
+	}
+}
+
+func TestMulZ(t *testing.T) {
+	a := NewFmpz(8)
+	b := NewFmpz(8)
+	expected := NewFmpz(64)
+
+	if a.MulZ(b).Cmp(expected) != 0 {
+		t.Errorf("Expected a.MulZ(b) == 64 but got something else: %v\n", a)
+	}
+}
+func TestMulI(t *testing.T) {
+	a := NewFmpz(8)
+	b := 8
+	expected := NewFmpz(64)
+
+	if a.MulI(b).Cmp(expected) != 0 {
+		t.Errorf("Expected a.MulI(b) == 64 but got something else: %v\n", a)
 	}
 }
 
@@ -242,21 +281,115 @@ func TestSetBytes(t *testing.T) {
 }
 
 func TestExp(t *testing.T) {
-	a := NewFmpz(11231231)
-	b := NewFmpz(55)
-	n := NewFmpz(6611116)
-
-	expected := NewFmpz(4221059)
-
-	z := a.Exp(a, b, n)
-
-	if z.Cmp(expected) != 0 {
-		t.Errorf("Exp(): expected %v but got %v\n", expected, z)
+	tt := []struct {
+		name string
+		a    *Fmpz
+		b    *Fmpz
+		n    *Fmpz
+		want *Fmpz
+	}{
+		{
+			name: "a**b % n",
+			a:    NewFmpz(11231231),
+			b:    NewFmpz(55),
+			n:    NewFmpz(6611116),
+			want: NewFmpz(4221059),
+		},
+		{
+			name: "a**b",
+			a:    NewFmpz(80),
+			b:    NewFmpz(3),
+			n:    nil,
+			want: NewFmpz(512000),
+		},
+		{
+			name: "a**0",
+			a:    NewFmpz(11231231),
+			b:    NewFmpz(0),
+			n:    nil,
+			want: NewFmpz(1),
+		},
+		{
+			name: "a**-1",
+			a:    NewFmpz(11231231),
+			b:    NewFmpz(-1),
+			n:    nil,
+			want: NewFmpz(1),
+		},
 	}
+	for _, tc := range tt {
+		got := tc.a.Exp(tc.a, tc.b, tc.n)
+		if got.Cmp(tc.want) != 0 {
+			t.Errorf("TstExp(): %s expected %v got %v\n", tc.name, tc.want, got)
+		}
+	}
+}
 
-	// Exp returns the result but also mutates the receiver.
-	if a.Cmp(expected) != 0 {
-		t.Errorf("Exp(): expected %v but got %v\n", expected, z)
+func TestExpZ(t *testing.T) {
+	tt := []struct {
+		name string
+		a    *Fmpz
+		b    *Fmpz
+		want *Fmpz
+	}{
+		{
+			name: "a**b",
+			a:    NewFmpz(80),
+			b:    NewFmpz(3),
+			want: NewFmpz(512000),
+		},
+		{
+			name: "a**0",
+			a:    NewFmpz(11231231),
+			b:    NewFmpz(0),
+			want: NewFmpz(1),
+		},
+		{
+			name: "a**-1",
+			a:    NewFmpz(11231231),
+			b:    NewFmpz(-1),
+			want: NewFmpz(1),
+		},
+	}
+	for _, tc := range tt {
+		got := tc.a.ExpZ(tc.b)
+		if got.Cmp(tc.want) != 0 {
+			t.Errorf("TstExpZ(): %s expected %v got %v\n", tc.name, tc.want, got)
+		}
+	}
+}
+
+func TestExpI(t *testing.T) {
+	tt := []struct {
+		name string
+		a    *Fmpz
+		b    int
+		want *Fmpz
+	}{
+		{
+			name: "a**b",
+			a:    NewFmpz(80),
+			b:    3,
+			want: NewFmpz(512000),
+		},
+		{
+			name: "a**0",
+			a:    NewFmpz(11231231),
+			b:    0,
+			want: NewFmpz(1),
+		},
+		{
+			name: "a**-1",
+			a:    NewFmpz(11231231),
+			b:    -1,
+			want: NewFmpz(1),
+		},
+	}
+	for _, tc := range tt {
+		got := tc.a.ExpI(tc.b)
+		if got.Cmp(tc.want) != 0 {
+			t.Errorf("TstExpI(): %s expected %v got %v\n", tc.name, tc.want, got)
+		}
 	}
 }
 

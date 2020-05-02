@@ -491,6 +491,22 @@ func (z *Fmpz) Add(x, y *Fmpz) *Fmpz {
 	return z
 }
 
+// AddZ sets z to the sum x+z and returns z.
+func (z *Fmpz) AddZ(x *Fmpz) *Fmpz {
+	x.doinit()
+	z.doinit()
+	C.fmpz_add(&z.i[0], &x.i[0], &z.i[0])
+	return z
+}
+
+// AddI sets z to the sum x+z where x is an int type and returns z.
+func (z *Fmpz) AddI(x int) *Fmpz {
+	fmpZX := NewFmpz(int64(x))
+	z.doinit()
+	C.fmpz_add(&z.i[0], &fmpZX.i[0], &z.i[0])
+	return z
+}
+
 // Sub sets z to the difference x-y and returns z.
 func (z *Fmpz) Sub(x, y *Fmpz) *Fmpz {
 	x.doinit()
@@ -500,12 +516,45 @@ func (z *Fmpz) Sub(x, y *Fmpz) *Fmpz {
 	return z
 }
 
+// SubZ sets z to the difference z-x and returns z.
+func (z *Fmpz) SubZ(x *Fmpz) *Fmpz {
+	x.doinit()
+	z.doinit()
+	C.fmpz_sub(&z.i[0], &z.i[0], &x.i[0])
+	return z
+}
+
+// SubI sets z to the difference z-x where x is an int type and returns z.
+func (z *Fmpz) SubI(x int) *Fmpz {
+	fmpZX := NewFmpz(int64(x))
+	z.doinit()
+	C.fmpz_sub(&z.i[0], &z.i[0], &fmpZX.i[0])
+	return z
+}
+
 // Mul sets z to the product x*y and returns z.
 func (z *Fmpz) Mul(x, y *Fmpz) *Fmpz {
 	x.doinit()
 	y.doinit()
 	z.doinit()
 	C.fmpz_mul(&z.i[0], &x.i[0], &y.i[0])
+	return z
+}
+
+// MulZ sets z to the product of z  * x and returns z.
+func (z *Fmpz) MulZ(x *Fmpz) *Fmpz {
+	x.doinit()
+	z.doinit()
+	C.fmpz_mul(&z.i[0], &x.i[0], &z.i[0])
+	return z
+}
+
+// MulI sets z to the product of z  * x where x is an int type
+// and returns z.
+func (z *Fmpz) MulI(x int) *Fmpz {
+	fmpZX := NewFmpz(int64(x))
+	z.doinit()
+	C.fmpz_mul(&z.i[0], &fmpZX.i[0], &z.i[0])
 	return z
 }
 
@@ -670,8 +719,7 @@ func (z *Fmpz) Exp(x, y, m *Fmpz) *Fmpz {
 	y.doinit()
 	z.doinit()
 	if y.Sign() <= 0 {
-		z.SetInt64(1)
-		return z
+		return z.SetInt64(1)
 	}
 	if m == nil || m.Sign() == 0 {
 		C.fmpz_pow_ui(&z.i[0], &x.i[0], C.fmpz_get_ui(&y.i[0]))
@@ -679,6 +727,31 @@ func (z *Fmpz) Exp(x, y, m *Fmpz) *Fmpz {
 		m.doinit()
 		C.fmpz_powm(&z.i[0], &x.i[0], &y.i[0], &m.i[0])
 	}
+	return z
+}
+
+// ExpZ sets z = z**x and returns z.
+func (z *Fmpz) ExpZ(x *Fmpz) *Fmpz {
+	x.doinit()
+	z.doinit()
+	if x.Sign() <= 0 {
+		return z.SetInt64(1)
+	}
+
+	C.fmpz_pow_ui(&z.i[0], &z.i[0], C.fmpz_get_ui(&x.i[0]))
+
+	return z
+}
+
+// ExpI sets z = z**x where i is an int type and returns z.
+func (z *Fmpz) ExpI(x int) *Fmpz {
+	z.doinit()
+	if x <= 0 {
+		return z.SetInt64(1)
+	}
+
+	C.fmpz_pow_ui(&z.i[0], &z.i[0], C.mp_limb_t(x))
+
 	return z
 }
 
