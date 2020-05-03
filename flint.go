@@ -262,6 +262,22 @@ func (q *Fmpq) CmpRational(y *Fmpq) (r int) {
 	return
 }
 
+// Cmp compares Mpz z and y and returns:
+//   -1 if z <  y
+//    0 if z == y
+//   +1 if z >  y
+func (z *Mpz) Cmp(y *Mpz) (r int) {
+	z.mpzDoinit()
+	y.mpzDoinit()
+	r = int(C.mpz_cmp(&z.i[0], &y.i[0]))
+	if r < 0 {
+		r = -1
+	} else if r > 0 {
+		r = 1
+	}
+	return
+}
+
 /*
  * Formatting
  */
@@ -288,6 +304,23 @@ func (q *Fmpq) string(base int) string {
 	s := C.GoString(p)
 	C.free(unsafe.Pointer(p))
 	return s
+}
+
+// string returns z in the base given
+func (z *Mpz) string(base int) string {
+	if z == nil {
+		return "<nil>"
+	}
+	z.mpzDoinit()
+	p := C.mpz_get_str(nil, C.int(base), &z.i[0])
+	s := C.GoString(p)
+	C.free(unsafe.Pointer(p))
+	return s
+}
+
+// String returns the decimal representation of z.
+func (z *Mpz) String() string {
+	return z.string(10)
 }
 
 // String returns the decimal representation of z.
@@ -558,6 +591,55 @@ func (z *Fmpz) MulI(x int) *Fmpz {
 	return z
 }
 
+// MulRMpz sets z to the product of z and y modulo n and returns z using Mpz
+// types.
+func (z *Mpz) MulRMpz(y, n *Mpz) *Mpz {
+	z.mpzDoinit()
+	y.mpzDoinit()
+	C.mpz_mul(&z.i[0], &z.i[0], &y.i[0])
+	C.mpz_fdiv_r(&z.i[0], &z.i[0], &n.i[0])
+	return z
+}
+
+// DivR sets z to the result of z/y in the ring of integers(n). Currently this
+// only works if y fits into the int type supported by the Fmpq type.
+func (z *Fmpz) DivR(y, n *Fmpz) *Fmpz {
+	z.doinit()
+	y.doinit()
+	n.doinit()
+
+	// We'll do division of a/b as a * 1/b.
+
+	// Get a denominator.
+	d := int64(y.GetInt())
+	if d == 0 {
+		return NewFmpz(0)
+	}
+
+	rat := NewFmpq(1, d)
+	rat.MulRational(rat, z)
+
+	res := z.ModRational(rat, n)
+	if res == 0 {
+		// No residue exists.
+		return NewFmpz(0)
+	}
+
+	return z
+}
+
+// SubRMpz sets z to the z -y modulo n and returns z using Mpz
+// types.
+func (z *Mpz) SubRMpz(y, n *Mpz) *Mpz {
+	z.mpzDoinit()
+	y.mpzDoinit()
+	C.mpz_sub(&z.i[0], &z.i[0], &y.i[0])
+	if z.Cmp(NewMpz(0)) == -1 {
+		C.mpz_add(&z.i[0], &z.i[0], &n.i[0])
+	}
+	return z
+}
+
 // MulRational sets q to the product of rational x and integer y and returns q.
 func (q *Fmpq) MulRational(o *Fmpq, x *Fmpz) *Fmpq {
 	x.doinit()
@@ -617,6 +699,24 @@ func (z *Fmpz) Div(x, y *Fmpz) *Fmpz {
 	return z
 }
 
+// DivMod sets z to the quotient x div y and m to the modulus x mod y
+// and returns the pair (z, m) for y != 0.
+func (z *Mpz) DivMod(x, y, m *Mpz) (*Mpz, *Mpz) {
+	x.mpzDoinit()
+	y.mpzDoinit()
+	m.mpzDoinit()
+	z.mpzDoinit()
+	switch y.Cmp(NewMpz(0)) {
+	case 1:
+		C.mpz_fdiv_qr(&z.i[0], &m.i[0], &x.i[0], &y.i[0])
+	case -1:
+		C.mpz_cdiv_qr(&z.i[0], &m.i[0], &x.i[0], &y.i[0])
+	case 0:
+		panic("Division by zero")
+	}
+	return z, m
+}
+
 /*
  * Modular Arithmatic
  */
@@ -638,6 +738,15 @@ func (z *Fmpz) ModZ(y *Fmpz) *Fmpz {
 
 	C.fmpz_mod(&z.i[0], &z.i[0], &y.i[0])
 	return z
+}
+
+// ModRational sets z to the residue of x = n/d (num, den) modulo n and
+// returns 1 if such a residue exists otherwise 0.
+func (z *Fmpz) ModRational(x *Fmpq, n *Fmpz) int {
+	z.doinit()
+	n.doinit()
+	x.fmpqDoinit()
+	return int(C.fmpq_mod_fmpz(&z.i[0], &x.i[0], &n.i[0]))
 }
 
 // DivMod sets z to the quotient x div y and m to the modulus x mod y

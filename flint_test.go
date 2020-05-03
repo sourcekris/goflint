@@ -141,6 +141,17 @@ func TestSub(t *testing.T) {
 		t.Errorf("Expected a.Sub(a, b) == 64 but got something else: %v\n", a)
 	}
 }
+func TestSubRMpz(t *testing.T) {
+	a := NewMpz(7)
+	b := NewMpz(8)
+	n := NewMpz(10000000000)
+	want := NewMpz(9999999999)
+	got := a.SubRMpz(b, n)
+
+	if got.Cmp(want) != 0 {
+		t.Errorf("a.SubRMpz(b, n) want / got mismatch: %v / %v\n", want, got)
+	}
+}
 
 func TestSubZ(t *testing.T) {
 	a := NewFmpz(68)
@@ -191,6 +202,17 @@ func TestMulI(t *testing.T) {
 	}
 }
 
+func TestMulRMpzI(t *testing.T) {
+	a := NewMpz(700000)
+	b := NewMpz(800000)
+	n := NewMpz(100000000000)
+	want := NewMpz(60000000000)
+	got := a.MulRMpz(b, n)
+	if got.Cmp(want) != 0 {
+		t.Errorf("a.MulRMpz(b, n) mismatched want / got: %v / %v\n", want, got)
+	}
+}
+
 func TestMulRational(t *testing.T) {
 	a := NewFmpq(2, 3)
 	b := NewFmpz(8)
@@ -222,7 +244,7 @@ func TestDivMod(t *testing.T) {
 	x, y := a.DivMod(a, b, n)
 
 	if x.Cmp(xE) != 0 && y.Cmp(yE) != 0 {
-		t.Errorf("Expected %v and %v but got %v and %v\n", xE, yE, x, y)
+		t.Errorf("Expected %v and %v but got %v and %v", xE, yE, x, y)
 	}
 
 	a.SetInt64(11231231)
@@ -233,7 +255,19 @@ func TestDivMod(t *testing.T) {
 	x, y = a.DivMod(a, b, n)
 
 	if x.Cmp(xE) != 0 && y.Cmp(yE) != 0 {
-		t.Errorf("Expected %v and %v but got %v and %v\n", xE, yE, x, y)
+		t.Errorf("Expected %v and %v but got %v and %v", xE, yE, x, y)
+	}
+}
+
+func TestDivR(t *testing.T) {
+	z := NewFmpz(3)
+	y := NewFmpz(7)
+	n := NewFmpz(100000000000)
+	want := NewFmpz(71428571429)
+
+	got := z.DivR(y, n)
+	if got.Cmp(want) != 0 {
+		t.Errorf("DivR want / got mismatched: %v / %v", want, got)
 	}
 }
 
