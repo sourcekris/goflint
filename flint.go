@@ -14,6 +14,15 @@ package goflint
 #include <flint/nmod_poly.h>
 #include <gmp.h>
 #include <stdlib.h>
+
+// Macros
+
+fmpz *_fmpq_numref(fmpq_t op) {
+    return fmpq_numref(op);
+}
+fmpz *_fmpq_denref(fmpq_t op) {
+    return fmpq_denref(op);
+}
 */
 import "C"
 
@@ -403,24 +412,33 @@ func (z *Fmpz) Uint64() (y uint64) {
 	return
 }
 
-// GetFmpqFraction gets the numerator and denomenator of the rational Fmpq q.
-func (q *Fmpq) GetFmpqFraction(num, den *Fmpz) {
-	num.doinit()
-	den.doinit()
-
-	// temporary storage since the API works with Mpz types for some reason
-	a := new(Mpz)
-	b := new(Mpz)
-
-	a.mpzDoinit()
-	b.mpzDoinit()
+// GetFmpqFraction gets the integer numerator and denomenator of the rational Fmpq q.
+func (q *Fmpq) GetFmpqFraction() (int, int) {
+	q.fmpqDoinit()
 
 	// store the num and den into Mpzs
-	C.fmpq_get_mpz_frac(&a.i[0], &b.i[0], &q.i[0])
+	// fmpq_get_mpz_frac is not reliably in the flint.h on different FLINT distributions.
+	// C.fmpq_get_mpz_frac(&a.i[0], &b.i[0], &q.i[0])
 
-	// transform the Mpz into Fmpz
-	num.SetMpz(a)
-	den.SetMpz(b)
+	// store the num and den into ints.
+	n := C._fmpq_numref(&q.i[0])
+	d := C._fmpq_denref(&q.i[0])
+
+	return int(*n), int(*d)
+}
+
+// NumRef returns the numerator of an Fmpq as an integer.
+func (q *Fmpq) NumRef() int {
+	q.fmpqDoinit()
+	z := C._fmpq_numref(&q.i[0])
+	return int(*z)
+}
+
+// DenRef returns the denominator of an Fmpq as an integer.
+func (q *Fmpq) DenRef() int {
+	q.fmpqDoinit()
+	z := C._fmpq_denref(&q.i[0])
+	return int(*z)
 }
 
 // SetString sets z to the value of s, interpreted in the given base,

@@ -260,14 +260,36 @@ func TestDivMod(t *testing.T) {
 }
 
 func TestDivR(t *testing.T) {
-	z := NewFmpz(3)
-	y := NewFmpz(7)
-	n := NewFmpz(100000000000)
-	want := NewFmpz(71428571429)
+	tt := []struct {
+		name string
+		z    *Fmpz
+		y    *Fmpz
+		n    string
+		want string
+	}{
+		{
+			name: "test from the sage documentation 3 / 7 mod 100000000000",
+			z:    NewFmpz(3),
+			y:    NewFmpz(7),
+			n:    "100000000000",
+			want: "71428571429",
+		},
+		{
+			name: "j/(1728-j) in ring Integers(n)",
+			z:    NewFmpz(-32768),
+			y:    NewFmpz(34496),
+			n:    "1444329727510154393553799612747635457542181563961160832013134005088873165794135221",
+			want: "418024930411102199247481891630113416283080378437738571046472921695480916259527076",
+		},
+	}
 
-	got := z.DivR(y, n)
-	if got.Cmp(want) != 0 {
-		t.Errorf("DivR want / got mismatched: %v / %v", want, got)
+	for _, tc := range tt {
+		n, _ := new(Fmpz).SetString(tc.n, 10)
+		want, _ := new(Fmpz).SetString(tc.want, 10)
+		got := tc.z.DivR(tc.y, n)
+		if got.Cmp(want) != 0 {
+			t.Errorf("%s: want / got mismatched: %v / %v", tc.name, want, got)
+		}
 	}
 }
 
@@ -608,19 +630,13 @@ func TestSetFmpqFraction(t *testing.T) {
 }
 
 func TestGetFmpqFraction(t *testing.T) {
-	a := NewFmpz(3)
-	b := NewFmpz(2)
-	c := new(Fmpq)
+	a := 3
+	b := 2
+	c := new(Fmpq).SetFmpqFraction(NewFmpz(int64(a)), NewFmpz(int64(b)))
+	num, den := c.GetFmpqFraction()
 
-	c.SetFmpqFraction(a, b)
-
-	num := new(Fmpz)
-	den := new(Fmpz)
-
-	c.GetFmpqFraction(num, den)
-
-	if a.Cmp(num) != 0 || b.Cmp(den) != 0 {
-		t.Errorf("Expected %s/%s but got %s/%s\n", a, b, num, den)
+	if a != num || b != den {
+		t.Errorf("GetFmpqFraction: want / got mismatched %d/%d but got %d/%d", a, b, num, den)
 	}
 }
 
@@ -876,5 +892,25 @@ func TestTstBit(t *testing.T) {
 		if got != tc.want {
 			t.Errorf("TstBit(): %s expected %v got %v\n", tc.name, tc.want, got)
 		}
+	}
+}
+
+func TestNumRef(t *testing.T) {
+	a := NewFmpq(1, 3)
+	want := 1
+
+	got := a.NumRef()
+	if got != want {
+		t.Errorf("NumRef: got %v want %v", got, want)
+	}
+}
+
+func TestDenRef(t *testing.T) {
+	a := NewFmpq(1, 3)
+	want := 3
+
+	got := a.DenRef()
+	if got != want {
+		t.Errorf("DenRef: got %v want %v", got, want)
 	}
 }
