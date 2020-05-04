@@ -18,6 +18,7 @@ This project is heavily influenced by and in the same pattern as Golang's [GMP w
 
 ### Comparisons
  * `(z *Fmpz) Cmp(y *Fmpz) (r int)` Compares z to y and returns -1, 0, or 1
+ * `(z *Mpz) Cmp(y *Mpz) (r int)` Compares z to y and returns -1, 0, or 1 where z is an Mpz type.
  * `(z *Fmpq) CmpRational(y *Fmpq) (r int)` Compares rational z to y and returns -1, 0, or 1
 
 ### Formatters
@@ -26,14 +27,27 @@ This project is heavily influenced by and in the same pattern as Golang's [GMP w
 
 ### Helpers
  * `(z *Fmpz) BitLen() int` Returns the length of z in bits
+ * `(z *Fmpz) Bits() int` Returns the number of bits required to store z
+ * `(z *Fmpz) TstBit(i int) int` Returns the value of the bit stored at index i where 0 is the least
+   significant bit.
  * `(z *Fmpz) Sign() (r int)` Returns the sign of z returns -1, 0, or 1
+
+### Primality Testing
+ * `(z *Fmpz) IsStrongProbabPrime(a *Fmpz)` returns 1 if z is a strong probable prime to base a, otherwise it returns 0
+ * `(z *Fmpz) IsProbabPrimeLucas() int` performs a Lucas probable prime test returns 1 if z is a Lucas probable prime, otherwise return 0
+ * `(z *Fmpz) IsProbabPrimeBPSW() int` performs a Baillie-PSW probable prime test returns 1 if z is a probable prime, otherwise return 0
+ * `(z *Fmpz) IsProbabPrime() int` returns 1 if z is a probable prime, otherwise return 0
+
+### Random Number Generation
+ * `(z *Fmpz) Randm(state *FlintRandT, m *Fmpz) *Fmpz` Sets z to a random number between 0 and m-1 inclusive
 
 ### Conversions
  * `(f *Fmpz) GetInt() int` Lowers f to type int
  * `(f *Fmpz) GetUInt() uint` Lowers f to type uint
  * `(z *Fmpz) Int64() (y int64)` Lowers z to type int64
  * `(z *Fmpz) Uint64() (y uint64)` Lower z to type uint64
- * `(q *Fmpq) GetFmpqFraction(num, den *Fmpz)` gets the numerator and denomenator of the rational q
+ * `(q *Fmpq) GetFmpqFraction() (int, int)` gets the numerator and denomenator of the rational q 
+    returning them as ints.
  * `(z *Fmpz) SetString(s string, base int) (*Fmpz, bool)` Sets z to the value in string s using given base 
  * `(z *Fmpz) SetMpz(x *Mpz)` Set z to the value in Mpz x
  * `(z *Mpz) GetMpz(x *Fmpz)` Set Mpz z to the value of the Fmpz x
@@ -44,17 +58,35 @@ This project is heavily influenced by and in the same pattern as Golang's [GMP w
  * `(z *Fmpz) Abs(x *Fmpz) *Fmpz` Set z to the absolute value of x and return z
  * `(z *Fmpz) Neg(x *Fmpz) *Fmpz` Set z to the negated value of x and return z
  * `(z *Fmpz) Add(x, y *Fmpz) *Fmpz` Set z to x + y and return z
+ * `(z *Fmpz) AddZ(x *Fmpz) *Fmpz` Set z to z + x and return z
+ * `(z *Fmpz) AddI(i int) *Fmpz` Set z to z + i where i is an int type and return z
  * `(z *Fmpz) Sub(x, y *Fmpz) *Fmpz` Set z to x - y and return z
+ * `(z *Fmpz) SubZ(x *Fmpz) *Fmpz` Set z to z - x and return z
+ * `(z *Fmpz) SubI(i int) *Fmpz` Set z to z - i where i is an int type and return z
+ * `(z *Mpz) SubRMpz(y, n *Mpz)` Sets z to z - y in the ring of integers modulo n using Mpz types.
  * `(z *Fmpz) Mul(x, y *Fmpz) *Fmpz` Set z to x * y and return z
+ * `(z *Fmpz) MulZ(x *Fmpz) *Fmpz` Set z to z * x and return z
+ * `(z *Fmpz) MulI(i int) *Fmpz` Set z to z * i where i is an int type and return z
+ * `(z *Mpz) MulRMpz(y, n *Mpz) *Mpz` Sets z to z * y in the integer ring modulo n using Mpz types.
+ * `(q *Fmpq) MulRational(o *Fmpq, x *Fmpz) *Fmpq` Sets q to the product of rational o and Fmpz x and returns q.
+ * `(z *Fmpz) DivR(y, n *Fmpz) *Fmpz` Sets z to the result of z/y in the ring of integers modulo n. Only works if y fits into the int type
  * `(z *Fmpz) Div(x, y *Fmpz) *Fmpz` Set z to x / y and return z
  * `(z *Fmpz) Quo(x, y *Fmpz) *Fmpz`
  * `(z *Fmpz) QuoRem(x, y, r *Fmpz) (*Fmpz, *Fmpz)`
  * `(z *Fmpz) Mod(x, y *Fmpz) *Fmpz` Set z to the value of x % y and return z
+ * `(z *Fmpz) ModZ(y *Fmpz) *Fmpz` Set z to the value of z % y and return z
+ * `(z *Fmpz) ModRational(x *Fmpq, n *Fmpz) int` Sets z to the residue of x = n/d (num, den) modulo 
+  n and returns 1 if such a modulo exists or 0 if it does not
  * `(z *Fmpz) DivMod(x, y, m *Fmpz) (*Fmpz, *Fmpz)`
  * `(z *Fmpz) ModInverse(x, y *Fmpz) *Fmpz`
  * `(z *Fmpz) NegMod(x, y *Fmpz) *Fmpz`
  * `(a *Fmpz) Jacobi(p *Fmpz) int`
  * `(z *Fmpz) Exp(x, y, m *Fmpz) *Fmpz` Set z to the value of (x^y)%m and return z
+ * `(z *Fmpz) ExpZ(x *Fmpz) *Fmpz` Set z to the value of (z^x) and return z
+ * `(z *Fmpz) ExpI(x int) *Fmpz` Set z to the value of (z^i) where i is an int type and return z
+ * `(z *Fmpz) ExpXY(x, y *Fmpz) *Fmpz` Set z to the value of (x^y) and return z
+ * `(z *Fmpz) ExpXI(x *Fmpz, y int) *Fmpz` Set z to the value of (x^y) where y is an int type and return z
+ * `(z *Fmpz) ExpXIM(x *Fmpz, i int, m *Fmpz) *Fmpz` Set z to the value of (x^y)%m where y is an int type and return z 
  * `(z *Fmpz) Pow(x, y, m *Fmpz) *Fmpz` Set z to the value of (x^y)%m and return z
  * `(f *Fmpz) GCD(g, h *Fmpz) *Fmpz` Set z to the value of the greatest common divisor of g and h and return z
  * `(f *Fmpz) Lcm(g, h *Fmpz) *Fmpz` Set z to the value of the lowest common multiple of g and h and return z 
@@ -94,6 +126,11 @@ type MpLimb struct {
   i    C.mp_limb_t
 }
 
+// FlintRandT keeps state for Fmpz random number generation.
+type FlintRandT struct {
+	i    C.flint_rand_t
+	init bool
+}
 ```
 
 ## Examples
@@ -106,6 +143,9 @@ fmt.Println(a.String())
 
 
 ## Install
+
+Install the golang and the FLINT library. On Ubuntu (tested on 20.04LTS):
+* `apt install golang libflint-dev`
 
 Use go to install the library:
 * `go get github.com/sourcekris/goflint`
@@ -124,5 +164,5 @@ I am also heavily influenced to do this by nick [at] craig-wood.com due to this 
 
 ## Authors
 
-* [The Go team](http://golang.org/AUTHORS)
 * Kris Hunt
+* [The Go team](http://golang.org/AUTHORS)
