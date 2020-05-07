@@ -10,6 +10,7 @@ package goflint
 #cgo LDFLAGS: -lflint -lgmp
 #include <flint/flint.h>
 #include <flint/fmpz.h>
+#include <flint/fmpz_mat.h>
 #include <flint/fmpq.h>
 #include <flint/nmod_poly.h>
 #include <gmp.h>
@@ -23,10 +24,12 @@ fmpz *_fmpq_numref(fmpq_t op) {
 fmpz *_fmpq_denref(fmpq_t op) {
     return fmpq_denref(op);
 }
+
 */
 import "C"
 
 import (
+	"errors"
 	"runtime"
 	"unsafe"
 )
@@ -70,6 +73,14 @@ type FlintRandT struct {
 	init bool
 }
 
+// FmpzMat is a matrix of Fmpz.
+type FmpzMat struct {
+	i    C.fmpz_mat_t
+	rows int
+	cols int
+	init bool
+}
+
 /*
  * Initializers and Finalizers
  */
@@ -80,6 +91,17 @@ func fmpzFinalize(z *Fmpz) {
 		runtime.SetFinalizer(z, nil)
 		C.fmpz_clear(&z.i[0])
 		z.init = false
+	}
+}
+
+// fmpzMatFinalize releases the memory allocated to the FmpzMat.
+func fmpzMatFinalize(m *FmpzMat) {
+	if m.init {
+		runtime.SetFinalizer(m, nil)
+		C.fmpz_mat_clear(&m.i[0])
+		m.init = false
+		m.rows = 0
+		m.cols = 0
 	}
 }
 
@@ -126,6 +148,24 @@ func (z *Fmpz) doinit() {
 	z.init = true
 	C.fmpz_init(&z.i[0])
 	runtime.SetFinalizer(z, fmpzFinalize)
+}
+
+// fmpzMatDoinit initializes an FmpzMat type.
+func (m *FmpzMat) fmpzMatDoinit(d ...int) error {
+	if m.init {
+		return nil
+	}
+	if len(d) == 2 {
+		m.rows = d[0]
+		m.cols = d[1]
+		m.init = true
+		C.fmpz_mat_init(&m.i[0], C.slong(m.rows), C.slong(m.cols))
+		runtime.SetFinalizer(m, fmpzMatFinalize)
+
+		return nil
+	}
+
+	return errors.New("fmpzMatDoinit: pass rows and colums on first init")
 }
 
 // fmpqDoinit initializes an Fmpz type.
@@ -198,6 +238,13 @@ func (z *Mpz) SetMpzInt64(x int64) *Mpz {
 // NewFmpz allocates and returns a new Fmpz set to x.
 func NewFmpz(x int64) *Fmpz {
 	return new(Fmpz).SetInt64(x)
+}
+
+// NewFmpzMat allocates a rows * cols matrix and returns a new FmpzMat.
+func NewFmpzMat(rows, cols int) *FmpzMat {
+	m := new(FmpzMat)
+	m.fmpzMatDoinit(rows, cols)
+	return m
 }
 
 // NewFmpq allocates and returns a new Fmpq set to p / q.
@@ -1100,5 +1147,37 @@ func (z *Fmpz) Randm(state *FlintRandT, m *Fmpz) *Fmpz {
 	state.flintRandTDoinit()
 	C.fmpz_randm(&z.i[0], &state.i[0], &m.i[0])
 
+	return z
+}
+
+// Matrices.
+
+// Zero sets all values of matrix m to zero and returns m.
+func (m *FmpzMat) Zero() *FmpzMat {
+	C.fmpz_mat_zero(&m.i[0])
+	return m
+}
+
+// One sets diagonal values of matrix m to 1 and returns m.
+func (m *FmpzMat) One() *FmpzMat {
+	C.fmpz_mat_one(&m.i[0])
+	return m
+}
+
+// NumRows returns the number of rows in a FmpzMat matrix.
+func (m *FmpzMat) NumRows() int {
+	return int(C.fmpz_mat_nrows(&m.i[0]))
+}
+
+// NumCols returns the number of cols in a FmpzMat matrix.
+func (m *FmpzMat) NumCols() int {
+	return int(C.fmpz_mat_ncols(&m.i[0]))
+}
+
+// Entry returns the value at x, y in the matrix m and returns it.
+func (m *FmpzMat) Entry(x, y int) *Fmpz {
+	z := new(Fmpz)
+	z.doinit()
+	z.i[0] = *C.fmpz_mat_entry(&m.i[0], C.slong(x), C.slong(y))
 	return z
 }

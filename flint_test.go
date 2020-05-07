@@ -914,3 +914,77 @@ func TestDenRef(t *testing.T) {
 		t.Errorf("DenRef: got %v want %v", got, want)
 	}
 }
+
+func TestNumRows(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		r    int
+		c    int
+		want int
+	}{
+		{
+			name: "5 x 5 matrix",
+			r:    5,
+			c:    5,
+			want: 5,
+		},
+	} {
+		m := NewFmpzMat(tc.r, tc.c)
+		got := m.NumRows()
+		if got != tc.want {
+			t.Errorf("NumRows() want / got mismatch: %d / %d", tc.want, got)
+		}
+	}
+}
+
+func TestNumCols(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		r    int
+		c    int
+		want int
+	}{
+		{
+			name: "6 x 6 matrix",
+			r:    6,
+			c:    6,
+			want: 6,
+		},
+	} {
+		m := NewFmpzMat(tc.r, tc.c)
+		got := m.NumCols()
+		if got != tc.want {
+			t.Errorf("NumCols() want / got mismatch: %d / %d", tc.want, got)
+		}
+	}
+}
+
+func TestEntry(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		x    int
+		y    int
+		want *Fmpz
+	}{
+		{
+			name: "1 at 0,0",
+			x:    0,
+			y:    0,
+			want: NewFmpz(1),
+		},
+		{
+			name: "0 at 1,0",
+			x:    0,
+			y:    1,
+			want: NewFmpz(0),
+		},
+	} {
+		m := NewFmpzMat(4, 4)
+		m = m.One()
+		got := m.Entry(tc.x, tc.y)
+
+		if got.Cmp(tc.want) != 0 {
+			t.Errorf("Entry() %s want / got mismatch: %v / %v", tc.name, tc.want, got)
+		}
+	}
+}
