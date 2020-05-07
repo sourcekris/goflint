@@ -1,3 +1,5 @@
+use 'godoc cmd/github.com/sourcekris/goflint' for documentation on the github.com/sourcekris/goflint command 
+
 <!--
 	Copyright 2009 The Go Authors. All rights reserved.
 	Use of this source code is governed by a BSD-style
@@ -19,7 +21,7 @@
 		
 		<div id="short-nav">
 			<dl>
-			<dd><code>import "."</code></dd>
+			<dd><code>import "github.com/sourcekris/goflint"</code></dd>
 			</dl>
 			<dl>
 			<dd><a href="#pkg-overview" class="overviewLink">Overview</a></dd>
@@ -57,6 +59,11 @@
 			
 			
 				
+				<dd><a href="#FlintRandT">type FlintRandT</a></dd>
+				
+				
+			
+				
 				<dd><a href="#Fmpq">type Fmpq</a></dd>
 				
 					
@@ -64,13 +71,19 @@
 				
 				
 					
-					<dd>&nbsp; &nbsp; <a href="#Fmpq.CmpRational">func (z *Fmpq) CmpRational(y *Fmpq) (r int)</a></dd>
+					<dd>&nbsp; &nbsp; <a href="#Fmpq.CmpRational">func (q *Fmpq) CmpRational(y *Fmpq) (r int)</a></dd>
 				
 					
-					<dd>&nbsp; &nbsp; <a href="#Fmpq.GetFmpqFraction">func (q *Fmpq) GetFmpqFraction(num, den *Fmpz)</a></dd>
+					<dd>&nbsp; &nbsp; <a href="#Fmpq.DenRef">func (q *Fmpq) DenRef() int</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Fmpq.GetFmpqFraction">func (q *Fmpq) GetFmpqFraction() (int, int)</a></dd>
 				
 					
 					<dd>&nbsp; &nbsp; <a href="#Fmpq.MulRational">func (q *Fmpq) MulRational(o *Fmpq, x *Fmpz) *Fmpq</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Fmpq.NumRef">func (q *Fmpq) NumRef() int</a></dd>
 				
 					
 					<dd>&nbsp; &nbsp; <a href="#Fmpq.SetFmpqFraction">func (q *Fmpq) SetFmpqFraction(num, den *Fmpz) *Fmpq</a></dd>
@@ -93,10 +106,19 @@
 					<dd>&nbsp; &nbsp; <a href="#Fmpz.Add">func (z *Fmpz) Add(x, y *Fmpz) *Fmpz</a></dd>
 				
 					
+					<dd>&nbsp; &nbsp; <a href="#Fmpz.AddI">func (z *Fmpz) AddI(x int) *Fmpz</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Fmpz.AddZ">func (z *Fmpz) AddZ(x *Fmpz) *Fmpz</a></dd>
+				
+					
 					<dd>&nbsp; &nbsp; <a href="#Fmpz.And">func (z *Fmpz) And(x, y *Fmpz) *Fmpz</a></dd>
 				
 					
 					<dd>&nbsp; &nbsp; <a href="#Fmpz.BitLen">func (z *Fmpz) BitLen() int</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Fmpz.Bits">func (z *Fmpz) Bits() int</a></dd>
 				
 					
 					<dd>&nbsp; &nbsp; <a href="#Fmpz.Bytes">func (z *Fmpz) Bytes() []byte</a></dd>
@@ -111,28 +133,64 @@
 					<dd>&nbsp; &nbsp; <a href="#Fmpz.DivMod">func (z *Fmpz) DivMod(x, y, m *Fmpz) (*Fmpz, *Fmpz)</a></dd>
 				
 					
+					<dd>&nbsp; &nbsp; <a href="#Fmpz.DivR">func (z *Fmpz) DivR(y, n *Fmpz) *Fmpz</a></dd>
+				
+					
 					<dd>&nbsp; &nbsp; <a href="#Fmpz.Exp">func (z *Fmpz) Exp(x, y, m *Fmpz) *Fmpz</a></dd>
 				
 					
-					<dd>&nbsp; &nbsp; <a href="#Fmpz.GCD">func (f *Fmpz) GCD(g, h *Fmpz) *Fmpz</a></dd>
+					<dd>&nbsp; &nbsp; <a href="#Fmpz.ExpI">func (z *Fmpz) ExpI(x int) *Fmpz</a></dd>
 				
 					
-					<dd>&nbsp; &nbsp; <a href="#Fmpz.GCDInv">func (f *Fmpz) GCDInv(g *Fmpz) (*Fmpz, *Fmpz)</a></dd>
+					<dd>&nbsp; &nbsp; <a href="#Fmpz.ExpXI">func (z *Fmpz) ExpXI(x *Fmpz, y int) *Fmpz</a></dd>
 				
 					
-					<dd>&nbsp; &nbsp; <a href="#Fmpz.GetInt">func (f *Fmpz) GetInt() int</a></dd>
+					<dd>&nbsp; &nbsp; <a href="#Fmpz.ExpXIM">func (z *Fmpz) ExpXIM(x *Fmpz, i int, m *Fmpz) *Fmpz</a></dd>
 				
 					
-					<dd>&nbsp; &nbsp; <a href="#Fmpz.GetUInt">func (f *Fmpz) GetUInt() uint</a></dd>
+					<dd>&nbsp; &nbsp; <a href="#Fmpz.ExpXY">func (z *Fmpz) ExpXY(x, y *Fmpz) *Fmpz</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Fmpz.ExpZ">func (z *Fmpz) ExpZ(x *Fmpz) *Fmpz</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Fmpz.GCD">func (z *Fmpz) GCD(g, h *Fmpz) *Fmpz</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Fmpz.GCDInv">func (z *Fmpz) GCDInv(g *Fmpz) (*Fmpz, *Fmpz)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Fmpz.GetInt">func (z *Fmpz) GetInt() int</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Fmpz.GetUInt">func (z *Fmpz) GetUInt() uint</a></dd>
 				
 					
 					<dd>&nbsp; &nbsp; <a href="#Fmpz.Int64">func (z *Fmpz) Int64() (y int64)</a></dd>
 				
 					
-					<dd>&nbsp; &nbsp; <a href="#Fmpz.Jacobi">func (a *Fmpz) Jacobi(p *Fmpz) int</a></dd>
+					<dd>&nbsp; &nbsp; <a href="#Fmpz.IsProbabPrime">func (z *Fmpz) IsProbabPrime() int</a></dd>
 				
 					
-					<dd>&nbsp; &nbsp; <a href="#Fmpz.Lcm">func (f *Fmpz) Lcm(g, h *Fmpz) *Fmpz</a></dd>
+					<dd>&nbsp; &nbsp; <a href="#Fmpz.IsProbabPrimeBPSW">func (z *Fmpz) IsProbabPrimeBPSW() int</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Fmpz.IsProbabPrimeLucas">func (z *Fmpz) IsProbabPrimeLucas() int</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Fmpz.IsProbabPrimePseudosquare">func (z *Fmpz) IsProbabPrimePseudosquare() int</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Fmpz.IsStrongProbabPrime">func (z *Fmpz) IsStrongProbabPrime(a *Fmpz) int</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Fmpz.Jacobi">func (z *Fmpz) Jacobi(p *Fmpz) int</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Fmpz.Lcm">func (z *Fmpz) Lcm(g, h *Fmpz) *Fmpz</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Fmpz.LucasChain">func (z *Fmpz) LucasChain(v2, a, m, n *Fmpz)</a></dd>
 				
 					
 					<dd>&nbsp; &nbsp; <a href="#Fmpz.Mod">func (z *Fmpz) Mod(x, y *Fmpz) *Fmpz</a></dd>
@@ -141,7 +199,19 @@
 					<dd>&nbsp; &nbsp; <a href="#Fmpz.ModInverse">func (z *Fmpz) ModInverse(x, y *Fmpz) *Fmpz</a></dd>
 				
 					
+					<dd>&nbsp; &nbsp; <a href="#Fmpz.ModRational">func (z *Fmpz) ModRational(x *Fmpq, n *Fmpz) int</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Fmpz.ModZ">func (z *Fmpz) ModZ(y *Fmpz) *Fmpz</a></dd>
+				
+					
 					<dd>&nbsp; &nbsp; <a href="#Fmpz.Mul">func (z *Fmpz) Mul(x, y *Fmpz) *Fmpz</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Fmpz.MulI">func (z *Fmpz) MulI(x int) *Fmpz</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Fmpz.MulZ">func (z *Fmpz) MulZ(x *Fmpz) *Fmpz</a></dd>
 				
 					
 					<dd>&nbsp; &nbsp; <a href="#Fmpz.Neg">func (z *Fmpz) Neg(x *Fmpz) *Fmpz</a></dd>
@@ -157,6 +227,9 @@
 				
 					
 					<dd>&nbsp; &nbsp; <a href="#Fmpz.QuoRem">func (z *Fmpz) QuoRem(x, y, r *Fmpz) (*Fmpz, *Fmpz)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Fmpz.Randm">func (z *Fmpz) Randm(state *FlintRandT, m *Fmpz) *Fmpz</a></dd>
 				
 					
 					<dd>&nbsp; &nbsp; <a href="#Fmpz.Root">func (z *Fmpz) Root(x *Fmpz, y int32) *Fmpz</a></dd>
@@ -192,11 +265,46 @@
 					<dd>&nbsp; &nbsp; <a href="#Fmpz.Sub">func (z *Fmpz) Sub(x, y *Fmpz) *Fmpz</a></dd>
 				
 					
+					<dd>&nbsp; &nbsp; <a href="#Fmpz.SubI">func (z *Fmpz) SubI(x int) *Fmpz</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Fmpz.SubZ">func (z *Fmpz) SubZ(x *Fmpz) *Fmpz</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Fmpz.TstBit">func (z *Fmpz) TstBit(i int) int</a></dd>
+				
+					
 					<dd>&nbsp; &nbsp; <a href="#Fmpz.Uint64">func (z *Fmpz) Uint64() (y uint64)</a></dd>
 				
 			
 				
+				<dd><a href="#FmpzMat">type FmpzMat</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#NewFmpzMat">func NewFmpzMat(rows, cols int) *FmpzMat</a></dd>
+				
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#FmpzMat.Entry">func (m *FmpzMat) Entry(x, y int) *Fmpz</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#FmpzMat.NumCols">func (m *FmpzMat) NumCols() int</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#FmpzMat.NumRows">func (m *FmpzMat) NumRows() int</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#FmpzMat.One">func (m *FmpzMat) One() *FmpzMat</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#FmpzMat.Zero">func (m *FmpzMat) Zero() *FmpzMat</a></dd>
+				
+			
+				
 				<dd><a href="#MpLimb">type MpLimb</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#NewMpLimb">func NewMpLimb(x uint64) *MpLimb</a></dd>
 				
 				
 			
@@ -208,10 +316,25 @@
 				
 				
 					
+					<dd>&nbsp; &nbsp; <a href="#Mpz.Cmp">func (z *Mpz) Cmp(y *Mpz) (r int)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Mpz.DivMod">func (z *Mpz) DivMod(x, y, m *Mpz) (*Mpz, *Mpz)</a></dd>
+				
+					
 					<dd>&nbsp; &nbsp; <a href="#Mpz.GetMpz">func (z *Mpz) GetMpz(x *Fmpz)</a></dd>
 				
 					
+					<dd>&nbsp; &nbsp; <a href="#Mpz.MulRMpz">func (z *Mpz) MulRMpz(y, n *Mpz) *Mpz</a></dd>
+				
+					
 					<dd>&nbsp; &nbsp; <a href="#Mpz.SetMpzInt64">func (z *Mpz) SetMpzInt64(x int64) *Mpz</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Mpz.String">func (z *Mpz) String() string</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Mpz.SubRMpz">func (z *Mpz) SubRMpz(y, n *Mpz) *Mpz</a></dd>
 				
 			
 				
@@ -230,7 +353,7 @@
 			<p>
 			<span style="font-size:90%">
 			
-				<a href="/src/flint.go">flint.go</a>
+				<a href="/src/github.com/sourcekris/goflint/flint.go">flint.go</a>
 			
 			</span>
 			</p>
@@ -281,7 +404,32 @@
 		
 			
 			
-			<h2 id="Fmpq">type <a href="/src/github.com/sourcekris/goflint/flint.go?s=625:671#L26">Fmpq</a>
+			<h2 id="FlintRandT">type <a href="/src/target/flint.go?s=1286:1344#L61">FlintRandT</a>
+				<a class="permalink" href="#FlintRandT">&#xb6;</a>
+			</h2>
+			<p>
+FlintRandT keeps state for Fmpz random number generation.
+</p>
+
+			<pre>type FlintRandT struct {
+    <span class="comment">// contains filtered or unexported fields</span>
+}</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+
+			
+		
+			
+			
+			<h2 id="Fmpq">type <a href="/src/target/flint.go?s=800:846#L38">Fmpq</a>
 				<a class="permalink" href="#Fmpq">&#xb6;</a>
 			</h2>
 			<p>
@@ -302,7 +450,7 @@ Fmpq is an arbitrary precision rational type.
 
 			
 				
-				<h3 id="NewFmpq">func <a href="/src/github.com/sourcekris/goflint/flint.go?s=3130:3160#L162">NewFmpq</a>
+				<h3 id="NewFmpq">func <a href="/src/target/flint.go?s=4677:4707#L241">NewFmpq</a>
 					<a class="permalink" href="#NewFmpq">&#xb6;</a>
 				</h3>
 				<pre>func NewFmpq(p, q <a href="/pkg/builtin/#int64">int64</a>) *<a href="#Fmpq">Fmpq</a></pre>
@@ -316,10 +464,10 @@ NewFmpq allocates and returns a new Fmpq set to p / q.
 
 			
 				
-				<h3 id="Fmpq.CmpRational">func (*Fmpq) <a href="/src/github.com/sourcekris/goflint/flint.go?s=4154:4197#L219">CmpRational</a>
+				<h3 id="Fmpq.CmpRational">func (*Fmpq) <a href="/src/target/flint.go?s=5812:5855#L299">CmpRational</a>
 					<a class="permalink" href="#Fmpq.CmpRational">&#xb6;</a>
 				</h3>
-				<pre>func (z *<a href="#Fmpq">Fmpq</a>) CmpRational(y *<a href="#Fmpq">Fmpq</a>) (r <a href="/pkg/builtin/#int">int</a>)</pre>
+				<pre>func (q *<a href="#Fmpq">Fmpq</a>) CmpRational(y *<a href="#Fmpq">Fmpq</a>) (r <a href="/pkg/builtin/#int">int</a>)</pre>
 				<p>
 CmpRational compares rationals z and y and returns:
 </p>
@@ -333,12 +481,12 @@ CmpRational compares rationals z and y and returns:
 				
 			
 				
-				<h3 id="Fmpq.GetFmpqFraction">func (*Fmpq) <a href="/src/github.com/sourcekris/goflint/flint.go?s=6459:6505#L340">GetFmpqFraction</a>
-					<a class="permalink" href="#Fmpq.GetFmpqFraction">&#xb6;</a>
+				<h3 id="Fmpq.DenRef">func (*Fmpq) <a href="/src/target/flint.go?s=9305:9332#L475">DenRef</a>
+					<a class="permalink" href="#Fmpq.DenRef">&#xb6;</a>
 				</h3>
-				<pre>func (q *<a href="#Fmpq">Fmpq</a>) GetFmpqFraction(num, den *<a href="#Fmpz">Fmpz</a>)</pre>
+				<pre>func (q *<a href="#Fmpq">Fmpq</a>) DenRef() <a href="/pkg/builtin/#int">int</a></pre>
 				<p>
-GetFmpqFraction gets the numerator and denomenator of the rational Fmpq q.
+DenRef returns the denominator of an Fmpq as an integer.
 </p>
 
 				
@@ -346,12 +494,25 @@ GetFmpqFraction gets the numerator and denomenator of the rational Fmpq q.
 				
 			
 				
-				<h3 id="Fmpq.MulRational">func (*Fmpq) <a href="/src/github.com/sourcekris/goflint/flint.go?s=9775:9825#L479">MulRational</a>
+				<h3 id="Fmpq.GetFmpqFraction">func (*Fmpq) <a href="/src/target/flint.go?s=8728:8771#L453">GetFmpqFraction</a>
+					<a class="permalink" href="#Fmpq.GetFmpqFraction">&#xb6;</a>
+				</h3>
+				<pre>func (q *<a href="#Fmpq">Fmpq</a>) GetFmpqFraction() (<a href="/pkg/builtin/#int">int</a>, <a href="/pkg/builtin/#int">int</a>)</pre>
+				<p>
+GetFmpqFraction gets the integer numerator and denomenator of the rational Fmpq q.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Fmpq.MulRational">func (*Fmpq) <a href="/src/target/flint.go?s=14489:14539#L699">MulRational</a>
 					<a class="permalink" href="#Fmpq.MulRational">&#xb6;</a>
 				</h3>
 				<pre>func (q *<a href="#Fmpq">Fmpq</a>) MulRational(o *<a href="#Fmpq">Fmpq</a>, x *<a href="#Fmpz">Fmpz</a>) *<a href="#Fmpq">Fmpq</a></pre>
 				<p>
-Mul sets q to the product of rational x and integer y and returns q.
+MulRational sets q to the product of rational x and integer y and returns q.
 </p>
 
 				
@@ -359,7 +520,20 @@ Mul sets q to the product of rational x and integer y and returns q.
 				
 			
 				
-				<h3 id="Fmpq.SetFmpqFraction">func (*Fmpq) <a href="/src/github.com/sourcekris/goflint/flint.go?s=3494:3546#L178">SetFmpqFraction</a>
+				<h3 id="Fmpq.NumRef">func (*Fmpq) <a href="/src/target/flint.go?s=9150:9177#L468">NumRef</a>
+					<a class="permalink" href="#Fmpq.NumRef">&#xb6;</a>
+				</h3>
+				<pre>func (q *<a href="#Fmpq">Fmpq</a>) NumRef() <a href="/pkg/builtin/#int">int</a></pre>
+				<p>
+NumRef returns the numerator of an Fmpq as an integer.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Fmpq.SetFmpqFraction">func (*Fmpq) <a href="/src/target/flint.go?s=5164:5216#L262">SetFmpqFraction</a>
 					<a class="permalink" href="#Fmpq.SetFmpqFraction">&#xb6;</a>
 				</h3>
 				<pre>func (q *<a href="#Fmpq">Fmpq</a>) SetFmpqFraction(num, den *<a href="#Fmpz">Fmpz</a>) *<a href="#Fmpq">Fmpq</a></pre>
@@ -373,7 +547,7 @@ the fraction num / den and returns q.
 				
 			
 				
-				<h3 id="Fmpq.String">func (*Fmpq) <a href="/src/github.com/sourcekris/goflint/flint.go?s=5013:5043#L265">String</a>
+				<h3 id="Fmpq.String">func (*Fmpq) <a href="/src/target/flint.go?s=7274:7304#L378">String</a>
 					<a class="permalink" href="#Fmpq.String">&#xb6;</a>
 				</h3>
 				<pre>func (q *<a href="#Fmpq">Fmpq</a>) String() <a href="/pkg/builtin/#string">string</a></pre>
@@ -388,7 +562,7 @@ String returns the decimal representation of z.
 		
 			
 			
-			<h2 id="Fmpz">type <a href="/src/github.com/sourcekris/goflint/flint.go?s=528:574#L20">Fmpz</a>
+			<h2 id="Fmpz">type <a href="/src/target/flint.go?s=703:749#L32">Fmpz</a>
 				<a class="permalink" href="#Fmpz">&#xb6;</a>
 			</h2>
 			<p>
@@ -409,7 +583,7 @@ Fmpz is a arbitrary size integer type.
 
 			
 				
-				<h3 id="NewFmpz">func <a href="/src/github.com/sourcekris/goflint/flint.go?s=3009:3036#L157">NewFmpz</a>
+				<h3 id="NewFmpz">func <a href="/src/target/flint.go?s=4380:4407#L229">NewFmpz</a>
 					<a class="permalink" href="#NewFmpz">&#xb6;</a>
 				</h3>
 				<pre>func NewFmpz(x <a href="/pkg/builtin/#int64">int64</a>) *<a href="#Fmpz">Fmpz</a></pre>
@@ -423,7 +597,7 @@ NewFmpz allocates and returns a new Fmpz set to x.
 
 			
 				
-				<h3 id="Fmpz.Abs">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=8938:8971#L436">Abs</a>
+				<h3 id="Fmpz.Abs">func (*Fmpz) <a href="/src/target/flint.go?s=11516:11549#L558">Abs</a>
 					<a class="permalink" href="#Fmpz.Abs">&#xb6;</a>
 				</h3>
 				<pre>func (z *<a href="#Fmpz">Fmpz</a>) Abs(x *<a href="#Fmpz">Fmpz</a>) *<a href="#Fmpz">Fmpz</a></pre>
@@ -436,7 +610,7 @@ Abs sets z to |x| (the absolute value of x) and returns z.
 				
 			
 				
-				<h3 id="Fmpz.Add">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=9223:9259#L452">Add</a>
+				<h3 id="Fmpz.Add">func (*Fmpz) <a href="/src/target/flint.go?s=11801:11837#L574">Add</a>
 					<a class="permalink" href="#Fmpz.Add">&#xb6;</a>
 				</h3>
 				<pre>func (z *<a href="#Fmpz">Fmpz</a>) Add(x, y *<a href="#Fmpz">Fmpz</a>) *<a href="#Fmpz">Fmpz</a></pre>
@@ -449,7 +623,33 @@ Add sets z to the sum x+y and returns z.
 				
 			
 				
-				<h3 id="Fmpz.And">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=15011:15047#L698">And</a>
+				<h3 id="Fmpz.AddI">func (*Fmpz) <a href="/src/target/flint.go?s=12154:12186#L591">AddI</a>
+					<a class="permalink" href="#Fmpz.AddI">&#xb6;</a>
+				</h3>
+				<pre>func (z *<a href="#Fmpz">Fmpz</a>) AddI(x <a href="/pkg/builtin/#int">int</a>) *<a href="#Fmpz">Fmpz</a></pre>
+				<p>
+AddI sets z to the sum x+z where x is an int type and returns z.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Fmpz.AddZ">func (*Fmpz) <a href="/src/target/flint.go?s=11973:12007#L583">AddZ</a>
+					<a class="permalink" href="#Fmpz.AddZ">&#xb6;</a>
+				</h3>
+				<pre>func (z *<a href="#Fmpz">Fmpz</a>) AddZ(x *<a href="#Fmpz">Fmpz</a>) *<a href="#Fmpz">Fmpz</a></pre>
+				<p>
+AddZ sets z to the sum x+z and returns z.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Fmpz.And">func (*Fmpz) <a href="/src/target/flint.go?s=21912:21948#L1023">And</a>
 					<a class="permalink" href="#Fmpz.And">&#xb6;</a>
 				</h3>
 				<pre>func (z *<a href="#Fmpz">Fmpz</a>) And(x, y *<a href="#Fmpz">Fmpz</a>) *<a href="#Fmpz">Fmpz</a></pre>
@@ -462,7 +662,7 @@ And sets z = x &amp; y and returns z.
 				
 			
 				
-				<h3 id="Fmpz.BitLen">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=5183:5210#L275">BitLen</a>
+				<h3 id="Fmpz.BitLen">func (*Fmpz) <a href="/src/target/flint.go?s=7444:7471#L388">BitLen</a>
 					<a class="permalink" href="#Fmpz.BitLen">&#xb6;</a>
 				</h3>
 				<pre>func (z *<a href="#Fmpz">Fmpz</a>) BitLen() <a href="/pkg/builtin/#int">int</a></pre>
@@ -476,7 +676,21 @@ The bit length of 0 is 0.
 				
 			
 				
-				<h3 id="Fmpz.Bytes">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=8649:8678#L422">Bytes</a>
+				<h3 id="Fmpz.Bits">func (*Fmpz) <a href="/src/target/flint.go?s=26009:26034#L1120">Bits</a>
+					<a class="permalink" href="#Fmpz.Bits">&#xb6;</a>
+				</h3>
+				<pre>func (z *<a href="#Fmpz">Fmpz</a>) Bits() <a href="/pkg/builtin/#int">int</a></pre>
+				<p>
+Bits returns the number of bits required to store the absolute value of z. If z is 0 then 0 is
+returned.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Fmpz.Bytes">func (*Fmpz) <a href="/src/target/flint.go?s=11227:11256#L544">Bytes</a>
 					<a class="permalink" href="#Fmpz.Bytes">&#xb6;</a>
 				</h3>
 				<pre>func (z *<a href="#Fmpz">Fmpz</a>) Bytes() []<a href="/pkg/builtin/#byte">byte</a></pre>
@@ -489,7 +703,7 @@ Bytes returns the absolute value of z as a big-endian byte slice.
 				
 			
 				
-				<h3 id="Fmpz.Cmp">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=3876:3911#L201">Cmp</a>
+				<h3 id="Fmpz.Cmp">func (*Fmpz) <a href="/src/target/flint.go?s=5540:5575#L283">Cmp</a>
 					<a class="permalink" href="#Fmpz.Cmp">&#xb6;</a>
 				</h3>
 				<pre>func (z *<a href="#Fmpz">Fmpz</a>) Cmp(y *<a href="#Fmpz">Fmpz</a>) (r <a href="/pkg/builtin/#int">int</a>)</pre>
@@ -506,7 +720,7 @@ Cmp compares z and y and returns:
 				
 			
 				
-				<h3 id="Fmpz.Div">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=11048:11084#L522">Div</a>
+				<h3 id="Fmpz.Div">func (*Fmpz) <a href="/src/target/flint.go?s=15762:15798#L742">Div</a>
 					<a class="permalink" href="#Fmpz.Div">&#xb6;</a>
 				</h3>
 				<pre>func (z *<a href="#Fmpz">Fmpz</a>) Div(x, y *<a href="#Fmpz">Fmpz</a>) *<a href="#Fmpz">Fmpz</a></pre>
@@ -521,7 +735,7 @@ Div implements Euclidean division (unlike Go); see DivMod for more details.
 				
 			
 				
-				<h3 id="Fmpz.DivMod">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=12089:12140#L566">DivMod</a>
+				<h3 id="Fmpz.DivMod">func (*Fmpz) <a href="/src/target/flint.go?s=17679:17730#L822">DivMod</a>
 					<a class="permalink" href="#Fmpz.DivMod">&#xb6;</a>
 				</h3>
 				<pre>func (z *<a href="#Fmpz">Fmpz</a>) DivMod(x, y, m *<a href="#Fmpz">Fmpz</a>) (*<a href="#Fmpz">Fmpz</a>, *<a href="#Fmpz">Fmpz</a>)</pre>
@@ -549,7 +763,21 @@ See QuoRem for T-division and modulus (like Go).
 				
 			
 				
-				<h3 id="Fmpz.Exp">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=13607:13646#L634">Exp</a>
+				<h3 id="Fmpz.DivR">func (*Fmpz) <a href="/src/target/flint.go?s=13787:13824#L661">DivR</a>
+					<a class="permalink" href="#Fmpz.DivR">&#xb6;</a>
+				</h3>
+				<pre>func (z *<a href="#Fmpz">Fmpz</a>) DivR(y, n *<a href="#Fmpz">Fmpz</a>) *<a href="#Fmpz">Fmpz</a></pre>
+				<p>
+DivR sets z to the result of z/y in the ring of integers(n). Currently this
+only works if y fits into the int type supported by the Fmpq type.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Fmpz.Exp">func (*Fmpz) <a href="/src/target/flint.go?s=19197:19236#L890">Exp</a>
 					<a class="permalink" href="#Fmpz.Exp">&#xb6;</a>
 				</h3>
 				<pre>func (z *<a href="#Fmpz">Fmpz</a>) Exp(x, y, m *<a href="#Fmpz">Fmpz</a>) *<a href="#Fmpz">Fmpz</a></pre>
@@ -564,12 +792,77 @@ See Knuth, volume 2, section 4.6.3.
 				
 			
 				
-				<h3 id="Fmpz.GCD">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=14168:14204#L662">GCD</a>
+				<h3 id="Fmpz.ExpI">func (*Fmpz) <a href="/src/target/flint.go?s=20650:20682#L965">ExpI</a>
+					<a class="permalink" href="#Fmpz.ExpI">&#xb6;</a>
+				</h3>
+				<pre>func (z *<a href="#Fmpz">Fmpz</a>) ExpI(x <a href="/pkg/builtin/#int">int</a>) *<a href="#Fmpz">Fmpz</a></pre>
+				<p>
+ExpI sets z = z**x where i is an int type and returns z.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Fmpz.ExpXI">func (*Fmpz) <a href="/src/target/flint.go?s=19794:19836#L921">ExpXI</a>
+					<a class="permalink" href="#Fmpz.ExpXI">&#xb6;</a>
+				</h3>
+				<pre>func (z *<a href="#Fmpz">Fmpz</a>) ExpXI(x *<a href="#Fmpz">Fmpz</a>, y <a href="/pkg/builtin/#int">int</a>) *<a href="#Fmpz">Fmpz</a></pre>
+				<p>
+ExpXI sets z = x**y where u is an int type and returns z.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Fmpz.ExpXIM">func (*Fmpz) <a href="/src/target/flint.go?s=20034:20086#L934">ExpXIM</a>
+					<a class="permalink" href="#Fmpz.ExpXIM">&#xb6;</a>
+				</h3>
+				<pre>func (z *<a href="#Fmpz">Fmpz</a>) ExpXIM(x *<a href="#Fmpz">Fmpz</a>, i <a href="/pkg/builtin/#int">int</a>, m *<a href="#Fmpz">Fmpz</a>) *<a href="#Fmpz">Fmpz</a></pre>
+				<p>
+ExpXIM sets z = x**i mod m where u is an int type and returns z.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Fmpz.ExpXY">func (*Fmpz) <a href="/src/target/flint.go?s=19538:19576#L907">ExpXY</a>
+					<a class="permalink" href="#Fmpz.ExpXY">&#xb6;</a>
+				</h3>
+				<pre>func (z *<a href="#Fmpz">Fmpz</a>) ExpXY(x, y *<a href="#Fmpz">Fmpz</a>) *<a href="#Fmpz">Fmpz</a></pre>
+				<p>
+ExpXY sets z = x**y and returns z.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Fmpz.ExpZ">func (*Fmpz) <a href="/src/target/flint.go?s=20411:20445#L952">ExpZ</a>
+					<a class="permalink" href="#Fmpz.ExpZ">&#xb6;</a>
+				</h3>
+				<pre>func (z *<a href="#Fmpz">Fmpz</a>) ExpZ(x *<a href="#Fmpz">Fmpz</a>) *<a href="#Fmpz">Fmpz</a></pre>
+				<p>
+ExpZ sets z = z**x and returns z.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Fmpz.GCD">func (*Fmpz) <a href="/src/target/flint.go?s=21058:21094#L987">GCD</a>
 					<a class="permalink" href="#Fmpz.GCD">&#xb6;</a>
 				</h3>
-				<pre>func (f *<a href="#Fmpz">Fmpz</a>) GCD(g, h *<a href="#Fmpz">Fmpz</a>) *<a href="#Fmpz">Fmpz</a></pre>
+				<pre>func (z *<a href="#Fmpz">Fmpz</a>) GCD(g, h *<a href="#Fmpz">Fmpz</a>) *<a href="#Fmpz">Fmpz</a></pre>
 				<p>
-Sets f to the greatest common divisor of g and h. The result is always positive, even if
+GCD sets f to the greatest common divisor of g and h. The result is always positive, even if
 one of g and h is negative
 </p>
 
@@ -578,12 +871,12 @@ one of g and h is negative
 				
 			
 				
-				<h3 id="Fmpz.GCDInv">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=14778:14823#L685">GCDInv</a>
+				<h3 id="Fmpz.GCDInv">func (*Fmpz) <a href="/src/target/flint.go?s=21679:21724#L1010">GCDInv</a>
 					<a class="permalink" href="#Fmpz.GCDInv">&#xb6;</a>
 				</h3>
-				<pre>func (f *<a href="#Fmpz">Fmpz</a>) GCDInv(g *<a href="#Fmpz">Fmpz</a>) (*<a href="#Fmpz">Fmpz</a>, *<a href="#Fmpz">Fmpz</a>)</pre>
+				<pre>func (z *<a href="#Fmpz">Fmpz</a>) GCDInv(g *<a href="#Fmpz">Fmpz</a>) (*<a href="#Fmpz">Fmpz</a>, *<a href="#Fmpz">Fmpz</a>)</pre>
 				<p>
-Given integers f, g with 0 ≤ f &lt; g, computes the greatest common divisor d = gcd(f, g)
+GCDInv given integers f, g with 0 ≤ f &lt; g, computes the greatest common divisor d = gcd(f, g)
 and the modular inverse a = f^-1 (mod g), whenever f != 0
 void fmpz_gcdinv (fmpz_t d , fmpz_t a , const fmpz_t f , const fmpz_t g )
 </p>
@@ -593,10 +886,10 @@ void fmpz_gcdinv (fmpz_t d , fmpz_t a , const fmpz_t f , const fmpz_t g )
 				
 			
 				
-				<h3 id="Fmpz.GetInt">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=5550:5577#L299">GetInt</a>
+				<h3 id="Fmpz.GetInt">func (*Fmpz) <a href="/src/target/flint.go?s=7811:7838#L412">GetInt</a>
 					<a class="permalink" href="#Fmpz.GetInt">&#xb6;</a>
 				</h3>
-				<pre>func (f *<a href="#Fmpz">Fmpz</a>) GetInt() <a href="/pkg/builtin/#int">int</a></pre>
+				<pre>func (z *<a href="#Fmpz">Fmpz</a>) GetInt() <a href="/pkg/builtin/#int">int</a></pre>
 				<p>
 GetInt returns the value of the Fmpz type as an int type if possible.
 </p>
@@ -606,10 +899,10 @@ GetInt returns the value of the Fmpz type as an int type if possible.
 				
 			
 				
-				<h3 id="Fmpz.GetUInt">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=5705:5734#L305">GetUInt</a>
+				<h3 id="Fmpz.GetUInt">func (*Fmpz) <a href="/src/target/flint.go?s=7966:7995#L418">GetUInt</a>
 					<a class="permalink" href="#Fmpz.GetUInt">&#xb6;</a>
 				</h3>
-				<pre>func (f *<a href="#Fmpz">Fmpz</a>) GetUInt() <a href="/pkg/builtin/#uint">uint</a></pre>
+				<pre>func (z *<a href="#Fmpz">Fmpz</a>) GetUInt() <a href="/pkg/builtin/#uint">uint</a></pre>
 				<p>
 GetUInt returns the value of the Fmpz type as a uint type if possible.
 </p>
@@ -619,7 +912,7 @@ GetUInt returns the value of the Fmpz type as a uint type if possible.
 				
 			
 				
-				<h3 id="Fmpz.Int64">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=5905:5937#L312">Int64</a>
+				<h3 id="Fmpz.Int64">func (*Fmpz) <a href="/src/target/flint.go?s=8166:8198#L425">Int64</a>
 					<a class="permalink" href="#Fmpz.Int64">&#xb6;</a>
 				</h3>
 				<pre>func (z *<a href="#Fmpz">Fmpz</a>) Int64() (y <a href="/pkg/builtin/#int64">int64</a>)</pre>
@@ -633,10 +926,102 @@ If z cannot be represented in an int64, the result is undefined.
 				
 			
 				
-				<h3 id="Fmpz.Jacobi">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=13317:13351#L624">Jacobi</a>
+				<h3 id="Fmpz.IsProbabPrime">func (*Fmpz) <a href="/src/target/flint.go?s=23816:23850#L1077">IsProbabPrime</a>
+					<a class="permalink" href="#Fmpz.IsProbabPrime">&#xb6;</a>
+				</h3>
+				<pre>func (z *<a href="#Fmpz">Fmpz</a>) IsProbabPrime() <a href="/pkg/builtin/#int">int</a></pre>
+				<p>
+IsProbabPrime performs some trial division and then some probabilistic primality tests.
+If z is definitely composite, the function returns 0, otherwise it is declared probably
+prime, i.e. prime for most practical purposes, and the function returns 1. The chance
+of declaring a composite prime is very small.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Fmpz.IsProbabPrimeBPSW">func (*Fmpz) <a href="/src/target/flint.go?s=23391:23429#L1068">IsProbabPrimeBPSW</a>
+					<a class="permalink" href="#Fmpz.IsProbabPrimeBPSW">&#xb6;</a>
+				</h3>
+				<pre>func (z *<a href="#Fmpz">Fmpz</a>) IsProbabPrimeBPSW() <a href="/pkg/builtin/#int">int</a></pre>
+				<p>
+IsProbabPrimeBPSW performs a Baillie-PSW probable prime test with parameters chosen by
+Selfridge&#39;s method A as per [4]. Return 1 if z is a Lucas probable prime, otherwise return
+0. There are no known composites passed as prime by this test, though infinitely many
+probably exist. The test will declare no primes composite.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Fmpz.IsProbabPrimeLucas">func (*Fmpz) <a href="/src/target/flint.go?s=22949:22988#L1059">IsProbabPrimeLucas</a>
+					<a class="permalink" href="#Fmpz.IsProbabPrimeLucas">&#xb6;</a>
+				</h3>
+				<pre>func (z *<a href="#Fmpz">Fmpz</a>) IsProbabPrimeLucas() <a href="/pkg/builtin/#int">int</a></pre>
+				<p>
+IsProbabPrimeLucas performs a Lucas probable prime test with parameters chosen by Selfridge&#39;s
+method A as per [4]. Return 1 if z is a Lucas probable prime, otherwise return 0. This function
+declares some composites probably prime, but no primes composite.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Fmpz.IsProbabPrimePseudosquare">func (*Fmpz) <a href="/src/target/flint.go?s=25483:25529#L1102">IsProbabPrimePseudosquare</a>
+					<a class="permalink" href="#Fmpz.IsProbabPrimePseudosquare">&#xb6;</a>
+				</h3>
+				<pre>func (z *<a href="#Fmpz">Fmpz</a>) IsProbabPrimePseudosquare() <a href="/pkg/builtin/#int">int</a></pre>
+				<p>
+IsProbabPrimePseudosquare returns 0 is z is composite. If z is too large (greater
+than about 94 bits) the function fails silently and returns −1, otherwise, if z
+is proven prime by the pseudosquares method, return 1.
+Tests if z is a prime according to [28, Theorem 2.7]. We first factor N using trial
+division up to some limit B. In fact, the number of primes used in the trial factoring
+is at most FLINT_PSEUDOSQUARES_CUTOFF.
+Next we compute N/B and find the next pseudosquare Lp above this value, using a
+static table as per <a href="http://research.att.com/~njas/sequences/b002189.txt">http://research.att.com/~njas/sequences/b002189.txt</a>.
+As noted in the text, if p is prime then Step 3 will pass. This test rejects many
+composites, and so by this time we suspect that p is prime. If N is 3 or 7 modulo 8,
+we are done, and N is prime.
+We now run a probable prime test, for which no known counterexamples are known, to
+reject any composites. We then proceed to prove N prime by executing Step 4. In the
+case that N is 1 modulo 8, if Step 4 fails, we extend the number of primes pi at Step 3
+and hope to find one which passes Step 4. We take the test one past the largest p for
+which we have pseudosquares Lp tabulated, as this already corresponds to the next Lp
+which is bigger than 264 and hence larger than any prime we might be testing.
+As explained in the text, Condition 4 cannot fail if N is prime.
+The possibility exists that the probable prime test declares a composite prime. However
+in that case an error is printed, as that would be of independent interest.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Fmpz.IsStrongProbabPrime">func (*Fmpz) <a href="/src/target/flint.go?s=22547:22594#L1050">IsStrongProbabPrime</a>
+					<a class="permalink" href="#Fmpz.IsStrongProbabPrime">&#xb6;</a>
+				</h3>
+				<pre>func (z *<a href="#Fmpz">Fmpz</a>) IsStrongProbabPrime(a *<a href="#Fmpz">Fmpz</a>) <a href="/pkg/builtin/#int">int</a></pre>
+				<p>
+IsStrongProbabPrime returns 1 if z is a strong probable prime to base a, otherwise it returns 0
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Fmpz.Jacobi">func (*Fmpz) <a href="/src/target/flint.go?s=18907:18941#L880">Jacobi</a>
 					<a class="permalink" href="#Fmpz.Jacobi">&#xb6;</a>
 				</h3>
-				<pre>func (a *<a href="#Fmpz">Fmpz</a>) Jacobi(p *<a href="#Fmpz">Fmpz</a>) <a href="/pkg/builtin/#int">int</a></pre>
+				<pre>func (z *<a href="#Fmpz">Fmpz</a>) Jacobi(p *<a href="#Fmpz">Fmpz</a>) <a href="/pkg/builtin/#int">int</a></pre>
 				<p>
 Jacobi computes the Jacobi symbol of a modulo p, where p is a prime and a is reduced modulo p
 </p>
@@ -646,12 +1031,12 @@ Jacobi computes the Jacobi symbol of a modulo p, where p is a prime and a is red
 				
 			
 				
-				<h3 id="Fmpz.Lcm">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=14420:14456#L673">Lcm</a>
+				<h3 id="Fmpz.Lcm">func (*Fmpz) <a href="/src/target/flint.go?s=21314:21350#L998">Lcm</a>
 					<a class="permalink" href="#Fmpz.Lcm">&#xb6;</a>
 				</h3>
-				<pre>func (f *<a href="#Fmpz">Fmpz</a>) Lcm(g, h *<a href="#Fmpz">Fmpz</a>) *<a href="#Fmpz">Fmpz</a></pre>
+				<pre>func (z *<a href="#Fmpz">Fmpz</a>) Lcm(g, h *<a href="#Fmpz">Fmpz</a>) *<a href="#Fmpz">Fmpz</a></pre>
 				<p>
-Sets f to the least common multiple of g and h. The result is always nonnegative, even
+Lcm sets f to the least common multiple of g and h. The result is always nonnegative, even
 if one of g and h is negative.
 </p>
 
@@ -660,7 +1045,21 @@ if one of g and h is negative.
 				
 			
 				
-				<h3 id="Fmpz.Mod">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=11389:11425#L542">Mod</a>
+				<h3 id="Fmpz.LucasChain">func (*Fmpz) <a href="/src/target/flint.go?s=25715:25759#L1109">LucasChain</a>
+					<a class="permalink" href="#Fmpz.LucasChain">&#xb6;</a>
+				</h3>
+				<pre>func (z *<a href="#Fmpz">Fmpz</a>) LucasChain(v2, a, m, n *<a href="#Fmpz">Fmpz</a>)</pre>
+				<p>
+LucasChain Given V0 = 2, V1 = A compute Vm, Vm+1 (mod n) from the recurrences Vj = AVj−1 −
+Vj−2 (mod n).
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Fmpz.Mod">func (*Fmpz) <a href="/src/target/flint.go?s=16532:16568#L780">Mod</a>
 					<a class="permalink" href="#Fmpz.Mod">&#xb6;</a>
 				</h3>
 				<pre>func (z *<a href="#Fmpz">Fmpz</a>) Mod(x, y *<a href="#Fmpz">Fmpz</a>) *<a href="#Fmpz">Fmpz</a></pre>
@@ -673,7 +1072,7 @@ Mod sets z to the modulus x%y for y != 0 and returns z.
 				
 			
 				
-				<h3 id="Fmpz.ModInverse">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=12882:12925#L604">ModInverse</a>
+				<h3 id="Fmpz.ModInverse">func (*Fmpz) <a href="/src/target/flint.go?s=18472:18515#L860">ModInverse</a>
 					<a class="permalink" href="#Fmpz.ModInverse">&#xb6;</a>
 				</h3>
 				<pre>func (z *<a href="#Fmpz">Fmpz</a>) ModInverse(x, y *<a href="#Fmpz">Fmpz</a>) *<a href="#Fmpz">Fmpz</a></pre>
@@ -689,7 +1088,34 @@ will be 0 and the value of f undefined.
 				
 			
 				
-				<h3 id="Fmpz.Mul">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=9576:9612#L470">Mul</a>
+				<h3 id="Fmpz.ModRational">func (*Fmpz) <a href="/src/target/flint.go?s=16957:17005#L800">ModRational</a>
+					<a class="permalink" href="#Fmpz.ModRational">&#xb6;</a>
+				</h3>
+				<pre>func (z *<a href="#Fmpz">Fmpz</a>) ModRational(x *<a href="#Fmpq">Fmpq</a>, n *<a href="#Fmpz">Fmpz</a>) <a href="/pkg/builtin/#int">int</a></pre>
+				<p>
+ModRational sets z to the residue of x = n/d (num, den) modulo n and
+returns 1 if such a residue exists otherwise 0.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Fmpz.ModZ">func (*Fmpz) <a href="/src/target/flint.go?s=16720:16754#L790">ModZ</a>
+					<a class="permalink" href="#Fmpz.ModZ">&#xb6;</a>
+				</h3>
+				<pre>func (z *<a href="#Fmpz">Fmpz</a>) ModZ(y *<a href="#Fmpz">Fmpz</a>) *<a href="#Fmpz">Fmpz</a></pre>
+				<p>
+ModZ sets z to the modulus z%y for y != 0 and returns z.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Fmpz.Mul">func (*Fmpz) <a href="/src/target/flint.go?s=12882:12918#L624">Mul</a>
 					<a class="permalink" href="#Fmpz.Mul">&#xb6;</a>
 				</h3>
 				<pre>func (z *<a href="#Fmpz">Fmpz</a>) Mul(x, y *<a href="#Fmpz">Fmpz</a>) *<a href="#Fmpz">Fmpz</a></pre>
@@ -702,7 +1128,34 @@ Mul sets z to the product x*y and returns z.
 				
 			
 				
-				<h3 id="Fmpz.Neg">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=9076:9109#L444">Neg</a>
+				<h3 id="Fmpz.MulI">func (*Fmpz) <a href="/src/target/flint.go?s=13258:13290#L642">MulI</a>
+					<a class="permalink" href="#Fmpz.MulI">&#xb6;</a>
+				</h3>
+				<pre>func (z *<a href="#Fmpz">Fmpz</a>) MulI(x <a href="/pkg/builtin/#int">int</a>) *<a href="#Fmpz">Fmpz</a></pre>
+				<p>
+MulI sets z to the product of z  * x where x is an int type
+and returns z.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Fmpz.MulZ">func (*Fmpz) <a href="/src/target/flint.go?s=13064:13098#L633">MulZ</a>
+					<a class="permalink" href="#Fmpz.MulZ">&#xb6;</a>
+				</h3>
+				<pre>func (z *<a href="#Fmpz">Fmpz</a>) MulZ(x *<a href="#Fmpz">Fmpz</a>) *<a href="#Fmpz">Fmpz</a></pre>
+				<p>
+MulZ sets z to the product of z  * x and returns z.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Fmpz.Neg">func (*Fmpz) <a href="/src/target/flint.go?s=11654:11687#L566">Neg</a>
 					<a class="permalink" href="#Fmpz.Neg">&#xb6;</a>
 				</h3>
 				<pre>func (z *<a href="#Fmpz">Fmpz</a>) Neg(x *<a href="#Fmpz">Fmpz</a>) *<a href="#Fmpz">Fmpz</a></pre>
@@ -715,7 +1168,7 @@ Neg sets z to -x and returns z.
 				
 			
 				
-				<h3 id="Fmpz.NegMod">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=13086:13125#L614">NegMod</a>
+				<h3 id="Fmpz.NegMod">func (*Fmpz) <a href="/src/target/flint.go?s=18676:18715#L870">NegMod</a>
 					<a class="permalink" href="#Fmpz.NegMod">&#xb6;</a>
 				</h3>
 				<pre>func (z *<a href="#Fmpz">Fmpz</a>) NegMod(x, y *<a href="#Fmpz">Fmpz</a>) *<a href="#Fmpz">Fmpz</a></pre>
@@ -728,7 +1181,7 @@ NegMod Sets z to −x (mod y), assuming x is reduced modulo y.
 				
 			
 				
-				<h3 id="Fmpz.Pow">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=13943:13982#L652">Pow</a>
+				<h3 id="Fmpz.Pow">func (*Fmpz) <a href="/src/target/flint.go?s=20829:20868#L977">Pow</a>
 					<a class="permalink" href="#Fmpz.Pow">&#xb6;</a>
 				</h3>
 				<pre>func (z *<a href="#Fmpz">Fmpz</a>) Pow(x, y, m *<a href="#Fmpz">Fmpz</a>) *<a href="#Fmpz">Fmpz</a></pre>
@@ -741,7 +1194,7 @@ Pow is a wrapper for Exp.
 				
 			
 				
-				<h3 id="Fmpz.Quo">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=10122:10158#L490">Quo</a>
+				<h3 id="Fmpz.Quo">func (*Fmpz) <a href="/src/target/flint.go?s=14836:14872#L710">Quo</a>
 					<a class="permalink" href="#Fmpz.Quo">&#xb6;</a>
 				</h3>
 				<pre>func (z *<a href="#Fmpz">Fmpz</a>) Quo(x, y *<a href="#Fmpz">Fmpz</a>) *<a href="#Fmpz">Fmpz</a></pre>
@@ -756,7 +1209,7 @@ Quo implements truncated division (like Go); see QuoRem for more details.
 				
 			
 				
-				<h3 id="Fmpz.QuoRem">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=10683:10734#L510">QuoRem</a>
+				<h3 id="Fmpz.QuoRem">func (*Fmpz) <a href="/src/target/flint.go?s=15397:15448#L730">QuoRem</a>
 					<a class="permalink" href="#Fmpz.QuoRem">&#xb6;</a>
 				</h3>
 				<pre>func (z *<a href="#Fmpz">Fmpz</a>) QuoRem(x, y, r *<a href="#Fmpz">Fmpz</a>) (*<a href="#Fmpz">Fmpz</a>, *<a href="#Fmpz">Fmpz</a>)</pre>
@@ -781,7 +1234,20 @@ See DivMod for Euclidean division and modulus (unlike Go).
 				
 			
 				
-				<h3 id="Fmpz.Root">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=15378:15421#L715">Root</a>
+				<h3 id="Fmpz.Randm">func (*Fmpz) <a href="/src/target/flint.go?s=26348:26402#L1134">Randm</a>
+					<a class="permalink" href="#Fmpz.Randm">&#xb6;</a>
+				</h3>
+				<pre>func (z *<a href="#Fmpz">Fmpz</a>) Randm(state *<a href="#FlintRandT">FlintRandT</a>, m *<a href="#Fmpz">Fmpz</a>) *<a href="#Fmpz">Fmpz</a></pre>
+				<p>
+Randm sets z to a random integer between 0 and m-1 inclusive.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Fmpz.Root">func (*Fmpz) <a href="/src/target/flint.go?s=22279:22322#L1040">Root</a>
 					<a class="permalink" href="#Fmpz.Root">&#xb6;</a>
 				</h3>
 				<pre>func (z *<a href="#Fmpz">Fmpz</a>) Root(x *<a href="#Fmpz">Fmpz</a>, y <a href="/pkg/builtin/#int32">int32</a>) *<a href="#Fmpz">Fmpz</a></pre>
@@ -794,7 +1260,7 @@ Root sets x to the truncated integer part of the yth root of x
 				
 			
 				
-				<h3 id="Fmpz.Set">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=3665:3698#L185">Set</a>
+				<h3 id="Fmpz.Set">func (*Fmpz) <a href="/src/target/flint.go?s=5335:5368#L269">Set</a>
 					<a class="permalink" href="#Fmpz.Set">&#xb6;</a>
 				</h3>
 				<pre>func (z *<a href="#Fmpz">Fmpz</a>) Set(x *<a href="#Fmpz">Fmpz</a>) *<a href="#Fmpz">Fmpz</a></pre>
@@ -807,7 +1273,7 @@ Set sets z to x and returns z.
 				
 			
 				
-				<h3 id="Fmpz.SetBytes">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=8344:8385#L407">SetBytes</a>
+				<h3 id="Fmpz.SetBytes">func (*Fmpz) <a href="/src/target/flint.go?s=10922:10963#L529">SetBytes</a>
 					<a class="permalink" href="#Fmpz.SetBytes">&#xb6;</a>
 				</h3>
 				<pre>func (z *<a href="#Fmpz">Fmpz</a>) SetBytes(buf []<a href="/pkg/builtin/#byte">byte</a>) *<a href="#Fmpz">Fmpz</a></pre>
@@ -821,7 +1287,7 @@ integer, sets z to that value, and returns z.
 				
 			
 				
-				<h3 id="Fmpz.SetInt64">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=2694:2732#L141">SetInt64</a>
+				<h3 id="Fmpz.SetInt64">func (*Fmpz) <a href="/src/target/flint.go?s=4062:4100#L213">SetInt64</a>
 					<a class="permalink" href="#Fmpz.SetInt64">&#xb6;</a>
 				</h3>
 				<pre>func (z *<a href="#Fmpz">Fmpz</a>) SetInt64(x <a href="/pkg/builtin/#int64">int64</a>) *<a href="#Fmpz">Fmpz</a></pre>
@@ -834,7 +1300,7 @@ SetInt64 sets z to x and returns z.
 				
 			
 				
-				<h3 id="Fmpz.SetMpz">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=7999:8028#L390">SetMpz</a>
+				<h3 id="Fmpz.SetMpz">func (*Fmpz) <a href="/src/target/flint.go?s=10577:10606#L512">SetMpz</a>
 					<a class="permalink" href="#Fmpz.SetMpz">&#xb6;</a>
 				</h3>
 				<pre>func (z *<a href="#Fmpz">Fmpz</a>) SetMpz(x *<a href="#Mpz">Mpz</a>)</pre>
@@ -847,7 +1313,7 @@ SetMpz transform x into an Fmpz z.
 				
 			
 				
-				<h3 id="Fmpz.SetString">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=7341:7399#L368">SetString</a>
+				<h3 id="Fmpz.SetString">func (*Fmpz) <a href="/src/target/flint.go?s=9919:9977#L490">SetString</a>
 					<a class="permalink" href="#Fmpz.SetString">&#xb6;</a>
 				</h3>
 				<pre>func (z *<a href="#Fmpz">Fmpz</a>) SetString(s <a href="/pkg/builtin/#string">string</a>, base <a href="/pkg/builtin/#int">int</a>) (*<a href="#Fmpz">Fmpz</a>, <a href="/pkg/builtin/#bool">bool</a>)</pre>
@@ -868,7 +1334,7 @@ is 0, the string prefix determines the actual conversion base. A prefix of
 				
 			
 				
-				<h3 id="Fmpz.SetUint64">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=2543:2583#L133">SetUint64</a>
+				<h3 id="Fmpz.SetUint64">func (*Fmpz) <a href="/src/target/flint.go?s=3911:3951#L205">SetUint64</a>
 					<a class="permalink" href="#Fmpz.SetUint64">&#xb6;</a>
 				</h3>
 				<pre>func (z *<a href="#Fmpz">Fmpz</a>) SetUint64(x <a href="/pkg/builtin/#uint64">uint64</a>) *<a href="#Fmpz">Fmpz</a></pre>
@@ -881,7 +1347,7 @@ SetUint64 sets z to x and returns z.
 				
 			
 				
-				<h3 id="Fmpz.Sign">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=5379:5404#L289">Sign</a>
+				<h3 id="Fmpz.Sign">func (*Fmpz) <a href="/src/target/flint.go?s=7640:7665#L402">Sign</a>
 					<a class="permalink" href="#Fmpz.Sign">&#xb6;</a>
 				</h3>
 				<pre>func (z *<a href="#Fmpz">Fmpz</a>) Sign() <a href="/pkg/builtin/#int">int</a></pre>
@@ -898,7 +1364,7 @@ Sign returns:
 				
 			
 				
-				<h3 id="Fmpz.Sqrt">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=15207:15241#L707">Sqrt</a>
+				<h3 id="Fmpz.Sqrt">func (*Fmpz) <a href="/src/target/flint.go?s=22108:22142#L1032">Sqrt</a>
 					<a class="permalink" href="#Fmpz.Sqrt">&#xb6;</a>
 				</h3>
 				<pre>func (z *<a href="#Fmpz">Fmpz</a>) Sqrt(x *<a href="#Fmpz">Fmpz</a>) *<a href="#Fmpz">Fmpz</a></pre>
@@ -911,7 +1377,7 @@ Sqrt sets x to the truncated integer part of the square root of x
 				
 			
 				
-				<h3 id="Fmpz.String">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=4905:4935#L260">String</a>
+				<h3 id="Fmpz.String">func (*Fmpz) <a href="/src/target/flint.go?s=7166:7196#L373">String</a>
 					<a class="permalink" href="#Fmpz.String">&#xb6;</a>
 				</h3>
 				<pre>func (z *<a href="#Fmpz">Fmpz</a>) String() <a href="/pkg/builtin/#string">string</a></pre>
@@ -924,7 +1390,7 @@ String returns the decimal representation of z.
 				
 			
 				
-				<h3 id="Fmpz.Sub">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=9401:9437#L461">Sub</a>
+				<h3 id="Fmpz.Sub">func (*Fmpz) <a href="/src/target/flint.go?s=12336:12372#L599">Sub</a>
 					<a class="permalink" href="#Fmpz.Sub">&#xb6;</a>
 				</h3>
 				<pre>func (z *<a href="#Fmpz">Fmpz</a>) Sub(x, y *<a href="#Fmpz">Fmpz</a>) *<a href="#Fmpz">Fmpz</a></pre>
@@ -937,7 +1403,46 @@ Sub sets z to the difference x-y and returns z.
 				
 			
 				
-				<h3 id="Fmpz.Uint64">func (*Fmpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=6240:6274#L328">Uint64</a>
+				<h3 id="Fmpz.SubI">func (*Fmpz) <a href="/src/target/flint.go?s=12703:12735#L616">SubI</a>
+					<a class="permalink" href="#Fmpz.SubI">&#xb6;</a>
+				</h3>
+				<pre>func (z *<a href="#Fmpz">Fmpz</a>) SubI(x <a href="/pkg/builtin/#int">int</a>) *<a href="#Fmpz">Fmpz</a></pre>
+				<p>
+SubI sets z to the difference z-x where x is an int type and returns z.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Fmpz.SubZ">func (*Fmpz) <a href="/src/target/flint.go?s=12515:12549#L608">SubZ</a>
+					<a class="permalink" href="#Fmpz.SubZ">&#xb6;</a>
+				</h3>
+				<pre>func (z *<a href="#Fmpz">Fmpz</a>) SubZ(x *<a href="#Fmpz">Fmpz</a>) *<a href="#Fmpz">Fmpz</a></pre>
+				<p>
+SubZ sets z to the difference z-x and returns z.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Fmpz.TstBit">func (*Fmpz) <a href="/src/target/flint.go?s=26151:26183#L1126">TstBit</a>
+					<a class="permalink" href="#Fmpz.TstBit">&#xb6;</a>
+				</h3>
+				<pre>func (z *<a href="#Fmpz">Fmpz</a>) TstBit(i <a href="/pkg/builtin/#int">int</a>) <a href="/pkg/builtin/#int">int</a></pre>
+				<p>
+TstBit tests bit index i of z and return 0 or 1, accordingly.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Fmpz.Uint64">func (*Fmpz) <a href="/src/target/flint.go?s=8501:8535#L441">Uint64</a>
 					<a class="permalink" href="#Fmpz.Uint64">&#xb6;</a>
 				</h3>
 				<pre>func (z *<a href="#Fmpz">Fmpz</a>) Uint64() (y <a href="/pkg/builtin/#uint64">uint64</a>)</pre>
@@ -953,11 +1458,113 @@ If z cannot be represented in a uint64, the result is undefined.
 		
 			
 			
-			<h2 id="MpLimb">type <a href="/src/github.com/sourcekris/goflint/flint.go?s=952:989#L44">MpLimb</a>
+			<h2 id="FmpzMat">type <a href="/src/target/flint.go?s=1378:1451#L67">FmpzMat</a>
+				<a class="permalink" href="#FmpzMat">&#xb6;</a>
+			</h2>
+			<p>
+FmpzMat is a matrix of Fmpz.
+</p>
+
+			<pre>type FmpzMat struct {
+    <span class="comment">// contains filtered or unexported fields</span>
+}</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+				
+				<h3 id="NewFmpzMat">func <a href="/src/target/flint.go?s=4515:4555#L234">NewFmpzMat</a>
+					<a class="permalink" href="#NewFmpzMat">&#xb6;</a>
+				</h3>
+				<pre>func NewFmpzMat(rows, cols <a href="/pkg/builtin/#int">int</a>) *<a href="#FmpzMat">FmpzMat</a></pre>
+				<p>
+NewFmpzMat allocates a rows * cols matrix and returns a new FmpzMat.
+</p>
+
+				
+				
+			
+
+			
+				
+				<h3 id="FmpzMat.Entry">func (*FmpzMat) <a href="/src/target/flint.go?s=27132:27171#L1168">Entry</a>
+					<a class="permalink" href="#FmpzMat.Entry">&#xb6;</a>
+				</h3>
+				<pre>func (m *<a href="#FmpzMat">FmpzMat</a>) Entry(x, y <a href="/pkg/builtin/#int">int</a>) *<a href="#Fmpz">Fmpz</a></pre>
+				<p>
+Entry returns the value at x, y in the matrix m and returns it.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="FmpzMat.NumCols">func (*FmpzMat) <a href="/src/target/flint.go?s=26989:27020#L1163">NumCols</a>
+					<a class="permalink" href="#FmpzMat.NumCols">&#xb6;</a>
+				</h3>
+				<pre>func (m *<a href="#FmpzMat">FmpzMat</a>) NumCols() <a href="/pkg/builtin/#int">int</a></pre>
+				<p>
+NumCols returns the number of cols in a FmpzMat matrix.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="FmpzMat.NumRows">func (*FmpzMat) <a href="/src/target/flint.go?s=26854:26885#L1158">NumRows</a>
+					<a class="permalink" href="#FmpzMat.NumRows">&#xb6;</a>
+				</h3>
+				<pre>func (m *<a href="#FmpzMat">FmpzMat</a>) NumRows() <a href="/pkg/builtin/#int">int</a></pre>
+				<p>
+NumRows returns the number of rows in a FmpzMat matrix.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="FmpzMat.One">func (*FmpzMat) <a href="/src/target/flint.go?s=26722:26754#L1152">One</a>
+					<a class="permalink" href="#FmpzMat.One">&#xb6;</a>
+				</h3>
+				<pre>func (m *<a href="#FmpzMat">FmpzMat</a>) One() *<a href="#FmpzMat">FmpzMat</a></pre>
+				<p>
+One sets diagonal values of matrix m to 1 and returns m.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="FmpzMat.Zero">func (*FmpzMat) <a href="/src/target/flint.go?s=26587:26620#L1146">Zero</a>
+					<a class="permalink" href="#FmpzMat.Zero">&#xb6;</a>
+				</h3>
+				<pre>func (m *<a href="#FmpzMat">FmpzMat</a>) Zero() *<a href="#FmpzMat">FmpzMat</a></pre>
+				<p>
+Zero sets all values of matrix m to zero and returns m.
+</p>
+
+				
+				
+				
+			
+		
+			
+			
+			<h2 id="MpLimb">type <a href="/src/target/flint.go?s=1186:1223#L56">MpLimb</a>
 				<a class="permalink" href="#MpLimb">&#xb6;</a>
 			</h2>
 			<p>
-MpLimb type is a uint64.
+MpLimb type is a mp_limb_t which is a type alias for ulong which in go is a uint64.
 </p>
 
 			<pre>type MpLimb struct {
@@ -973,12 +1580,24 @@ MpLimb type is a uint64.
 			
 
 			
+				
+				<h3 id="NewMpLimb">func <a href="/src/target/flint.go?s=4989:5021#L256">NewMpLimb</a>
+					<a class="permalink" href="#NewMpLimb">&#xb6;</a>
+				</h3>
+				<pre>func NewMpLimb(x <a href="/pkg/builtin/#uint64">uint64</a>) *<a href="#MpLimb">MpLimb</a></pre>
+				<p>
+NewMpLimb returns a new MpLimb type from a uint64.
+</p>
+
+				
+				
+			
 
 			
 		
 			
 			
-			<h2 id="Mpz">type <a href="/src/github.com/sourcekris/goflint/flint.go?s=750:794#L32">Mpz</a>
+			<h2 id="Mpz">type <a href="/src/target/flint.go?s=925:969#L44">Mpz</a>
 				<a class="permalink" href="#Mpz">&#xb6;</a>
 			</h2>
 			<p>
@@ -999,12 +1618,12 @@ Mpz is an abitrary size integer type from the Gnu Multiprecision Library.
 
 			
 				
-				<h3 id="NewMpz">func <a href="/src/github.com/sourcekris/goflint/flint.go?s=3326:3351#L172">NewMpz</a>
+				<h3 id="NewMpz">func <a href="/src/target/flint.go?s=4872:4897#L251">NewMpz</a>
 					<a class="permalink" href="#NewMpz">&#xb6;</a>
 				</h3>
 				<pre>func NewMpz(x <a href="/pkg/builtin/#int64">int64</a>) *<a href="#Mpz">Mpz</a></pre>
 				<p>
-NewFmpz allocates and returns a new Fmpz set to x.
+NewMpz allocates and returns a new Fmpz set to x.
 </p>
 
 				
@@ -1013,7 +1632,38 @@ NewFmpz allocates and returns a new Fmpz set to x.
 
 			
 				
-				<h3 id="Mpz.GetMpz">func (*Mpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=8133:8162#L398">GetMpz</a>
+				<h3 id="Mpz.Cmp">func (*Mpz) <a href="/src/target/flint.go?s=6086:6119#L315">Cmp</a>
+					<a class="permalink" href="#Mpz.Cmp">&#xb6;</a>
+				</h3>
+				<pre>func (z *<a href="#Mpz">Mpz</a>) Cmp(y *<a href="#Mpz">Mpz</a>) (r <a href="/pkg/builtin/#int">int</a>)</pre>
+				<p>
+Cmp compares Mpz z and y and returns:
+</p>
+<pre>-1 if z &lt;  y
+ 0 if z == y
++1 if z &gt;  y
+</pre>
+
+				
+				
+				
+			
+				
+				<h3 id="Mpz.DivMod">func (*Mpz) <a href="/src/target/flint.go?s=16127:16174#L759">DivMod</a>
+					<a class="permalink" href="#Mpz.DivMod">&#xb6;</a>
+				</h3>
+				<pre>func (z *<a href="#Mpz">Mpz</a>) DivMod(x, y, m *<a href="#Mpz">Mpz</a>) (*<a href="#Mpz">Mpz</a>, *<a href="#Mpz">Mpz</a>)</pre>
+				<p>
+DivMod sets z to the quotient x div y and m to the modulus x mod y
+and returns the pair (z, m) for y != 0.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Mpz.GetMpz">func (*Mpz) <a href="/src/target/flint.go?s=10711:10740#L520">GetMpz</a>
 					<a class="permalink" href="#Mpz.GetMpz">&#xb6;</a>
 				</h3>
 				<pre>func (z *<a href="#Mpz">Mpz</a>) GetMpz(x *<a href="#Fmpz">Fmpz</a>)</pre>
@@ -1026,12 +1676,53 @@ GetMpz transform x into an Mpz z.
 				
 			
 				
-				<h3 id="Mpz.SetMpzInt64">func (*Mpz) <a href="/src/github.com/sourcekris/goflint/flint.go?s=2843:2882#L149">SetMpzInt64</a>
+				<h3 id="Mpz.MulRMpz">func (*Mpz) <a href="/src/target/flint.go?s=13476:13513#L651">MulRMpz</a>
+					<a class="permalink" href="#Mpz.MulRMpz">&#xb6;</a>
+				</h3>
+				<pre>func (z *<a href="#Mpz">Mpz</a>) MulRMpz(y, n *<a href="#Mpz">Mpz</a>) *<a href="#Mpz">Mpz</a></pre>
+				<p>
+MulRMpz sets z to the product of z and y modulo n and returns z using Mpz
+types.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Mpz.SetMpzInt64">func (*Mpz) <a href="/src/target/flint.go?s=4214:4253#L221">SetMpzInt64</a>
 					<a class="permalink" href="#Mpz.SetMpzInt64">&#xb6;</a>
 				</h3>
 				<pre>func (z *<a href="#Mpz">Mpz</a>) SetMpzInt64(x <a href="/pkg/builtin/#int64">int64</a>) *<a href="#Mpz">Mpz</a></pre>
 				<p>
-SetInt64 sets z to x and returns z.
+SetMpzInt64 sets z to x and returns z.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Mpz.String">func (*Mpz) <a href="/src/target/flint.go?s=7059:7088#L368">String</a>
+					<a class="permalink" href="#Mpz.String">&#xb6;</a>
+				</h3>
+				<pre>func (z *<a href="#Mpz">Mpz</a>) String() <a href="/pkg/builtin/#string">string</a></pre>
+				<p>
+String returns the decimal representation of z.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Mpz.SubRMpz">func (*Mpz) <a href="/src/target/flint.go?s=14217:14254#L688">SubRMpz</a>
+					<a class="permalink" href="#Mpz.SubRMpz">&#xb6;</a>
+				</h3>
+				<pre>func (z *<a href="#Mpz">Mpz</a>) SubRMpz(y, n *<a href="#Mpz">Mpz</a>) *<a href="#Mpz">Mpz</a></pre>
+				<p>
+SubRMpz sets z to the z -y modulo n and returns z using Mpz
+types.
 </p>
 
 				
@@ -1041,7 +1732,7 @@ SetInt64 sets z to x and returns z.
 		
 			
 			
-			<h2 id="NmodPoly">type <a href="/src/github.com/sourcekris/goflint/flint.go?s=867:922#L38">NmodPoly</a>
+			<h2 id="NmodPoly">type <a href="/src/target/flint.go?s=1042:1097#L50">NmodPoly</a>
 				<a class="permalink" href="#NmodPoly">&#xb6;</a>
 			</h2>
 			<p>
