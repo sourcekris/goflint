@@ -1054,7 +1054,7 @@ func (z *Fmpz) Root(x *Fmpz, y int32) *Fmpz {
 	return z
 }
 
-// Arbitrary precision primality testing.
+// Arbitrary precision primality testing and factorization.
 
 // IsStrongProbabPrime returns 1 if z is a strong probable prime to base a, otherwise it returns 0
 func (z *Fmpz) IsStrongProbabPrime(a *Fmpz) int {
@@ -1112,6 +1112,17 @@ func (z *Fmpz) IsProbabPrime() int {
 func (z *Fmpz) IsProbabPrimePseudosquare() int {
 	z.doinit()
 	return int(C.fmpz_is_prime_pseudosquare(&z.i[0]))
+}
+
+// WilliamsPP1 uses Use Williams' p+1 method to factor n, using a prime bound in stage 1 of B1 and a
+// prime limit in stage 2 of at least the square of B2_sqrt. If a factor is found, the function
+// returns 1 and factor is set to the factor that is found. Otherwise, the function returns 0.
+// c should be a random value greater than 2. Successive calls to the function
+// with different values of c give additional chances to factor n with roughly exponentially
+// decaying probability of finding a factor which has been missed (if p+1 or p−1 is not smooth for
+// any prime factors p of n then the function will not ever succeed).
+func (z *Fmpz) WilliamsPP1(n *Fmpz, b1, b2, c int) int {
+	return int(C.fmpz_factor_pp1(&z.i[0], &n.i[0], C.ulong(b1), C.ulong(b2), C.ulong(c)))
 }
 
 // LucasChain Given V0 = 2, V1 = A compute Vm, Vm+1 (mod n) from the recurrences Vj = AVj−1 −

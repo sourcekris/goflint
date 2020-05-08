@@ -988,3 +988,17 @@ func TestEntry(t *testing.T) {
 		}
 	}
 }
+
+func TestWilliamsPP1(t *testing.T) {
+	n := NewFmpz(451889)
+	b1 := 10
+	b2 := 50
+	c := 7
+	want := NewFmpz(139)
+
+	z := new(Fmpz)
+	got := z.WilliamsPP1(n, b1, b2, c)
+	if got != 1 && z.Cmp(want) != 0 {
+		t.Errorf("WilliamsPP1 failed - got / want mismatch: %v / %v", z, want)
+	}
+}
