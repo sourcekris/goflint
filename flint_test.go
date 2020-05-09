@@ -824,6 +824,20 @@ func TestIsProbabPrimePseudosquare(t *testing.T) {
 	}
 }
 
+func TestWilliamsPP1(t *testing.T) {
+	n := NewFmpz(451889)
+	b1 := 10
+	b2 := 50
+	c := 7
+	want := NewFmpz(139)
+
+	z := new(Fmpz)
+	got := z.WilliamsPP1(n, b1, b2, c)
+	if got != 1 && z.Cmp(want) != 0 {
+		t.Errorf("WilliamsPP1 failed - got / want mismatch: %v / %v", z, want)
+	}
+}
+
 func TestBits(t *testing.T) {
 	tt := []struct {
 		name string
@@ -989,16 +1003,37 @@ func TestEntry(t *testing.T) {
 	}
 }
 
-func TestWilliamsPP1(t *testing.T) {
-	n := NewFmpz(451889)
-	b1 := 10
-	b2 := 50
-	c := 7
-	want := NewFmpz(139)
+func TestSetPosVal(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		pos  int
+		val  *Fmpz
+		want *Fmpz
+	}{
+		{
+			name: "1 at 0",
+			pos:  0,
+			want: NewFmpz(1),
+		},
+		{
+			name: "100 at 1",
+			pos:  1,
+			want: NewFmpz(100),
+		},
+	} {
+		m := NewFmpzMat(4, 4)
+		m = m.Zero()
+		orig := m.Entry(tc.pos, 0) // Orig should be a zero
+		m.SetPosVal(tc.want, tc.pos)
+		got := m.Entry(tc.pos, 0)
 
-	z := new(Fmpz)
-	got := z.WilliamsPP1(n, b1, b2, c)
-	if got != 1 && z.Cmp(want) != 0 {
-		t.Errorf("WilliamsPP1 failed - got / want mismatch: %v / %v", z, want)
+		if got.Cmp(orig) == 0 {
+			t.Errorf("SetPosVal() %s failed to mutate value at pos %d - got %v / want %v", tc.name, tc.pos, got, tc.want)
+		}
+
+		if got.Cmp(tc.want) != 0 {
+			t.Errorf("SetPosVal() %s want / got mismatch: %v / %v", tc.name, tc.want, got)
+		}
 	}
+
 }

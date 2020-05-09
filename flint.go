@@ -25,6 +25,10 @@ fmpz *_fmpq_denref(fmpq_t op) {
     return fmpq_denref(op);
 }
 
+void fmpzmat_set_val(fmpz_mat_t mat, fmpz_t val, slong pos) {
+	mat->rows[pos] = val;
+}
+
 */
 import "C"
 
@@ -1191,4 +1195,10 @@ func (m *FmpzMat) Entry(x, y int) *Fmpz {
 	z.doinit()
 	z.i[0] = *C.fmpz_mat_entry(&m.i[0], C.slong(x), C.slong(y))
 	return z
+}
+
+// SetPosVal sets position pos in matrix m to val and returns m.
+func (m *FmpzMat) SetPosVal(val *Fmpz, pos int) *FmpzMat {
+	C.fmpzmat_set_val(&m.i[0], &val.i[0], C.slong(pos))
+	return m
 }
