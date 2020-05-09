@@ -1077,3 +1077,19 @@ func TestSetVal(t *testing.T) {
 		}
 	}
 }
+
+func TestOne(t *testing.T) {
+	m := new(FmpzMat)
+	m.fmpzMatDoinit(3, 3)
+	m = m.One()
+
+	if m.Entry(0, 0).Cmp(NewFmpz(1)) != 0 {
+		t.Errorf("TestOne: Failed setting 1 in top left")
+	}
+	if m.Entry(1, 1).Cmp(NewFmpz(1)) != 0 {
+		t.Errorf("TestOne: Failed setting 1 in center")
+	}
+	if m.Entry(2, 2).Cmp(NewFmpz(1)) != 0 {
+		t.Errorf("TestOne: Failed setting 1 in bottom right")
+	}
+}
