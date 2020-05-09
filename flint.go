@@ -25,8 +25,12 @@ fmpz *_fmpq_denref(fmpq_t op) {
     return fmpq_denref(op);
 }
 
+fmpz fmpzmat_get_val(fmpz_mat_t mat, slong pos) {
+	return mat->entries[pos];
+}
+
 void fmpzmat_set_val(fmpz_mat_t mat, fmpz_t val, slong pos) {
-	mat->rows[pos] = val;
+	mat->entries[pos] = *val;
 }
 
 */
@@ -1167,6 +1171,32 @@ func (z *Fmpz) Randm(state *FlintRandT, m *Fmpz) *Fmpz {
 
 // Matrices.
 
+func (m *FmpzMat) String() string {
+	// Create a FILE * memstream.
+	var buf *C.char
+	var bufSize C.size_t
+	ms := C.open_memstream(&buf, &bufSize)
+	if ms == nil {
+		return ""
+	}
+	defer func() {
+		C.fclose(ms)
+		C.free(unsafe.Pointer(buf))
+	}()
+
+	if pp := C.fmpz_mat_fprint_pretty(ms, &m.i[0]); pp <= 0 {
+		// Positive value on success.
+		return ""
+	}
+
+	if rc := C.fflush(ms); rc != 0 {
+		// log.Warningf("fflush returned %d", rc)
+		return ""
+	}
+
+	return C.GoString(buf)
+}
+
 // Zero sets all values of matrix m to zero and returns m.
 func (m *FmpzMat) Zero() *FmpzMat {
 	C.fmpz_mat_zero(&m.i[0])
@@ -1189,16 +1219,25 @@ func (m *FmpzMat) NumCols() int {
 	return int(C.fmpz_mat_ncols(&m.i[0]))
 }
 
-// Entry returns the value at x, y in the matrix m and returns it.
+// Entry returns the value at x, y in the matrix m.
 func (m *FmpzMat) Entry(x, y int) *Fmpz {
 	z := new(Fmpz)
 	z.doinit()
-	z.i[0] = *C.fmpz_mat_entry(&m.i[0], C.slong(x), C.slong(y))
+	pos := x + m.cols*y
+	z.i[0] = C.fmpzmat_get_val(&m.i[0], C.slong(pos))
 	return z
 }
 
 // SetPosVal sets position pos in matrix m to val and returns m.
 func (m *FmpzMat) SetPosVal(val *Fmpz, pos int) *FmpzMat {
+	val.doinit()
 	C.fmpzmat_set_val(&m.i[0], &val.i[0], C.slong(pos))
 	return m
+}
+
+// SetVal sets position x, y in matrix m to val and returns m.
+func (m *FmpzMat) SetVal(val *Fmpz, x, y int) *FmpzMat {
+	val.doinit()
+	pos := x + m.cols*y
+	return m.SetPosVal(val, pos)
 }
