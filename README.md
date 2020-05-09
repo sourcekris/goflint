@@ -32,11 +32,15 @@ This project is heavily influenced by and in the same pattern as Golang's [GMP w
    significant bit.
  * `(z *Fmpz) Sign() (r int)` Returns the sign of z returns -1, 0, or 1
 
-### Primality Testing
+### Primality Testing and Factorization
  * `(z *Fmpz) IsStrongProbabPrime(a *Fmpz)` returns 1 if z is a strong probable prime to base a, otherwise it returns 0
  * `(z *Fmpz) IsProbabPrimeLucas() int` performs a Lucas probable prime test returns 1 if z is a Lucas probable prime, otherwise return 0
  * `(z *Fmpz) IsProbabPrimeBPSW() int` performs a Baillie-PSW probable prime test returns 1 if z is a probable prime, otherwise return 0
  * `(z *Fmpz) IsProbabPrime() int` returns 1 if z is a probable prime, otherwise return 0
+ * `(z *Fmpz) WilliamsPP1(n *Fmpz, b1, b2, c int) int` WilliamsPP1 uses Use Williams' p+1 method to 
+   factor n, using a prime bound in stage 1 of B1 and a prime limit in stage 2 of at least the 
+   square of B2_sqrt. If a factor is found, the function returns 1 and factor is set to the factor 
+   that is found. Otherwise, the function returns 0. c should be a random value greater than 2.
 
 ### Random Number Generation
  * `(z *Fmpz) Randm(state *FlintRandT, m *Fmpz) *Fmpz` Sets z to a random number between 0 and m-1 inclusive
@@ -94,6 +98,18 @@ This project is heavily influenced by and in the same pattern as Golang's [GMP w
  * `(z *Fmpz) And(x, y *Fmpz) *Fmpz` Set z to the value of x & y and return z
  * `(z *Fmpz) Sqrt(x *Fmpz) *Fmpz` Set z to the value of the square root of x and return z
  * `(z *Fmpz) Root(x *Fmpz, y int32) *Fmpz` Set z to the value of then yth root of x and return z
+
+### Matrices
+ * `NewFmpzMat(rows, cols int) *FmpzMat` Creates and allocates a new FmpzMat matrix type of size rows * cols.
+ * `(m *FmpzMat) String() string` Returns a pretty printed string version of the matrix as a string.
+ * `(m *FmpzMat) Zero() *FmpzMat` Sets all of the values of the matrix to zero and returns the matrix.
+ * `(m *FmpzMat) One() *FmpzMat` Sets the diagonal values of the matrix to 1 and returns the matrix.
+ * `(m *FmpzMat) NumRows() int ` Returns the number of rows in the matrix as an integer.
+ * `(m *FmpzMat) NumCols() int` Returns the number of columns in the matrix.
+ * `(m *FmpzMat) Entry(x, y int) *Fmpz` Returns the value at coordinates x, y in the matrix m.
+ * `(m *FmpzMat) SetPosVal(val *Fmpz, pos int) *FmpzMat` Sets the value at offset pos in the matrix m and returns m.
+ * `(m *FmpzMat) SetVal(val *Fmpz, x, y int) *FmpzMat` Sets the value at coordinates x,y in the matrix and returns m.
+
  
 ## Types
 ```
@@ -129,6 +145,14 @@ type MpLimb struct {
 // FlintRandT keeps state for Fmpz random number generation.
 type FlintRandT struct {
 	i    C.flint_rand_t
+	init bool
+}
+
+// FmpzMat is a matrix of Fmpz.
+type FmpzMat struct {
+	i    C.fmpz_mat_t
+	rows int
+	cols int
 	init bool
 }
 ```
