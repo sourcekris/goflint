@@ -1241,3 +1241,15 @@ func (m *FmpzMat) SetVal(val *Fmpz, x, y int) *FmpzMat {
 	pos := x + m.cols*y
 	return m.SetPosVal(val, pos)
 }
+
+// Chinese Remainder Theorem.
+
+// CRT uses the Chinese Remainder Theorem to set out to the unique value 0≤x<M (if sign = 0) or
+// −M/2<x≤M/2 (if sign = 1) congruent to r1 modulo m1 and r2 modulo m2, where where M=m1×m2. It is
+// assumed that m1 and m2 are positive integers greater than 1 and coprime.  If sign = 0, it is
+// assumed that 0≤r1<m1 and 0≤r2<m2. Otherwise, it is assumed that −m1≤r1<m1 and 0≤r2<m2.
+func (z *Fmpz) CRT(r1, m1, r2, m2 *Fmpz, sign int) *Fmpz {
+	z.doinit()
+	C.fmpz_CRT(&z.i[0], &r1.i[0], &m1.i[0], &r2.i[0], &m2.i[0], C.int(sign))
+	return z
+}
