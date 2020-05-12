@@ -42,6 +42,11 @@ import (
 	"unsafe"
 )
 
+var (
+	// Zero is an Fmpz of value 0.
+	Zero = NewFmpz(0)
+)
+
 /*
  * Types
  */
@@ -340,6 +345,28 @@ func (z *Mpz) Cmp(y *Mpz) (r int) {
 		r = 1
 	}
 	return
+}
+
+// Equals compares z and y and returns true if they are equal.
+func (z *Fmpz) Equals(y *Fmpz) bool {
+	z.doinit()
+	y.doinit()
+	if int(C.fmpz_cmp(&z.i[0], &y.i[0])) == 0 {
+		return true
+	}
+
+	return false
+}
+
+// IsZero returns true if z == 0.
+func (z *Fmpz) IsZero() bool {
+	z.doinit()
+	r := int(C.fmpz_cmp(&z.i[0], &Zero.i[0]))
+	if r == 0 {
+		return true
+	}
+
+	return false
 }
 
 /*
@@ -994,6 +1021,16 @@ func (z *Fmpz) ExpI(x int) *Fmpz {
 // Pow is a wrapper for Exp.
 func (z *Fmpz) Pow(x, y, m *Fmpz) *Fmpz {
 	return z.Exp(x, y, m)
+}
+
+// Square raises z to the power of 2 and returns z.
+func (z *Fmpz) Square() *Fmpz {
+	return z.ExpXI(z, 2)
+}
+
+// Cube raises z to the power of 3 and returns z.
+func (z *Fmpz) Cube() *Fmpz {
+	return z.ExpXI(z, 3)
 }
 
 /*
