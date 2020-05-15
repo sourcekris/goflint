@@ -11,6 +11,7 @@ package goflint
 #include <flint/flint.h>
 #include <flint/fmpz.h>
 #include <flint/fmpz_mat.h>
+#include <flint/fmpz_mod_poly.h>
 #include <flint/fmpq.h>
 #include <flint/nmod_poly.h>
 #include <gmp.h>
@@ -72,6 +73,12 @@ type Mpz struct {
 // NmodPoly type represents elements of Z/nZ[x] for a fixed modulus n.
 type NmodPoly struct {
 	i    C.nmod_poly_t
+	init bool
+}
+
+// FmpzModPoly type represents elements of Z/nZ[x] for a fixed modulus n.
+type FmpzModPoly struct {
+	i    C.fmpz_mod_poly_t
 	init bool
 }
 
@@ -145,6 +152,15 @@ func nmodPolyFinalize(z *NmodPoly) {
 	}
 }
 
+// fmpzModPolyFinalize releases the memory allocated to the FmpzModPoly.
+func fmpzModPolyFinalize(z *FmpzModPoly) {
+	if z.init {
+		runtime.SetFinalizer(z, nil)
+		C.fmpz_mod_poly_clear(&z.i[0])
+		z.init = false
+	}
+}
+
 func flintRandTFinalize(r *FlintRandT) {
 	if r.init {
 		runtime.SetFinalizer(r, nil)
@@ -211,6 +227,26 @@ func (z *NmodPoly) nmodPolyDoinit(n *MpLimb) {
 	runtime.SetFinalizer(z, nmodPolyFinalize)
 }
 
+// fmpzModPolyDoinit initializes an FmpzModPoly type.
+func (z *FmpzModPoly) fmpzModPolyDoinit(n *Fmpz) {
+	if z.init {
+		return
+	}
+	z.init = true
+	C.fmpz_mod_poly_init(&z.i[0], &n.i[0])
+	runtime.SetFinalizer(z, fmpzModPolyFinalize)
+}
+
+// fmpzModPolyDoinit2 initializes an FmpzModPoly type with at least a coefficients.
+func (z *FmpzModPoly) fmpzModPolyDoinit2(n *Fmpz, a int) {
+	if z.init {
+		return
+	}
+	z.init = true
+	C.fmpz_mod_poly_init2(&z.i[0], &n.i[0], C.slong(a))
+	runtime.SetFinalizer(z, fmpzModPolyFinalize)
+}
+
 func (r *FlintRandT) flintRandTDoinit() {
 	if r.init {
 		return
@@ -258,6 +294,20 @@ func NewFmpzMat(rows, cols int) *FmpzMat {
 	m := new(FmpzMat)
 	m.fmpzMatDoinit(rows, cols)
 	return m
+}
+
+// NewFmpzModPoly allocates a new FmpzModPoly mod n and returns it.
+func NewFmpzModPoly(n *Fmpz) *FmpzModPoly {
+	p := new(FmpzModPoly)
+	p.fmpzModPolyDoinit(n)
+	return p
+}
+
+// NewFmpzModPoly2 allocates a new FmpzModPoly mod n with at least a coefficients and returns it.
+func NewFmpzModPoly2(n *Fmpz, a int) *FmpzModPoly {
+	p := new(FmpzModPoly)
+	p.fmpzModPolyDoinit2(n, a)
+	return p
 }
 
 // NewFmpq allocates and returns a new Fmpq set to p / q.
@@ -1288,5 +1338,67 @@ func (m *FmpzMat) SetVal(val *Fmpz, x, y int) *FmpzMat {
 func (z *Fmpz) CRT(r1, m1, r2, m2 *Fmpz, sign int) *Fmpz {
 	z.doinit()
 	C.fmpz_CRT(&z.i[0], &r1.i[0], &m1.i[0], &r2.i[0], &m2.i[0], C.int(sign))
+	return z
+}
+
+// Arbitrary precision polynomials mod n.
+
+// String returns a string representation of the polynomial.
+func (z *FmpzModPoly) String() string {
+	// Create a FILE * memstream.
+	var buf *C.char
+	var bufSize C.size_t
+	ms := C.open_memstream(&buf, &bufSize)
+	if ms == nil {
+		return ""
+	}
+	defer func() {
+		C.fclose(ms)
+		C.free(unsafe.Pointer(buf))
+	}()
+
+	var x C.char = 'x'
+	if pp := C.fmpz_mod_poly_fprint_pretty(ms, &z.i[0], &x); pp <= 0 {
+		// Positive value on success.
+		return ""
+	}
+
+	if rc := C.fflush(ms); rc != 0 {
+		return ""
+	}
+
+	return C.GoString(buf)
+}
+
+// FitLength sets the number of coefficiets in z to l.
+func (z *FmpzModPoly) FitLength(l int) {
+	C.fmpz_mod_poly_fit_length(&z.i[0], C.slong(l))
+}
+
+// SetCoeff sets the c'th coefficient of z to x where x is an Fmpz.
+func (z *FmpzModPoly) SetCoeff(c int, x *Fmpz) {
+	C.fmpz_mod_poly_set_coeff_fmpz(&z.i[0], C.slong(c), &x.i[0])
+}
+
+// SetCoeffUI sets the c'th coefficient of z to x where x is an uint.
+func (z *FmpzModPoly) SetCoeffUI(c int, x uint) {
+	C.fmpz_mod_poly_set_coeff_ui(&z.i[0], C.slong(c), C.ulong(x))
+}
+
+// Neg sets z to the negative of p and returns z.
+func (z *FmpzModPoly) Neg(p *FmpzModPoly) *FmpzModPoly {
+	C.fmpz_mod_poly_neg(&z.i[0], &p.i[0])
+	return z
+}
+
+// Pow sets z to m^e and returns z.
+func (z *FmpzModPoly) Pow(m *FmpzModPoly, e int) *FmpzModPoly {
+	C.fmpz_mod_poly_pow(&z.i[0], &m.i[0], C.ulong(e))
+	return z
+}
+
+// GCD sets z = gcd(a, b) and returns
+func (z *FmpzModPoly) GCD(a, b *FmpzModPoly) *FmpzModPoly {
+	C.fmpz_mod_poly_gcd(&z.i[0], &a.i[0], &b.i[0])
 	return z
 }

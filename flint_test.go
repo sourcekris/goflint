@@ -1188,3 +1188,110 @@ func TestCRT(t *testing.T) {
 		}
 	}
 }
+
+func TestFmpzModPolyString(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		m    *FmpzModPoly
+		c    int
+		x    uint
+		want string
+	}{
+		{
+			name: "2x mod n",
+			m:    NewFmpzModPoly(NewFmpz(100)),
+			c:    1,
+			x:    2,
+			want: "2*x",
+		},
+		{
+			name: "3x^2 mod n",
+			m:    NewFmpzModPoly(NewFmpz(100)),
+			c:    2,
+			x:    3,
+			want: "3*x^2",
+		},
+	} {
+
+		tc.m.SetCoeffUI(tc.c, tc.x)
+		got := tc.m.String()
+		if got != tc.want {
+			t.Errorf("String() %s want / got mismatch: %v / %v", tc.name, tc.want, got)
+		}
+	}
+}
+
+func TestFmpzModPolyPow(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		m    *FmpzModPoly
+		c    int
+		x    uint
+		e    int
+		want string
+	}{
+		{
+			name: "(2x)^3 mod n",
+			m:    NewFmpzModPoly(NewFmpz(100)),
+			c:    1,
+			x:    2,
+			e:    3,
+			want: "8*x^3",
+		},
+		{
+			name: "(3x^2)^2 mod n",
+			m:    NewFmpzModPoly(NewFmpz(100)),
+			c:    2,
+			x:    3,
+			e:    2,
+			want: "9*x^4",
+		},
+	} {
+
+		tc.m.SetCoeffUI(tc.c, tc.x)
+		z := tc.m.Pow(tc.m, tc.e)
+		got := z.String()
+		if got != tc.want {
+			t.Errorf("String() %s want / got mismatch: %v / %v", tc.name, tc.want, got)
+		}
+	}
+}
+
+func TestFmpzModPolyGCD(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		c1   []int64
+		n1   *Fmpz
+		c2   []int64
+		n2   *Fmpz
+		want string
+	}{
+		{
+			name: "gcd",
+			n1:   NewFmpz(73),
+			c1:   []int64{6, 7, 1},
+			n2:   NewFmpz(73),
+			c2:   []int64{1, 1, -72},
+			want: "1",
+		},
+	} {
+
+		m := NewFmpzModPoly(tc.n1)
+		n := NewFmpzModPoly(tc.n2)
+
+		// Setup coefficients.
+		for i, c := range tc.c1 {
+			m.SetCoeff(i, NewFmpz(c))
+		}
+
+		for i, c := range tc.c2 {
+			n.SetCoeff(i, NewFmpz(c))
+		}
+
+		g := new(FmpzModPoly).GCD(m, n)
+		got := g.String()
+		if got != tc.want {
+			t.Errorf("GCD() %s want / got mismatch: %v / %v", tc.name, tc.want, got)
+		}
+	}
+}
