@@ -1300,3 +1300,23 @@ func TestFmpzModPolyGCD(t *testing.T) {
 		}
 	}
 }
+
+func TestFmpzModPolyGetMod(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		m    *FmpzModPoly
+		want *Fmpz
+	}{
+		{
+			name: "f(x)=5x^3+2x+1 in (Z/6Z)[x] has modulus of 6",
+			m:    NewFmpzModPoly(NewFmpz(6)).SetCoeffUI(0, 1).SetCoeffUI(1, 2).SetCoeffUI(2, 0).SetCoeffUI(3, 5),
+			want: NewFmpz(6),
+		},
+	} {
+
+		got := tc.m.GetMod()
+		if got.Cmp(tc.want) != 0 {
+			t.Errorf("GetMod() %s want / got mismatch: %v / %v", tc.name, tc.want, got)
+		}
+	}
+}

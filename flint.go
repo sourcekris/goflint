@@ -19,6 +19,10 @@ package goflint
 
 // Macros
 
+fmpz fmpzmodpoly_modulus(fmpz_mod_poly_t poly) {
+	return poly->p;
+}
+
 fmpz *_fmpq_numref(fmpq_t op) {
     return fmpq_numref(op);
 }
@@ -1346,6 +1350,12 @@ func (z *Fmpz) CRT(r1, m1, r2, m2 *Fmpz, sign int) *Fmpz {
 
 // Arbitrary precision polynomials over integers mod n
 
+// Set sets z to poly and returns z.
+func (z *FmpzModPoly) Set(poly *FmpzModPoly) *FmpzModPoly {
+	C.fmpz_mod_poly_set(&z.i[0], &poly.i[0])
+	return z
+}
+
 // SetString returns a polynomial in mod n using the string representation as the definition.
 // e.g. "4 6  1 2 0 5" produces 5x3+2x+1 in (Z/6Z)[x].
 func SetString(poly string) (*FmpzModPoly, error) {
@@ -1435,6 +1445,12 @@ func (z *FmpzModPoly) StringSimple() string {
 	return C.GoString(buf)
 }
 
+// Zero sets z to the zero polynomial and returns z.
+func (z *FmpzModPoly) Zero() *FmpzModPoly {
+	C.fmpz_mod_poly_zero(&z.i[0])
+	return z
+}
+
 // FitLength sets the number of coefficiets in z to l.
 func (z *FmpzModPoly) FitLength(l int) {
 	C.fmpz_mod_poly_fit_length(&z.i[0], C.slong(l))
@@ -1444,6 +1460,14 @@ func (z *FmpzModPoly) FitLength(l int) {
 func (z *FmpzModPoly) SetCoeff(c int, x *Fmpz) *FmpzModPoly {
 	C.fmpz_mod_poly_set_coeff_fmpz(&z.i[0], C.slong(c), &x.i[0])
 	return z
+}
+
+// GetMod gets the c'th coefficient of z and returns an Fmpz.
+func (z *FmpzModPoly) GetMod() *Fmpz {
+	r := new(Fmpz)
+	r.doinit()
+	r.i[0] = C.fmpzmodpoly_modulus(&z.i[0])
+	return r
 }
 
 // GetCoeff gets the c'th coefficient of z and returns an Fmpz.
@@ -1516,4 +1540,12 @@ func (z *FmpzModPoly) DivScalar(a *FmpzModPoly, x *Fmpz) *FmpzModPoly {
 func (z *FmpzModPoly) Pow(m *FmpzModPoly, e int) *FmpzModPoly {
 	C.fmpz_mod_poly_pow(&z.i[0], &m.i[0], C.ulong(e))
 	return z
+}
+
+// DivRem computes q, r such that z=mq+r and 0 ≤ len(r) < len(m).
+func (z *FmpzModPoly) DivRem(m *FmpzModPoly) (*FmpzModPoly, *FmpzModPoly) {
+	q := NewFmpzModPoly(z.GetMod())
+	r := NewFmpzModPoly(z.GetMod())
+	C.fmpz_mod_poly_divrem(&q.i[0], &r.i[0], &z.i[0], &m.i[0])
+	return q, r
 }
