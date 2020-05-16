@@ -1320,3 +1320,68 @@ func TestFmpzModPolyGetMod(t *testing.T) {
 		}
 	}
 }
+
+func TestFmpzModPolyLen(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		m    *FmpzModPoly
+		want int
+	}{
+		{
+			name: "f(x)=5x^3+2x+1 in (Z/6Z)[x] has len 4",
+			m:    NewFmpzModPoly(NewFmpz(6)).SetCoeffUI(0, 1).SetCoeffUI(1, 2).SetCoeffUI(2, 0).SetCoeffUI(3, 5),
+			want: 4,
+		},
+	} {
+
+		got := tc.m.Len()
+		if got != tc.want {
+			t.Errorf("Len() %s want / got mismatch: %v / %v", tc.name, tc.want, got)
+		}
+	}
+}
+
+func TestFmpzModPolyGetCoeff(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		m    *FmpzModPoly
+		c    int
+		want *Fmpz
+	}{
+		{
+			name: "f(x)=5x^3+2x+1 in (Z/6Z)[x] 3rd coefficient of 5",
+			m:    NewFmpzModPoly(NewFmpz(6)).SetCoeffUI(0, 1).SetCoeffUI(1, 2).SetCoeffUI(2, 0).SetCoeffUI(3, 5),
+			c:    3,
+			want: NewFmpz(5),
+		},
+	} {
+
+		got := tc.m.GetCoeff(tc.c)
+		if got.Cmp(tc.want) != 0 {
+			t.Errorf("GetCoeff() %s want / got mismatch: %v / %v", tc.name, tc.want, got)
+		}
+	}
+}
+
+func TestFmpzModPolyGetCoeffs(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		m    *FmpzModPoly
+		want []*Fmpz
+	}{
+		{
+			name: "f(x)=5x^3+2x+1 in (Z/6Z)[x] coeffs are 1,2,0,5",
+			m:    NewFmpzModPoly(NewFmpz(6)).SetCoeffUI(0, 1).SetCoeffUI(1, 2).SetCoeffUI(2, 0).SetCoeffUI(3, 5),
+			want: []*Fmpz{NewFmpz(1), NewFmpz(2), NewFmpz(0), NewFmpz(5)},
+		},
+	} {
+
+		got := tc.m.GetCoeffs()
+
+		for i, g := range got {
+			if g.Cmp(tc.want[i]) != 0 {
+				t.Errorf("GetCoeffs() %s want / got mismatch: %v / %v", tc.name, tc.want, got)
+			}
+		}
+	}
+}

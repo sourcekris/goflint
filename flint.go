@@ -327,6 +327,14 @@ func NewFmpq(p, q int64) *Fmpq {
 	return z
 }
 
+// NewFmpqFmpz allocates and returns a new Fmpq set to p / q where p and q are Fmpz types.
+func NewFmpqFmpz(p, q *Fmpz) *Fmpq {
+	z := new(Fmpq)
+	z.fmpqDoinit()
+	C.fmpq_set_fmpz_frac(&z.i[0], &p.i[0], &q.i[0])
+	return z
+}
+
 // NewMpz allocates and returns a new Fmpz set to x.
 func NewMpz(x int64) *Mpz {
 	return new(Mpz).SetMpzInt64(x)
@@ -1470,12 +1478,29 @@ func (z *FmpzModPoly) GetMod() *Fmpz {
 	return r
 }
 
+// Len returns the length of the poly z.
+func (z *FmpzModPoly) Len() int {
+	return int(C.fmpz_mod_poly_length(&z.i[0]))
+}
+
 // GetCoeff gets the c'th coefficient of z and returns an Fmpz.
 func (z *FmpzModPoly) GetCoeff(c int) *Fmpz {
 	r := new(Fmpz)
 	r.doinit()
 	C.fmpz_mod_poly_get_coeff_fmpz(&r.i[0], &z.i[0], C.slong(c))
 	return r
+}
+
+// GetCoeffs gets all of the coefficient of z and returns a slice of Fmpz.
+func (z *FmpzModPoly) GetCoeffs() []*Fmpz {
+	var coefficients []*Fmpz
+	for i := 0; i < z.Len(); i++ {
+		r := new(Fmpz)
+		r.doinit()
+		C.fmpz_mod_poly_get_coeff_fmpz(&r.i[0], &z.i[0], C.slong(i))
+		coefficients = append(coefficients, r)
+	}
+	return coefficients
 }
 
 // SetCoeffUI sets the c'th coefficient of z to x where x is an uint and returns z.
