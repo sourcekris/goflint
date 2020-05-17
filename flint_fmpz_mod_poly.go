@@ -188,7 +188,7 @@ func (z *FmpzModPoly) SetCoeff(c int, x *Fmpz) *FmpzModPoly {
 	return z
 }
 
-// GetMod gets the c'th coefficient of z and returns an Fmpz.
+// GetMod gets the modulus of z and returns an Fmpz.
 func (z *FmpzModPoly) GetMod() *Fmpz {
 	r := new(Fmpz)
 	r.doinit()

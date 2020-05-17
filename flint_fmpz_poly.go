@@ -27,8 +27,8 @@ type FmpzPoly struct {
 	init bool
 }
 
-// FmpzPolyFinalize releases the memory allocated to the FmpzPoly.
-func FmpzPolyFinalize(z *FmpzPoly) {
+// fmpzPolyFinalize releases the memory allocated to the FmpzPoly.
+func fmpzPolyFinalize(z *FmpzPoly) {
 	if z.init {
 		runtime.SetFinalizer(z, nil)
 		C.fmpz_poly_clear(&z.i[0])
@@ -36,37 +36,37 @@ func FmpzPolyFinalize(z *FmpzPoly) {
 	}
 }
 
-// FmpzPolyDoinit initializes an FmpzPoly type.
-func (z *FmpzPoly) FmpzPolyDoinit() {
+// fmpzPolyDoinit initializes an FmpzPoly type.
+func (z *FmpzPoly) fmpzPolyDoinit() {
 	if z.init {
 		return
 	}
 	z.init = true
 	C.fmpz_poly_init(&z.i[0])
-	runtime.SetFinalizer(z, FmpzPolyFinalize)
+	runtime.SetFinalizer(z, fmpzPolyFinalize)
 }
 
-// FmpzPolyDoinit2 initializes an FmpzPoly type with at least a coefficients.
-func (z *FmpzPoly) FmpzPolyDoinit2(a int) {
+// fmpzPolyDoinit2 initializes an FmpzPoly type with at least a coefficients.
+func (z *FmpzPoly) fmpzPolyDoinit2(a int) {
 	if z.init {
 		return
 	}
 	z.init = true
 	C.fmpz_poly_init2(&z.i[0], C.slong(a))
-	runtime.SetFinalizer(z, FmpzPolyFinalize)
+	runtime.SetFinalizer(z, fmpzPolyFinalize)
 }
 
 // NewFmpzPoly allocates a new FmpzPoly and returns it.
 func NewFmpzPoly() *FmpzPoly {
 	p := new(FmpzPoly)
-	p.FmpzPolyDoinit()
+	p.fmpzPolyDoinit()
 	return p
 }
 
-// NewFmpzPoly2 allocates a new FmpzPoly  with at least a coefficients and returns it.
+// NewFmpzPoly2 allocates a new FmpzPoly with at least a coefficients and returns it.
 func NewFmpzPoly2(a int) *FmpzPoly {
 	p := new(FmpzPoly)
-	p.FmpzPolyDoinit2(a)
+	p.fmpzPolyDoinit2(a)
 	return p
 }
 
@@ -78,7 +78,7 @@ func (z *FmpzPoly) Set(poly *FmpzPoly) *FmpzPoly {
 	return z
 }
 
-// FmpzPolySetString returns a polynomial in mod n using the string representation as the definition.
+// FmpzPolySetString returns a polynomial using the string representation as the definition.
 // e.g. "4  1 2 0 5" produces 5x3+2x+1.
 func FmpzPolySetString(poly string) (*FmpzPoly, error) {
 	cs := strings.Split(poly, " ")

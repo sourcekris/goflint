@@ -110,6 +110,58 @@ This project is heavily influenced by and in the same pattern as Golang's [GMP w
  * `(m *FmpzMat) SetPosVal(val *Fmpz, pos int) *FmpzMat` Sets the value at offset pos in the matrix m and returns m.
  * `(m *FmpzMat) SetVal(val *Fmpz, x, y int) *FmpzMat` Sets the value at coordinates x,y in the matrix and returns m.
 
+### Univatiate Polynomials over the integers.
+ * `NewFmpzPoly() *FmpzPoly` NewFmpzPoly allocates a new FmpzPoly and returns it.
+ * `NewFmpzPoly2(a int) *FmpzPoly` NewFmpzPoly2 allocates a new FmpzPoly with at least a coefficients and returns it.
+ * `FmpzPolySetString(poly string) (*FmpzPoly, error)` FmpzPolySetString returns a polynomial using the string representation as the definition.
+ * `(z *FmpzPoly) Set(poly *FmpzPoly) *FmpzPoly` Set sets z to poly and returns z
+ * `(z *FmpzPoly) String() string` String returns a string representation of the polynomial.
+ * `(z *FmpzPoly) StringSimple() string` StringSimple returns a simple string representation of the polynomials length and
+   coefficients. 
+ * `(z *FmpzPoly) Zero() *FmpzPoly` Zero sets z to the zero polynomial and returns z.
+ * `(z *FmpzPoly) FitLength(l int)` FitLength sets the number of coefficiets in z to l.
+ * `(z *FmpzPoly) SetCoeff(c int, x *Fmpz) *FmpzPoly` SetCoeff sets the c'th coefficient of z to x where x is an Fmpz and returns z.
+ * `(z *FmpzPoly) SetCoeffUI(c int, x uint) *FmpzPoly` SetCoeffUI sets the c'th coefficient of z to x where x is an uint and returns z.
+ * `(z *FmpzPoly) GetCoeff(c int) *Fmpz` GetCoeff gets the c'th coefficient of z and returns an Fmpz.
+ * `(z *FmpzPoly) GetCoeffs() []*Fmpz` GetCoeffs gets all of the coefficient of z and returns a slice of Fmpz.
+ * `(z *FmpzPoly) Len() int` Len returns the length of the poly z.
+ * `(z *FmpzPoly) Neg(p *FmpzPoly) *FmpzPoly` Neg sets z to the negative of p and returns z.
+ * `(z *FmpzPoly) GCD(a, b *FmpzPoly) *FmpzPoly` GCD sets z = gcd(a, b) and returns z.
+ * `(z *FmpzPoly) Equal(p *FmpzPoly) bool` Equal returns true if z is equal to p otherwise false.
+ * `(z *FmpzPoly) Add(a, b *FmpzPoly) *FmpzPoly` Add sets z = a + b and returns z.
+ * `(z *FmpzPoly) Sub(a, b *FmpzPoly) *FmpzPoly` Sub sets z = a - b and returns z.
+ * `(z *FmpzPoly) Mul(a, b *FmpzPoly) *FmpzPoly` Mul sets z = a * b and returns z.
+ * `(z *FmpzPoly) MulScalar(a *FmpzPoly, x *Fmpz) *FmpzPoly` MulScalar sets z = a * x where x is an Fmpz.
+ * `(z *FmpzPoly) DivScalar(a *FmpzPoly, x *Fmpz) *FmpzPoly` DivScalar sets z = a / x where x is an Fmpz. Rounding coefficients down toward -infinity.
+ * `(z *FmpzPoly) Pow(m *FmpzPoly, e int) *FmpzPoly` Pow sets z to m^e and returns z.
+ * `(z *FmpzPoly) DivRem(m *FmpzPoly) (*FmpzPoly, *FmpzPoly)` DivRem computes q, r such that z=mq+r and 0 ≤ len(r) < len(m).
+
+### Univatiate Polynomials over the integers modulo n.
+ * `NewFmpzModPoly(n *Fmpz) *FmpzModPoly` NewFmpzModPoly allocates a new FmpzModPoly mod n and returns it.
+ * `NewFmpzModPoly2(n *Fmpz, a int) *FmpzModPoly` NewFmpzModPoly2 allocates a new FmpzModPoly mod n with at least a coefficients and returns it.
+ * `SetString(poly string) (*FmpzModPoly, error)` SetString returns a polynomial mod n using the string representation as the definition.
+ * `(z *FmpzModPoly) Set(poly *FmpzModPoly) *FmpzModPoly` Set sets z to poly and returns z
+ * `(z *FmpzModPoly) String() string` String returns a string representation of the polynomial.
+ * `(z *FmpzModPoly) StringSimple() string` StringSimple returns a simple string representation of the polynomials length, modulus and
+   coefficients. 
+ * `(z *FmpzModPoly) Zero() *FmpzModPoly` Zero sets z to the zero polynomial and returns z.
+ * `(z *FmpzModPoly) FitLength(l int)` FitLength sets the number of coefficiets in z to l.
+ * `(z *FmpzModPoly) SetCoeff(c int, x *Fmpz) *FmpzModPoly` SetCoeff sets the c'th coefficient of z to x where x is an Fmpz and returns z.
+ * `(z *FmpzModPoly) SetCoeffUI(c int, x uint) *FmpzModPoly` SetCoeffUI sets the c'th coefficient of z to x where x is an uint and returns z.
+ * `(z *FmpzModPoly) GetCoeff(c int) *Fmpz` GetCoeff gets the c'th coefficient of z and returns an Fmpz.
+ * `(z *FmpzModPoly) GetCoeffs() []*Fmpz` GetCoeffs gets all of the coefficient of z and returns a slice of Fmpz.
+ * `(z *FmpzModPoly) GetMod() *Fmpz` GetMod gets the modulus of z and returns an Fmpz.
+ * `(z *FmpzModPoly) Len() int` Len returns the length of the poly z.
+ * `(z *FmpzModPoly) Neg(p *FmpzModPoly) *FmpzModPoly` Neg sets z to the negative of p and returns z.
+ * `(z *FmpzModPoly) GCD(a, b *FmpzModPoly) *FmpzModPoly` GCD sets z = gcd(a, b) and returns z.
+ * `(z *FmpzModPoly) Equal(p *FmpzModPoly) bool` Equal returns true if z is equal to p otherwise false.
+ * `(z *FmpzModPoly) Add(a, b *FmpzModPoly) *FmpzModPoly` Add sets z = a + b and returns z.
+ * `(z *FmpzModPoly) Sub(a, b *FmpzModPoly) *FmpzModPoly` Sub sets z = a - b and returns z.
+ * `(z *FmpzModPoly) Mul(a, b *FmpzModPoly) *FmpzModPoly` Mul sets z = a * b and returns z.
+ * `(z *FmpzModPoly) MulScalar(a *FmpzModPoly, x *Fmpz) *FmpzModPoly` MulScalar sets z = a * x where x is an Fmpz.
+ * `(z *FmpzModPoly) DivScalar(a *FmpzModPoly, x *Fmpz) *FmpzModPoly` DivScalar sets z = a / x where x is an Fmpz.
+ * `(z *FmpzModPoly) Pow(m *FmpzModPoly, e int) *FmpzModPoly` Pow sets z to m^e and returns z.
+ * `(z *FmpzModPoly) DivRem(m *FmpzModPoly) (*FmpzModPoly, *FmpzModPoly)` DivRem computes q, r such that z=mq+r and 0 ≤ len(r) < len(m).
  
 ## Types
 ```
@@ -129,6 +181,18 @@ type Mpz struct {
 type Fmpq struct {
   i    C.fmpq_t
   init bool
+}
+
+// FmpzPoly type represents a univatiate polynomial over the integers.
+type FmpzPoly struct {
+	i    C.fmpz_poly_t
+	init bool
+}
+
+// FmpzModPoly type represents elements of Z/nZ[x] for a fixed modulus n.
+type FmpzModPoly struct {
+	i    C.fmpz_mod_poly_t
+	init bool
 }
 
 // NmodPoly type represents elements of Z/nZ[x] for a fixed modulus n.
