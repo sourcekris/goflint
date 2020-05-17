@@ -110,7 +110,7 @@ This project is heavily influenced by and in the same pattern as Golang's [GMP w
  * `(m *FmpzMat) SetPosVal(val *Fmpz, pos int) *FmpzMat` Sets the value at offset pos in the matrix m and returns m.
  * `(m *FmpzMat) SetVal(val *Fmpz, x, y int) *FmpzMat` Sets the value at coordinates x,y in the matrix and returns m.
 
-### Univatiate Polynomials over the integers.
+### Univariate Polynomials over the integers.
  * `NewFmpzPoly() *FmpzPoly` NewFmpzPoly allocates a new FmpzPoly and returns it.
  * `NewFmpzPoly2(a int) *FmpzPoly` NewFmpzPoly2 allocates a new FmpzPoly with at least a coefficients and returns it.
  * `FmpzPolySetString(poly string) (*FmpzPoly, error)` FmpzPolySetString returns a polynomial using the string representation as the definition.
@@ -136,7 +136,7 @@ This project is heavily influenced by and in the same pattern as Golang's [GMP w
  * `(z *FmpzPoly) Pow(m *FmpzPoly, e int) *FmpzPoly` Pow sets z to m^e and returns z.
  * `(z *FmpzPoly) DivRem(m *FmpzPoly) (*FmpzPoly, *FmpzPoly)` DivRem computes q, r such that z=mq+r and 0 ≤ len(r) < len(m).
 
-### Univatiate Polynomials over the integers modulo n.
+### Univariate Polynomials over the integers modulo n.
  * `NewFmpzModPoly(n *Fmpz) *FmpzModPoly` NewFmpzModPoly allocates a new FmpzModPoly mod n and returns it.
  * `NewFmpzModPoly2(n *Fmpz, a int) *FmpzModPoly` NewFmpzModPoly2 allocates a new FmpzModPoly mod n with at least a coefficients and returns it.
  * `SetString(poly string) (*FmpzModPoly, error)` SetString returns a polynomial mod n using the string representation as the definition.
