@@ -156,8 +156,8 @@ func (m *FmpzMat) SetPosVal(val *Fmpz, pos int) *FmpzMat {
 // SetVal sets position x, y in matrix m to val and returns m.
 func (m *FmpzMat) SetVal(val *Fmpz, x, y int) *FmpzMat {
 	val.doinit()
-	pos := x + m.cols*y
-	return m.SetPosVal(val, pos)
+	C.fmpz_set(C.fmpz_mat_entry(&m.i[0], C.slong(y), C.slong(x)), &val.i[0])
+	return m
 }
 
 // LLL reduces m in place according to the parameters specified by the default LLL context of
