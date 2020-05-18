@@ -1,6 +1,9 @@
 package goflint
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestFmpzPolyString(t *testing.T) {
 	for _, tc := range []struct {
@@ -224,5 +227,32 @@ func TestFmpzPolySub(t *testing.T) {
 			t.Errorf("Sub() %s want / got mismatch: %v / %v", tc.name, tc.want, got)
 		}
 
+	}
+}
+
+func TestFmpzPolyFactor(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		poly *FmpzPoly
+		want string
+	}{
+		{
+			name: "f(x)=10x^3+5x^2+5x+5 factors to 5, (2*x^3+x^2+x+1, 1)",
+			poly: NewFmpzPoly().SetCoeffUI(0, 5).SetCoeffUI(1, 5).SetCoeffUI(2, 5).SetCoeffUI(3, 10),
+			want: "5, (2*x^3+x^2+x+1, 1)",
+		},
+	} {
+
+		fac := tc.poly.Factor()
+		got := fac.GetCoeff().String()
+		for i := 0; i < fac.Len(); i++ {
+			p := fac.GetPoly(i)
+			e := fac.GetExp(i)
+			got = fmt.Sprintf("%s, (%v, %d)", got, p, e)
+		}
+
+		if got != tc.want {
+			t.Errorf("Factor() %s want / got mismatch: %v / %v", tc.name, tc.want, got)
+		}
 	}
 }

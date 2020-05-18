@@ -5,10 +5,34 @@ package goflint
 #include <flint/flint.h>
 #include <flint/fmpz.h>
 #include <flint/fmpz_poly.h>
+#include <flint/fmpz_poly_factor.h>
 #include <gmp.h>
 #include <stdlib.h>
 
 // Macros
+// typedef struct {
+//     fmpz c;
+//     fmpz_poly_struct *p;
+//     slong *exp;
+//     slong num;
+//     slong alloc;
+// } fmpz_poly_factor_struct;
+
+fmpz_poly_struct fmpz_poly_factor_get_poly(fmpz_poly_factor_t fac, slong i) {
+	return fac->p[i];
+}
+
+fmpz fmpz_poly_factor_get_coeff(fmpz_poly_factor_t fac) {
+	return fac->c;
+}
+
+slong fmpz_poly_factor_get_num(fmpz_poly_factor_t fac) {
+	return fac->num;
+}
+
+slong fmpz_poly_factor_get_exp(fmpz_poly_factor_t fac, slong i) {
+	return fac->exp[i];
+}
 
 */
 import "C"
@@ -21,9 +45,15 @@ import (
 	"unsafe"
 )
 
-// FmpzPoly type represents a univatiate polynomial over the integers.
+// FmpzPoly type represents a univariate polynomial over the integers.
 type FmpzPoly struct {
 	i    C.fmpz_poly_t
+	init bool
+}
+
+// FmpzPolyFactor type represents the factors univariate polynomial over the integers.
+type FmpzPolyFactor struct {
+	i    C.fmpz_poly_factor_t
 	init bool
 }
 
@@ -33,6 +63,15 @@ func fmpzPolyFinalize(z *FmpzPoly) {
 		runtime.SetFinalizer(z, nil)
 		C.fmpz_poly_clear(&z.i[0])
 		z.init = false
+	}
+}
+
+// fmpzPolyFactorFinalize releases the memory allocated to the FmpzPoly.
+func fmpzPolyFactorFinalize(f *FmpzPolyFactor) {
+	if f.init {
+		runtime.SetFinalizer(f, nil)
+		C.fmpz_poly_factor_clear(&f.i[0])
+		f.init = false
 	}
 }
 
@@ -56,6 +95,16 @@ func (z *FmpzPoly) fmpzPolyDoinit2(a int) {
 	runtime.SetFinalizer(z, fmpzPolyFinalize)
 }
 
+// fmpzPolyFactor initializes an FmpzPolyFactor type.
+func (f *FmpzPolyFactor) fmpzPolyFactorDoinit() {
+	if f.init {
+		return
+	}
+	f.init = true
+	C.fmpz_poly_factor_init(&f.i[0])
+	runtime.SetFinalizer(f, fmpzPolyFactorFinalize)
+}
+
 // NewFmpzPoly allocates a new FmpzPoly and returns it.
 func NewFmpzPoly() *FmpzPoly {
 	p := new(FmpzPoly)
@@ -70,12 +119,25 @@ func NewFmpzPoly2(a int) *FmpzPoly {
 	return p
 }
 
+// NewFmpzPolyFactor allocates a new FmpzPolyFactor and returns it.
+func NewFmpzPolyFactor() *FmpzPolyFactor {
+	f := new(FmpzPolyFactor)
+	f.fmpzPolyFactorDoinit()
+	return f
+}
+
 // Arbitrary precision polynomials over integers.
 
 // Set sets z to poly and returns z.
 func (z *FmpzPoly) Set(poly *FmpzPoly) *FmpzPoly {
 	C.fmpz_poly_set(&z.i[0], &poly.i[0])
 	return z
+}
+
+// Set sets f to FmpzPolyFactor fac and returns f.
+func (f *FmpzPolyFactor) Set(fac *FmpzPolyFactor) *FmpzPolyFactor {
+	C.fmpz_poly_factor_set(&f.i[0], &fac.i[0])
+	return f
 }
 
 // FmpzPolySetString returns a polynomial using the string representation as the definition.
@@ -160,6 +222,11 @@ func (z *FmpzPoly) StringSimple() string {
 	}
 
 	return C.GoString(buf)
+}
+
+// Print prints the FmpzPolyFactor to stdout.
+func (f *FmpzPolyFactor) Print() {
+	C.fmpz_poly_factor_print(&f.i[0])
 }
 
 // Zero sets z to the zero polynomial and returns z.
@@ -274,4 +341,39 @@ func (z *FmpzPoly) DivRem(m *FmpzPoly) (*FmpzPoly, *FmpzPoly) {
 	r := NewFmpzPoly()
 	C.fmpz_poly_divrem(&q.i[0], &r.i[0], &z.i[0], &m.i[0])
 	return q, r
+}
+
+// Factor uses the Zassenhaus factoring algorithm, which takes as input any FmpzPoly z, and
+// returns a factorization in an FmpzPolyFac type.
+func (z *FmpzPoly) Factor() *FmpzPolyFactor {
+	fac := NewFmpzPolyFactor()
+	// In FLINT 2.5.3 this should be just fmpz_poly_factor but most Linux distros are still on
+	// FLINT 2.5.2.
+	C.fmpz_poly_factor_zassenhaus(&fac.i[0], &z.i[0])
+	return fac
+}
+
+// GetPoly gets the nth polynomial factor from a FmpzPolyFactor and returns it.
+func (f *FmpzPolyFactor) GetPoly(n int) *FmpzPoly {
+	p := NewFmpzPoly()
+	p.i[0] = C.fmpz_poly_factor_get_poly(&f.i[0], C.slong(n))
+	return p
+}
+
+// GetExp gets the exponent of the nth polynomial from the FmpzPolyFactor.
+func (f *FmpzPolyFactor) GetExp(n int) int {
+	return int(C.fmpz_poly_factor_get_exp(&f.i[0], C.slong(n)))
+}
+
+// GetCoeff gets the coefficient from the FmpzPolyFactor.
+func (f *FmpzPolyFactor) GetCoeff() *Fmpz {
+	z := new(Fmpz)
+	z.doinit()
+	z.i[0] = C.fmpz_poly_factor_get_coeff(&f.i[0])
+	return z
+}
+
+// Len gets the length of the FmpzPolyFactors list. i.e. the number of factors found.
+func (f *FmpzPolyFactor) Len() int {
+	return int(C.fmpz_poly_factor_get_num(&f.i[0]))
 }
