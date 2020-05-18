@@ -5,6 +5,7 @@ package goflint
 #include <flint/flint.h>
 #include <flint/fmpz.h>
 #include <flint/fmpz_mat.h>
+#include <flint/fmpz_lll.h>
 #include <gmp.h>
 #include <stdlib.h>
 
@@ -32,6 +33,12 @@ type FmpzMat struct {
 	i    C.fmpz_mat_t
 	rows int
 	cols int
+	init bool
+}
+
+// FmpzLLL stores a LLL matrix reduction context including delta, eta, rt and gt values.
+type FmpzLLL struct {
+	i    C.fmpz_lll_t
 	init bool
 }
 
@@ -64,6 +71,16 @@ func (m *FmpzMat) fmpzMatDoinit(d ...int) error {
 	}
 
 	return errors.New("fmpzMatDoinit: pass rows and colums on first init")
+}
+
+// fmpzLLLDoinit initializes an FmpzLLL type.
+func (l *FmpzLLL) fmpzLLLDoinit() {
+	if l.init {
+		return
+	}
+
+	l.init = true
+	C.fmpz_lll_context_init_default(&l.i[0])
 }
 
 // NewFmpzMat allocates a rows * cols matrix and returns a new FmpzMat.
@@ -125,8 +142,7 @@ func (m *FmpzMat) NumCols() int {
 func (m *FmpzMat) Entry(x, y int) *Fmpz {
 	z := new(Fmpz)
 	z.doinit()
-	pos := x + m.cols*y
-	z.i[0] = C.fmpzmat_get_val(&m.i[0], C.slong(pos))
+	z.i[0] = *C.fmpz_mat_entry(&m.i[0], C.slong(y), C.slong(x))
 	return z
 }
 
@@ -142,4 +158,14 @@ func (m *FmpzMat) SetVal(val *Fmpz, x, y int) *FmpzMat {
 	val.doinit()
 	pos := x + m.cols*y
 	return m.SetPosVal(val, pos)
+}
+
+// LLL reduces m in place according to the parameters specified by the default LLL context of
+// fl->delta, fl->eta, fl->rt and fl->gt set to 0.99, 0.51, ZBASIS and APPROX respectively.
+// u is the matrix used to capture the unimodular transformations if it is not NULL.
+func (m *FmpzMat) LLL() *FmpzMat {
+	l := new(FmpzLLL)
+	l.fmpzLLLDoinit()
+	C.fmpz_lll(&m.i[0], nil, &l.i[0])
+	return m
 }
