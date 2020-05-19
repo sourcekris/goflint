@@ -70,7 +70,7 @@ func fmpzPolyFinalize(z *FmpzPoly) {
 func fmpzPolyFactorFinalize(f *FmpzPolyFactor) {
 	if f.init {
 		runtime.SetFinalizer(f, nil)
-		C.fmpz_poly_factor_clear(&f.i[0])
+		//C.fmpz_poly_factor_clear(&f.i[0])
 		f.init = false
 	}
 }
