@@ -1045,20 +1045,20 @@ func (z *Fmpz) CRT(r1, m1, r2, m2 *Fmpz, sign int) *Fmpz {
 
 // Min and Max.
 
-// Min finds the min(z,a) and returns it.
-func (z *Fmpz) Min(a *Fmpz) *Fmpz {
+// Min finds the min(a, b) sets z to it and returns it.
+func (z *Fmpz) Min(a, b *Fmpz) *Fmpz {
 	if a.Cmp(z) < 0 {
-		return a
+		return z.Set(a)
 	}
 
-	return z
+	return z.Set(b)
 }
 
-// Max finds the max(z,a) and returns it.
-func (z *Fmpz) Max(a *Fmpz) *Fmpz {
+// Max finds the max(a, b) sets z to it and returns it.
+func (z *Fmpz) Max(a, b *Fmpz) *Fmpz {
 	if a.Cmp(z) > 0 {
-		return a
+		return z.Set(a)
 	}
 
-	return z
+	return z.Set(b)
 }
