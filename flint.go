@@ -1042,3 +1042,23 @@ func (z *Fmpz) CRT(r1, m1, r2, m2 *Fmpz, sign int) *Fmpz {
 	C.fmpz_CRT(&z.i[0], &r1.i[0], &m1.i[0], &r2.i[0], &m2.i[0], C.int(sign))
 	return z
 }
+
+// Min and Max.
+
+// Min finds the min(z,a) and returns it.
+func (z *Fmpz) Min(a *Fmpz) *Fmpz {
+	if a.Cmp(z) < 0 {
+		return a
+	}
+
+	return z
+}
+
+// Max finds the max(z,a) and returns it.
+func (z *Fmpz) Max(a *Fmpz) *Fmpz {
+	if a.Cmp(z) > 0 {
+		return a
+	}
+
+	return z
+}
