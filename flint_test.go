@@ -945,3 +945,24 @@ func TestCRT(t *testing.T) {
 		}
 	}
 }
+
+func TestDLog(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		n    string
+		want int
+	}{
+		{
+			name: "large int log(n)",
+			n:    "833810193564967701912362955539789451139872863794534923259743419423089229206473091408403560311191545764221310666338878019",
+			want: 276,
+		},
+	} {
+		n, _ := new(Fmpz).SetString(tc.n, 10)
+		got := int(n.DLog())
+
+		if got != tc.want {
+			t.Errorf("DLog() %s want / got mismatch: %v / %v", tc.name, tc.want, got)
+		}
+	}
+}

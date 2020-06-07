@@ -8,6 +8,7 @@ package goflint
 
 /*
 #cgo LDFLAGS: -lflint -lgmp
+#include <flint/arith.h>
 #include <flint/flint.h>
 #include <flint/fmpz.h>
 #include <flint/fmpq.h>
@@ -1061,4 +1062,11 @@ func (z *Fmpz) Max(a, b *Fmpz) *Fmpz {
 	}
 
 	return z.Set(b)
+}
+
+// Natural logarithm.
+
+// DLog returns log(z) as a float64.
+func (z *Fmpz) DLog() float64 {
+	return float64(C.fmpz_dlog(&z.i[0]))
 }
