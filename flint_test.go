@@ -966,3 +966,59 @@ func TestDLog(t *testing.T) {
 		}
 	}
 }
+
+func TestLsh(t *testing.T) {
+	for _, tc := range []struct {
+		name  string
+		n     *Fmpz
+		shift int
+		want  *Fmpz
+	}{
+		{
+			name:  "left shift 1 bit",
+			n:     NewFmpz(8),
+			shift: 1,
+			want:  NewFmpz(16),
+		},
+		{
+			name:  "left shift 3 bits",
+			n:     NewFmpz(100),
+			shift: 3,
+			want:  NewFmpz(800),
+		},
+	} {
+		got := tc.n.Lsh(tc.shift)
+
+		if got.Cmp(tc.want) != 0 {
+			t.Errorf("Lsh() %s want / got mismatch: %v / %v", tc.name, tc.want, got)
+		}
+	}
+}
+
+func TestRsh(t *testing.T) {
+	for _, tc := range []struct {
+		name  string
+		n     *Fmpz
+		shift int
+		want  *Fmpz
+	}{
+		{
+			name:  "right shift 1 bit",
+			n:     NewFmpz(16),
+			shift: 1,
+			want:  NewFmpz(8),
+		},
+		{
+			name:  "right shift 3 bits",
+			n:     NewFmpz(800),
+			shift: 3,
+			want:  NewFmpz(100),
+		},
+	} {
+		got := tc.n.Rsh(tc.shift)
+
+		if got.Cmp(tc.want) != 0 {
+			t.Errorf("Rsh() %s want / got mismatch: %v / %v", tc.name, tc.want, got)
+		}
+	}
+}

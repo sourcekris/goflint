@@ -22,6 +22,7 @@ package goflint
 import "C"
 
 import (
+	"math/big"
 	"runtime"
 	"unsafe"
 )
@@ -300,6 +301,24 @@ func (z *Fmpz) BitLen() int {
 		return 0
 	}
 	return int(C.fmpz_sizeinbase(&z.i[0], 2))
+}
+
+// Lsh left shifts an Fmpz z by an arbitrary number of bits and returns it.
+func (z *Fmpz) Lsh(bits int) *Fmpz {
+	// We proxy this through the std library big.Int type since Flint has no
+	// method for bit shifting.
+	i := new(big.Int).SetBytes(z.Bytes())
+	i = i.Lsh(i, uint(bits))
+	return z.SetBytes(i.Bytes())
+}
+
+// Rsh right shifts an Fmpz z by an arbitrary number of bits and returns it.
+func (z *Fmpz) Rsh(bits int) *Fmpz {
+	// We proxy this through the std library big.Int type since Flint has no
+	// method for bit shifting.
+	i := new(big.Int).SetBytes(z.Bytes())
+	i = i.Rsh(i, uint(bits))
+	return z.SetBytes(i.Bytes())
 }
 
 // Sign returns:
