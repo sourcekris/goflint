@@ -1022,3 +1022,25 @@ func TestRsh(t *testing.T) {
 		}
 	}
 }
+
+func TestXor(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		a    *Fmpz
+		b    *Fmpz
+		want *Fmpz
+	}{
+		{
+			name: "41 ^ 20 = 61",
+			a:    NewFmpz(41),
+			b:    NewFmpz(20),
+			want: NewFmpz(61),
+		},
+	} {
+		got := new(Fmpz).Xor(tc.a, tc.b)
+
+		if got.Cmp(tc.want) != 0 {
+			t.Errorf("Xor() %s want / got mismatch: %v / %v", tc.name, tc.want, got)
+		}
+	}
+}

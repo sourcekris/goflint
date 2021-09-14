@@ -305,6 +305,7 @@ func (z *Fmpz) BitLen() int {
 
 // Lsh left shifts an Fmpz z by an arbitrary number of bits and returns it.
 func (z *Fmpz) Lsh(bits int) *Fmpz {
+	z.doinit()
 	// We proxy this through the std library big.Int type since Flint has no
 	// method for bit shifting.
 	i := new(big.Int).SetBytes(z.Bytes())
@@ -314,11 +315,21 @@ func (z *Fmpz) Lsh(bits int) *Fmpz {
 
 // Rsh right shifts an Fmpz z by an arbitrary number of bits and returns it.
 func (z *Fmpz) Rsh(bits int) *Fmpz {
+	z.doinit()
 	// We proxy this through the std library big.Int type since Flint has no
 	// method for bit shifting.
 	i := new(big.Int).SetBytes(z.Bytes())
 	i = i.Rsh(i, uint(bits))
 	return z.SetBytes(i.Bytes())
+}
+
+// Xor sets z to the bitwise exclusive or of a and b and returns z.
+func (z *Fmpz) Xor(a, b *Fmpz) *Fmpz {
+	a.doinit()
+	b.doinit()
+	z.doinit()
+	C.fmpz_xor(&z.i[0], &a.i[0], &b.i[0])
+	return z
 }
 
 // Sign returns:
