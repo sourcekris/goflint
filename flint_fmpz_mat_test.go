@@ -133,9 +133,8 @@ func TestSetVal(t *testing.T) {
 			want: NewFmpz(666),
 		},
 	} {
-		m := new(FmpzMat)
-		m.fmpzMatDoinit(4, 4)
-		//m = NewFmpzMat(4, 4)
+
+		m := NewFmpzMat(4, 4)
 		m = m.Zero()
 		orig := m.Entry(tc.x, tc.y) // Orig should be a zero
 		m.SetVal(tc.want, tc.x, tc.y)

@@ -36,14 +36,7 @@ type FmpzMat struct {
 	init bool
 }
 
-// FmpzLLL stores a LLL matrix reduction context including delta, eta, rt and gt values.
-type FmpzLLL struct {
-	i    C.fmpz_lll_t
-	init bool
-}
-
 // Matrices.
-
 // fmpzMatFinalize releases the memory allocated to the FmpzMat.
 func fmpzMatFinalize(m *FmpzMat) {
 	if m.init {
@@ -71,16 +64,6 @@ func (m *FmpzMat) fmpzMatDoinit(d ...int) error {
 	}
 
 	return errors.New("fmpzMatDoinit: pass rows and colums on first init")
-}
-
-// fmpzLLLDoinit initializes an FmpzLLL type.
-func (l *FmpzLLL) fmpzLLLDoinit() {
-	if l.init {
-		return
-	}
-
-	l.init = true
-	C.fmpz_lll_context_init_default(&l.i[0])
 }
 
 // NewFmpzMat allocates a rows * cols matrix and returns a new FmpzMat.
@@ -157,15 +140,5 @@ func (m *FmpzMat) SetPosVal(val *Fmpz, pos int) *FmpzMat {
 func (m *FmpzMat) SetVal(val *Fmpz, x, y int) *FmpzMat {
 	val.doinit()
 	C.fmpz_set(C.fmpz_mat_entry(&m.i[0], C.slong(y), C.slong(x)), &val.i[0])
-	return m
-}
-
-// LLL reduces m in place according to the parameters specified by the default LLL context of
-// fl->delta, fl->eta, fl->rt and fl->gt set to 0.99, 0.51, ZBASIS and APPROX respectively.
-// u is the matrix used to capture the unimodular transformations if it is not NULL.
-func (m *FmpzMat) LLL() *FmpzMat {
-	l := new(FmpzLLL)
-	l.fmpzLLLDoinit()
-	C.fmpz_lll(&m.i[0], nil, &l.i[0])
 	return m
 }

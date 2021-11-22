@@ -38,6 +38,8 @@ func fmpzModPolyFinalize(z *FmpzModPoly) {
 			runtime.SetFinalizer(z, nil)
 			C.fmpz_mod_poly_clear(&z.i[0], &z.ctx.i[0])
 			z.init = false
+
+			fmpzModCtxFinalize(z.ctx)
 		}
 	}
 }

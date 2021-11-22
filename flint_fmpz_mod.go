@@ -2,11 +2,7 @@ package goflint
 
 /*
 #cgo LDFLAGS: -lflint -lgmp
-#include <flint/flint.h>
-#include <flint/fmpz.h>
 #include <flint/fmpz_mod.h>
-#include <gmp.h>
-#include <stdlib.h>
 
 */
 import "C"

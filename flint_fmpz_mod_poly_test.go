@@ -199,50 +199,50 @@ func TestFmpzModPolyGetCoeffs(t *testing.T) {
 	}
 }
 
-// func TestFmpzModPolyAdd(t *testing.T) {
-// 	for _, tc := range []struct {
-// 		name string
-// 		m1   *FmpzModPoly
-// 		m2   *FmpzModPoly
-// 		want string
-// 	}{
-// 		{
-// 			name: "f(x)=5x^3+2x+1 in (Z/6Z)[x] + x^3+3x^2+2 = 3*x^2+2*x+3",
-// 			m1:   NewFmpzModPoly(NewFmpz(6)).SetCoeffUI(0, 1).SetCoeffUI(1, 2).SetCoeffUI(2, 0).SetCoeffUI(3, 5),
-// 			m2:   NewFmpzModPoly(NewFmpz(6)).SetCoeffUI(0, 2).SetCoeffUI(1, 0).SetCoeffUI(2, 3).SetCoeffUI(3, 1),
-// 			want: "3*x^2+2*x+3",
-// 		},
-// 	} {
+func TestFmpzModPolyAdd(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		m1   *FmpzModPoly
+		m2   *FmpzModPoly
+		want string
+	}{
+		{
+			name: "f(x)=5x^3+2x+1 in (Z/6Z)[x] + x^3+3x^2+2 = 3*x^2+2*x+3",
+			m1:   NewFmpzModPoly(NewFmpzModCtx(NewFmpz(6))).SetCoeffUI(0, 1).SetCoeffUI(1, 2).SetCoeffUI(2, 0).SetCoeffUI(3, 5),
+			m2:   NewFmpzModPoly(NewFmpzModCtx(NewFmpz(6))).SetCoeffUI(0, 2).SetCoeffUI(1, 0).SetCoeffUI(2, 3).SetCoeffUI(3, 1),
+			want: "3*x^2+2*x+3",
+		},
+	} {
 
-// 		got := NewFmpzModPoly(tc.m1.GetMod()).Add(tc.m1, tc.m2).String()
+		got := NewFmpzModPoly(tc.m1.ctx).Add(tc.m1, tc.m2).String()
 
-// 		if got != tc.want {
-// 			t.Errorf("Add() %s want / got mismatch: %v / %v", tc.name, tc.want, got)
-// 		}
+		if got != tc.want {
+			t.Errorf("Add() %s want / got mismatch: %v / %v", tc.name, tc.want, got)
+		}
 
-// 	}
-// }
+	}
+}
 
-// func TestFmpzModPolySub(t *testing.T) {
-// 	for _, tc := range []struct {
-// 		name string
-// 		m1   *FmpzModPoly
-// 		m2   *FmpzModPoly
-// 		want string
-// 	}{
-// 		{
-// 			name: "f(x)=5x^3+2x+1 in (Z/6Z)[x] - x^3+3x^2+2 = 4*x^3+3*x^2+2*x+5",
-// 			m1:   NewFmpzModPoly(NewFmpz(6)).SetCoeffUI(0, 1).SetCoeffUI(1, 2).SetCoeffUI(2, 0).SetCoeffUI(3, 5),
-// 			m2:   NewFmpzModPoly(NewFmpz(6)).SetCoeffUI(0, 2).SetCoeffUI(1, 0).SetCoeffUI(2, 3).SetCoeffUI(3, 1),
-// 			want: "4*x^3+3*x^2+2*x+5",
-// 		},
-// 	} {
+func TestFmpzModPolySub(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		m1   *FmpzModPoly
+		m2   *FmpzModPoly
+		want string
+	}{
+		{
+			name: "f(x)=5x^3+2x+1 in (Z/6Z)[x] - x^3+3x^2+2 = 4*x^3+3*x^2+2*x+5",
+			m1:   NewFmpzModPoly(NewFmpzModCtx(NewFmpz(6))).SetCoeffUI(0, 1).SetCoeffUI(1, 2).SetCoeffUI(2, 0).SetCoeffUI(3, 5),
+			m2:   NewFmpzModPoly(NewFmpzModCtx(NewFmpz(6))).SetCoeffUI(0, 2).SetCoeffUI(1, 0).SetCoeffUI(2, 3).SetCoeffUI(3, 1),
+			want: "4*x^3+3*x^2+2*x+5",
+		},
+	} {
 
-// 		got := NewFmpzModPoly(tc.m1.GetMod()).Sub(tc.m1, tc.m2).String()
+		got := NewFmpzModPoly(tc.m1.ctx).Sub(tc.m1, tc.m2).String()
 
-// 		if got != tc.want {
-// 			t.Errorf("Sub() %s want / got mismatch: %v / %v", tc.name, tc.want, got)
-// 		}
+		if got != tc.want {
+			t.Errorf("Sub() %s want / got mismatch: %v / %v", tc.name, tc.want, got)
+		}
 
-// 	}
-// }
+	}
+}
