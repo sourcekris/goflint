@@ -10,14 +10,6 @@ package goflint
 #include <stdlib.h>
 
 // Macros
-// typedef struct {
-//     fmpz c;
-//     fmpz_poly_struct *p;
-//     slong *exp;
-//     slong num;
-//     slong alloc;
-// } fmpz_poly_factor_struct;
-
 fmpz_poly_struct fmpz_poly_factor_get_poly(fmpz_poly_factor_t fac, slong i) {
 	return fac->p[i];
 }
@@ -273,18 +265,21 @@ func (z *FmpzPoly) GetCoeffs() []*Fmpz {
 
 // SetCoeffUI sets the c'th coefficient of z to x where x is an uint and returns z.
 func (z *FmpzPoly) SetCoeffUI(c int, x uint) *FmpzPoly {
+	z.fmpzPolyDoinit()
 	C.fmpz_poly_set_coeff_ui(&z.i[0], C.slong(c), C.ulong(x))
 	return z
 }
 
 // Neg sets z to the negative of p and returns z.
 func (z *FmpzPoly) Neg(p *FmpzPoly) *FmpzPoly {
+	z.fmpzPolyDoinit()
 	C.fmpz_poly_neg(&z.i[0], &p.i[0])
 	return z
 }
 
 // GCD sets z = gcd(a, b) and returns
 func (z *FmpzPoly) GCD(a, b *FmpzPoly) *FmpzPoly {
+	z.fmpzPolyDoinit()
 	C.fmpz_poly_gcd(&z.i[0], &a.i[0], &b.i[0])
 	return z
 }
@@ -292,11 +287,7 @@ func (z *FmpzPoly) GCD(a, b *FmpzPoly) *FmpzPoly {
 // Equal returns true if z is equal to p otherwise false.
 func (z *FmpzPoly) Equal(p *FmpzPoly) bool {
 	r := int(C.fmpz_poly_equal(&z.i[0], &p.i[0]))
-	if r != 0 {
-		return true
-	}
-
-	return false
+	return r != 0
 }
 
 // Add sets z = a + b and returns z.

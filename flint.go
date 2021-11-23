@@ -114,6 +114,16 @@ func (z *Fmpz) doinit() {
 	runtime.SetFinalizer(z, fmpzFinalize)
 }
 
+// doinitNoFinalizer initializes an Fmpz type without setting a finalizer.
+// This is a hack to help debug double frees in Flint.
+func (z *Fmpz) doinitNoFinalizer() {
+	if z.init {
+		return
+	}
+	z.init = true
+	C.fmpz_init(&z.i[0])
+}
+
 // mpzDoinit initializes an Mpz type.
 func (z *Mpz) mpzDoinit() {
 	if z.init {
@@ -163,6 +173,15 @@ func (z *Fmpz) SetInt64(x int64) *Fmpz {
 	return z
 }
 
+// SetInt64NoFinalizer sets z to x and returns z without setting a Finalizer.
+// This is a hack to help debug double frees in Flint.
+func (z *Fmpz) SetInt64NoFinalizer(x int64) *Fmpz {
+	z.doinitNoFinalizer()
+	y := C.slong(x)
+	C.fmpz_set_si(&z.i[0], y)
+	return z
+}
+
 // SetMpzInt64 sets z to x and returns z.
 func (z *Mpz) SetMpzInt64(x int64) *Mpz {
 	z.mpzDoinit()
@@ -174,6 +193,11 @@ func (z *Mpz) SetMpzInt64(x int64) *Mpz {
 // NewFmpz allocates and returns a new Fmpz set to x.
 func NewFmpz(x int64) *Fmpz {
 	return new(Fmpz).SetInt64(x)
+}
+
+// NewFmpz allocates and returns a new Fmpz set to x.
+func NewFmpzNoFinalizer(x int64) *Fmpz {
+	return new(Fmpz).SetInt64NoFinalizer(x)
 }
 
 // NewMpz allocates and returns a new Fmpz set to x.
