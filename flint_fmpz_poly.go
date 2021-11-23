@@ -77,6 +77,15 @@ func (z *FmpzPoly) fmpzPolyDoinit() {
 	runtime.SetFinalizer(z, fmpzPolyFinalize)
 }
 
+// fmpzPolyDoinitNF initializes an FmpzPoly type without a finalizer.
+func (z *FmpzPoly) fmpzPolyDoinitNF() {
+	if z.init {
+		return
+	}
+	z.init = true
+	C.fmpz_poly_init(&z.i[0])
+}
+
 // fmpzPolyDoinit2 initializes an FmpzPoly type with at least a coefficients.
 func (z *FmpzPoly) fmpzPolyDoinit2(a int) {
 	if z.init {
@@ -101,6 +110,13 @@ func (f *FmpzPolyFactor) fmpzPolyFactorDoinit() {
 func NewFmpzPoly() *FmpzPoly {
 	p := new(FmpzPoly)
 	p.fmpzPolyDoinit()
+	return p
+}
+
+// NewFmpzPolyNF allocates a new FmpzPoly and returns it.
+func NewFmpzPolyNF() *FmpzPoly {
+	p := new(FmpzPoly)
+	p.fmpzPolyDoinitNF()
 	return p
 }
 
@@ -357,6 +373,14 @@ func (z *FmpzPoly) Factor() *FmpzPolyFactor {
 func (f *FmpzPolyFactor) GetPoly(n int) *FmpzPoly {
 	f.fmpzPolyFactorDoinit()
 	p := NewFmpzPoly()
+	p.i[0] = C.fmpz_poly_factor_get_poly(&f.i[0], C.slong(n))
+	return p
+}
+
+// GetPoly gets the nth polynomial factor from a FmpzPolyFactor and returns it.
+func (f *FmpzPolyFactor) GetPolyNF(n int) *FmpzPoly {
+	f.fmpzPolyFactorDoinit()
+	p := NewFmpzPolyNF()
 	p.i[0] = C.fmpz_poly_factor_get_poly(&f.i[0], C.slong(n))
 	return p
 }

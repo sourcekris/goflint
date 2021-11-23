@@ -66,10 +66,38 @@ func (m *FmpzMat) fmpzMatDoinit(d ...int) error {
 	return errors.New("fmpzMatDoinit: pass rows and colums on first init")
 }
 
+// fmpzMatDoinitNF initializes an FmpzMat type without finalizer.
+func (m *FmpzMat) fmpzMatDoinitNF(d ...int) error {
+	if m.init {
+		return nil
+	}
+	if len(d) == 2 {
+		m.rows = d[0]
+		m.cols = d[1]
+		m.init = true
+		C.fmpz_mat_init(&m.i[0], C.slong(m.rows), C.slong(m.cols))
+
+		return nil
+	}
+
+	return errors.New("fmpzMatDoinitNoFinalizer: pass rows and colums on first init")
+}
+
 // NewFmpzMat allocates a rows * cols matrix and returns a new FmpzMat.
 func NewFmpzMat(rows, cols int) *FmpzMat {
 	m := new(FmpzMat)
-	m.fmpzMatDoinit(rows, cols)
+	if err := m.fmpzMatDoinit(rows, cols); err != nil {
+		panic(err)
+	}
+	return m
+}
+
+// NewFmpzMatNF allocates a rows * cols matrix and returns a new FmpzMat.
+func NewFmpzMatNF(rows, cols int) *FmpzMat {
+	m := new(FmpzMat)
+	if err := m.fmpzMatDoinitNF(rows, cols); err != nil {
+		panic(err)
+	}
 	return m
 }
 

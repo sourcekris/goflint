@@ -60,10 +60,27 @@ func (z *FmpzModPoly) fmpzModPolyDoinit2(n *FmpzModCtx, a int) {
 	runtime.SetFinalizer(z, fmpzModPolyFinalize)
 }
 
+// fmpzModPolyDoinitNF initializes an FmpzModPoly type.
+func (z *FmpzModPoly) fmpzModPolyDoinitNF(n *FmpzModCtx) {
+	if z.init {
+		return
+	}
+	z.init = true
+	C.fmpz_mod_poly_init(&z.i[0], &n.i[0])
+}
+
 // NewFmpzModPoly allocates a new FmpzModPoly mod n and returns it.
 func NewFmpzModPoly(n *FmpzModCtx) *FmpzModPoly {
 	p := new(FmpzModPoly)
 	p.fmpzModPolyDoinit(n)
+	p.ctx = n
+	return p
+}
+
+// NewFmpzModPolyNF allocates a new FmpzModPoly mod n and returns it.
+func NewFmpzModPolyNF(n *FmpzModCtx) *FmpzModPoly {
+	p := new(FmpzModPoly)
+	p.fmpzModPolyDoinitNF(n)
 	p.ctx = n
 	return p
 }

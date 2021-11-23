@@ -25,12 +25,17 @@ func (l *FmpzLLL) fmpzLLLDoinit() {
 	C.fmpz_lll_context_init_default(&l.i[0])
 }
 
+func NewFmpzLLL() *FmpzLLL {
+	l := new(FmpzLLL)
+	l.fmpzLLLDoinit()
+	return l
+}
+
 // LLL reduces m in place according to the parameters specified by the default LLL context of
 // fl->delta, fl->eta, fl->rt and fl->gt set to 0.99, 0.51, ZBASIS and APPROX respectively.
 // u is the matrix used to capture the unimodular transformations if it is not NULL.
 func (m *FmpzMat) LLL() *FmpzMat {
-	l := new(FmpzLLL)
-	l.fmpzLLLDoinit()
+	l := NewFmpzLLL()
 	C.fmpz_lll(&m.i[0], nil, &l.i[0])
 	return m
 }
