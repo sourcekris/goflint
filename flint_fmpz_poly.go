@@ -62,7 +62,7 @@ func fmpzPolyFinalize(z *FmpzPoly) {
 func fmpzPolyFactorFinalize(f *FmpzPolyFactor) {
 	if f.init {
 		runtime.SetFinalizer(f, nil)
-		//C.fmpz_poly_factor_clear(&f.i[0])
+		C.fmpz_poly_factor_clear(&f.i[0])
 		f.init = false
 	}
 }
@@ -286,48 +286,56 @@ func (z *FmpzPoly) GCD(a, b *FmpzPoly) *FmpzPoly {
 
 // Equal returns true if z is equal to p otherwise false.
 func (z *FmpzPoly) Equal(p *FmpzPoly) bool {
+	z.fmpzPolyDoinit()
 	r := int(C.fmpz_poly_equal(&z.i[0], &p.i[0]))
 	return r != 0
 }
 
 // Add sets z = a + b and returns z.
 func (z *FmpzPoly) Add(a, b *FmpzPoly) *FmpzPoly {
+	z.fmpzPolyDoinit()
 	C.fmpz_poly_add(&z.i[0], &a.i[0], &b.i[0])
 	return z
 }
 
 // Sub sets z = a - b and returns z.
 func (z *FmpzPoly) Sub(a, b *FmpzPoly) *FmpzPoly {
+	z.fmpzPolyDoinit()
 	C.fmpz_poly_sub(&z.i[0], &a.i[0], &b.i[0])
 	return z
 }
 
 // Mul sets z = a * b and returns z.
 func (z *FmpzPoly) Mul(a, b *FmpzPoly) *FmpzPoly {
+	z.fmpzPolyDoinit()
 	C.fmpz_poly_mul(&z.i[0], &a.i[0], &b.i[0])
 	return z
 }
 
 // MulScalar sets z = a * x where x is an Fmpz.
 func (z *FmpzPoly) MulScalar(a *FmpzPoly, x *Fmpz) *FmpzPoly {
+	z.fmpzPolyDoinit()
 	C.fmpz_poly_scalar_mul_fmpz(&z.i[0], &a.i[0], &x.i[0])
 	return z
 }
 
 // DivScalar sets z = a / x where x is an Fmpz. Rounding coefficients down toward -infinity.
 func (z *FmpzPoly) DivScalar(a *FmpzPoly, x *Fmpz) *FmpzPoly {
+	z.fmpzPolyDoinit()
 	C.fmpz_poly_scalar_fdiv_fmpz(&z.i[0], &a.i[0], &x.i[0])
 	return z
 }
 
 // Pow sets z to m^e and returns z.
 func (z *FmpzPoly) Pow(m *FmpzPoly, e int) *FmpzPoly {
+	z.fmpzPolyDoinit()
 	C.fmpz_poly_pow(&z.i[0], &m.i[0], C.ulong(e))
 	return z
 }
 
 // DivRem computes q, r such that z=mq+r and 0 ≤ len(r) < len(m).
 func (z *FmpzPoly) DivRem(m *FmpzPoly) (*FmpzPoly, *FmpzPoly) {
+	z.fmpzPolyDoinit()
 	q := NewFmpzPoly()
 	r := NewFmpzPoly()
 	C.fmpz_poly_divrem(&q.i[0], &r.i[0], &z.i[0], &m.i[0])
@@ -337,6 +345,7 @@ func (z *FmpzPoly) DivRem(m *FmpzPoly) (*FmpzPoly, *FmpzPoly) {
 // Factor uses the Zassenhaus factoring algorithm, which takes as input any FmpzPoly z, and
 // returns a factorization in an FmpzPolyFac type.
 func (z *FmpzPoly) Factor() *FmpzPolyFactor {
+	z.fmpzPolyDoinit()
 	fac := NewFmpzPolyFactor()
 	// In FLINT 2.5.3 this should be just fmpz_poly_factor but most Linux distros are still on
 	// FLINT 2.5.2.
@@ -346,6 +355,7 @@ func (z *FmpzPoly) Factor() *FmpzPolyFactor {
 
 // GetPoly gets the nth polynomial factor from a FmpzPolyFactor and returns it.
 func (f *FmpzPolyFactor) GetPoly(n int) *FmpzPoly {
+	f.fmpzPolyFactorDoinit()
 	p := NewFmpzPoly()
 	p.i[0] = C.fmpz_poly_factor_get_poly(&f.i[0], C.slong(n))
 	return p
@@ -353,11 +363,13 @@ func (f *FmpzPolyFactor) GetPoly(n int) *FmpzPoly {
 
 // GetExp gets the exponent of the nth polynomial from the FmpzPolyFactor.
 func (f *FmpzPolyFactor) GetExp(n int) int {
+	f.fmpzPolyFactorDoinit()
 	return int(C.fmpz_poly_factor_get_exp(&f.i[0], C.slong(n)))
 }
 
 // GetCoeff gets the coefficient from the FmpzPolyFactor.
 func (f *FmpzPolyFactor) GetCoeff() *Fmpz {
+	f.fmpzPolyFactorDoinit()
 	z := new(Fmpz)
 	z.doinit()
 	z.i[0] = C.fmpz_poly_factor_get_coeff(&f.i[0])
@@ -366,5 +378,6 @@ func (f *FmpzPolyFactor) GetCoeff() *Fmpz {
 
 // Len gets the length of the FmpzPolyFactors list. i.e. the number of factors found.
 func (f *FmpzPolyFactor) Len() int {
+	f.fmpzPolyFactorDoinit()
 	return int(C.fmpz_poly_factor_get_num(&f.i[0]))
 }

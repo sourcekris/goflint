@@ -257,22 +257,14 @@ func (z *Mpz) Cmp(y *Mpz) (r int) {
 func (z *Fmpz) Equals(y *Fmpz) bool {
 	z.doinit()
 	y.doinit()
-	if int(C.fmpz_cmp(&z.i[0], &y.i[0])) == 0 {
-		return true
-	}
-
-	return false
+	return int(C.fmpz_cmp(&z.i[0], &y.i[0])) == 0
 }
 
 // IsZero returns true if z == 0.
 func (z *Fmpz) IsZero() bool {
 	z.doinit()
 	r := int(C.fmpz_cmp(&z.i[0], &Zero.i[0]))
-	if r == 0 {
-		return true
-	}
-
-	return false
+	return r == 0
 }
 
 /*

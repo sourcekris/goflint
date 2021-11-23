@@ -34,13 +34,9 @@ type FmpzModPoly struct {
 // fmpzModPolyFinalize releases the memory allocated to the FmpzModPoly.
 func fmpzModPolyFinalize(z *FmpzModPoly) {
 	if z.init {
-		if z.ctx.init {
-			runtime.SetFinalizer(z, nil)
-			C.fmpz_mod_poly_clear(&z.i[0], &z.ctx.i[0])
-			z.init = false
-
-			fmpzModCtxFinalize(z.ctx)
-		}
+		runtime.SetFinalizer(z, nil)
+		C.fmpz_mod_poly_clear(&z.i[0], &z.ctx.i[0])
+		z.init = false
 	}
 }
 
@@ -250,11 +246,7 @@ func (z *FmpzModPoly) GCD(a, b *FmpzModPoly) *FmpzModPoly {
 // Equal returns true if z is equal to p otherwise false.
 func (z *FmpzModPoly) Equal(p *FmpzModPoly) bool {
 	r := int(C.fmpz_mod_poly_equal(&z.i[0], &p.i[0], &z.ctx.i[0]))
-	if r != 0 {
-		return true
-	}
-
-	return false
+	return r != 0
 }
 
 // Add sets z = a + b and returns z.
