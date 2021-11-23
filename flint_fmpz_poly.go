@@ -381,6 +381,8 @@ func (f *FmpzPolyFactor) GetPoly(n int) *FmpzPoly {
 func (f *FmpzPolyFactor) GetPolyNF(n int) *FmpzPoly {
 	f.fmpzPolyFactorDoinit()
 	p := NewFmpzPolyNF()
+	// This is quite sketchy, if we call free on this it crashes so I use NewFmpzPolyNF to avoid
+	// that.
 	p.i[0] = C.fmpz_poly_factor_get_poly(&f.i[0], C.slong(n))
 	return p
 }
