@@ -1,17 +1,8 @@
 package goflint
 
 /*
-#cgo LDFLAGS: -lflint -lgmp
-#include <flint/flint.h>
-#include <flint/fmpz.h>
+#cgo LDFLAGS: -lflint
 #include <flint/fmpz_mod_poly.h>
-#include <gmp.h>
-#include <stdlib.h>
-
-// Macros
-fmpz * fmpzmodctx_modulus(fmpz_mod_ctx_t ctx) {
-	return ctx->n;
-}
 
 */
 import "C"
@@ -211,10 +202,7 @@ func (z *FmpzModPoly) SetCoeff(c int, x *Fmpz) *FmpzModPoly {
 
 // GetMod gets the modulus of z and returns an Fmpz.
 func (z *FmpzModPoly) GetMod() *Fmpz {
-	r := new(Fmpz)
-	r.doinit()
-	r.i[0] = *C.fmpzmodctx_modulus(&z.ctx.i[0])
-	return r
+	return z.ctx.n
 }
 
 // Len returns the length of the poly z.
