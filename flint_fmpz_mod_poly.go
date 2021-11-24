@@ -31,7 +31,7 @@ package goflint
 	}
 
 	void fmpzmod_poly_zero(fmpz_mod_poly_t poly, const fmpz_mod_ctx_t ctx) {
-		void fmpz_mod_poly_zero(poly, ctx);
+		fmpz_mod_poly_zero(poly, ctx);
 	}
 
 	void fmpzmod_poly_fit_length(fmpz_mod_poly_t poly, slong len, const fmpz_mod_ctx_t ctx) {
