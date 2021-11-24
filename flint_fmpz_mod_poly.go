@@ -4,6 +4,193 @@ package goflint
 #cgo LDFLAGS: -lflint
 #include <flint/fmpz_mod_poly.h>
 
+#if __FLINT_RELEASE >= 20503
+	// Wrappers directly wired to the modern libflint versions.
+	void fmpzmod_poly_clear(fmpz_mod_poly_t poly, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_clear(poly, ctx);
+	}
+
+	void fmpzmod_poly_init(fmpz_mod_poly_t poly, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_init(poly, ctx);
+	}
+
+	void fmpzmod_poly_init2(fmpz_mod_poly_t poly, slong alloc, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_init2(poly, alloc, ctx);
+	}
+
+	void fmpzmod_poly_set(fmpz_mod_poly_t poly1, const fmpz_mod_poly_t poly2, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_set(poly1, poly2, ctx);
+	}
+
+	int fmpzmod_poly_fprint_pretty(FILE * file, const fmpz_mod_poly_t poly, const char * x, const fmpz_mod_ctx_t ctx) {
+		return fmpz_mod_poly_fprint_pretty(file, poly, x, ctx);
+	}
+
+	int fmpzmod_poly_fprint(FILE * file, const fmpz_mod_poly_t poly, const fmpz_mod_ctx_t ctx) {
+		return fmpz_mod_poly_fprint(file, poly, ctx);
+	}
+
+	void fmpzmod_poly_zero(fmpz_mod_poly_t poly, const fmpz_mod_ctx_t ctx) {
+		void fmpz_mod_poly_zero(poly, ctx);
+	}
+
+	void fmpzmod_poly_fit_length(fmpz_mod_poly_t poly, slong len, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_fit_length(poly, len, ctx);
+	}
+
+	void fmpzmod_poly_set_coeff_fmpz(fmpz_mod_poly_t poly, slong n, const fmpz_t x, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_set_coeff_fmpz(poly, n, x, ctx);
+	}
+
+	slong fmpzmod_poly_length(const fmpz_mod_poly_t poly, const fmpz_mod_ctx_t ctx) {
+		return fmpz_mod_poly_length(poly, ctx);
+	}
+
+	void fmpzmod_poly_get_coeff_fmpz(fmpz_t x, const fmpz_mod_poly_t poly, slong n, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_get_coeff_fmpz(x, poly, n, ctx);
+    }
+
+	void fmpzmod_poly_set_coeff_ui(fmpz_mod_poly_t poly, slong n, ulong x, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_set_coeff_ui(poly, n, x, ctx);
+	}
+
+	void fmpzmod_poly_neg(fmpz_mod_poly_t res, const fmpz_mod_poly_t poly, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_neg(res, poly, ctx);
+	}
+
+	void fmpzmod_poly_gcd(fmpz_mod_poly_t G, const fmpz_mod_poly_t A, const fmpz_mod_poly_t B, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_gcd(G, A, B, ctx);
+	}
+
+	int fmpzmod_poly_equal(const fmpz_mod_poly_t poly1, const fmpz_mod_poly_t poly2, const fmpz_mod_ctx_t ctx) {
+		return fmpz_mod_poly_equal(poly1, poly2, ctx);
+	}
+
+	void fmpzmod_poly_add(fmpz_mod_poly_t res, const fmpz_mod_poly_t poly1, const fmpz_mod_poly_t poly2, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_add(res, poly1, poly2, ctx);
+	}
+
+	void fmpzmod_poly_sub(fmpz_mod_poly_t res, const fmpz_mod_poly_t poly1, const fmpz_mod_poly_t poly2, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_sub(res, poly1, poly2, ctx);
+	}
+
+	void fmpzmod_poly_mul(fmpz_mod_poly_t res, const fmpz_mod_poly_t poly1, const fmpz_mod_poly_t poly2, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_mul(res, poly1, poly2, ctx);
+	}
+
+	void fmpzmod_poly_scalar_mul_fmpz(fmpz_mod_poly_t res, const fmpz_mod_poly_t poly, const fmpz_t x, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_scalar_mul_fmpz(res, poly, x, ctx);
+	}
+
+	void fmpzmod_poly_scalar_div_fmpz(fmpz_mod_poly_t res, const fmpz_mod_poly_t poly, const fmpz_t x, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_scalar_div_fmpz(res, poly, x, ctx);
+	}
+
+	void fmpzmod_poly_pow(fmpz_mod_poly_t rop, const fmpz_mod_poly_t op, ulong e, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_pow(rop, op, e, ctx);
+	}
+
+	void fmpzmod_poly_divrem(fmpz_mod_poly_t Q, fmpz_mod_poly_t R, const fmpz_mod_poly_t A, const fmpz_mod_poly_t B, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_divrem(Q, R, A, B, ctx);
+	}
+
+#else
+	// Wrappers to shim the new API into the old.
+	#include <flint/fmpz.h>
+	typedef struct fmpz_mod_ctx {
+		fmpz_t n;
+	} fmpz_mod_ctx_struct;
+	typedef fmpz_mod_ctx_struct fmpz_mod_ctx_t[1];
+
+	void fmpzmod_poly_clear(fmpz_mod_poly_t poly, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_clear(poly);
+	}
+
+	void fmpzmod_poly_init(fmpz_mod_poly_t poly, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_init(poly, ctx->n);
+	}
+
+	void fmpzmod_poly_init2(fmpz_mod_poly_t poly, slong alloc, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_init2(poly, ctx->n, alloc);
+	}
+
+	void fmpzmod_poly_set(fmpz_mod_poly_t poly1, const fmpz_mod_poly_t poly2, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_set(poly1, poly2);
+	}
+
+	int fmpzmod_poly_fprint_pretty(FILE * file, const fmpz_mod_poly_t poly, const char * x, const fmpz_mod_ctx_t ctx) {
+		return fmpz_mod_poly_fprint_pretty(file, poly, x);
+	}
+
+	int fmpzmod_poly_fprint(FILE * file, const fmpz_mod_poly_t poly, const fmpz_mod_ctx_t ctx) {
+		return fmpz_mod_poly_fprint(file, poly);
+	}
+
+	void fmpzmod_poly_zero(fmpz_mod_poly_t poly, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_zero(poly);
+	}
+
+	void fmpzmod_poly_fit_length(fmpz_mod_poly_t poly, slong len, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_fit_length(poly, len);
+	}
+
+	void fmpzmod_poly_set_coeff_fmpz(fmpz_mod_poly_t poly, slong n, const fmpz_t x, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_set_coeff_fmpz(poly, n, x);
+	}
+
+	slong fmpzmod_poly_length(const fmpz_mod_poly_t poly, const fmpz_mod_ctx_t ctx) {
+		return fmpz_mod_poly_length(poly);
+	}
+
+	void fmpzmod_poly_get_coeff_fmpz(fmpz_t x, const fmpz_mod_poly_t poly, slong n, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_get_coeff_fmpz(x, poly, n);
+    }
+
+	void fmpzmod_poly_set_coeff_ui(fmpz_mod_poly_t poly, slong n, ulong x, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_set_coeff_ui(poly, n, x);
+	}
+
+	void fmpzmod_poly_neg(fmpz_mod_poly_t res, const fmpz_mod_poly_t poly, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_neg(res, poly);
+	}
+
+	void fmpzmod_poly_gcd(fmpz_mod_poly_t G, const fmpz_mod_poly_t A, const fmpz_mod_poly_t B, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_gcd(G, A, B);
+	}
+
+	int fmpzmod_poly_equal(const fmpz_mod_poly_t poly1, const fmpz_mod_poly_t poly2, const fmpz_mod_ctx_t ctx) {
+		return fmpz_mod_poly_equal(poly1, poly2);
+	}
+
+	void fmpzmod_poly_add(fmpz_mod_poly_t res, const fmpz_mod_poly_t poly1, const fmpz_mod_poly_t poly2, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_add(res, poly1, poly2);
+	}
+
+	void fmpzmod_poly_sub(fmpz_mod_poly_t res, const fmpz_mod_poly_t poly1, const fmpz_mod_poly_t poly2, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_sub(res, poly1, poly2);
+	}
+
+	void fmpzmod_poly_mul(fmpz_mod_poly_t res, const fmpz_mod_poly_t poly1, const fmpz_mod_poly_t poly2, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_mul(res, poly1, poly2);
+	}
+
+	void fmpzmod_poly_scalar_mul_fmpz(fmpz_mod_poly_t res, const fmpz_mod_poly_t poly, const fmpz_t x, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_scalar_mul_fmpz(res, poly, x);
+	}
+
+	void fmpzmod_poly_scalar_div_fmpz(fmpz_mod_poly_t res, const fmpz_mod_poly_t poly, const fmpz_t x, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_scalar_div_fmpz(res, poly, x);
+	}
+
+	void fmpzmod_poly_pow(fmpz_mod_poly_t rop, const fmpz_mod_poly_t op, ulong e, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_pow(rop, op, e);
+	}
+
+	void fmpzmod_poly_divrem(fmpz_mod_poly_t Q, fmpz_mod_poly_t R, const fmpz_mod_poly_t A, const fmpz_mod_poly_t B, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_divrem(Q, R, A, B);
+	}
+#endif
+
 */
 import "C"
 
@@ -26,7 +213,7 @@ type FmpzModPoly struct {
 func fmpzModPolyFinalize(z *FmpzModPoly) {
 	if z.init {
 		runtime.SetFinalizer(z, nil)
-		C.fmpz_mod_poly_clear(&z.i[0], &z.ctx.i[0])
+		C.fmpzmod_poly_clear(&z.i[0], &z.ctx.i[0])
 		z.init = false
 	}
 }
@@ -37,7 +224,7 @@ func (z *FmpzModPoly) fmpzModPolyDoinit(n *FmpzModCtx) {
 		return
 	}
 	z.init = true
-	C.fmpz_mod_poly_init(&z.i[0], &n.i[0])
+	C.fmpzmod_poly_init(&z.i[0], &n.i[0])
 	runtime.SetFinalizer(z, fmpzModPolyFinalize)
 }
 
@@ -47,7 +234,7 @@ func (z *FmpzModPoly) fmpzModPolyDoinit2(n *FmpzModCtx, a int) {
 		return
 	}
 	z.init = true
-	C.fmpz_mod_poly_init2(&z.i[0], C.slong(a), &n.i[0])
+	C.fmpzmod_poly_init2(&z.i[0], C.slong(a), &n.i[0])
 	runtime.SetFinalizer(z, fmpzModPolyFinalize)
 }
 
@@ -57,7 +244,7 @@ func (z *FmpzModPoly) fmpzModPolyDoinitNF(n *FmpzModCtx) {
 		return
 	}
 	z.init = true
-	C.fmpz_mod_poly_init(&z.i[0], &n.i[0])
+	C.fmpzmod_poly_init(&z.i[0], &n.i[0])
 }
 
 // NewFmpzModPoly allocates a new FmpzModPoly mod n and returns it.
@@ -88,7 +275,7 @@ func NewFmpzModPoly2(n *FmpzModCtx, a int) *FmpzModPoly {
 
 // Set sets z to poly and returns z.
 func (z *FmpzModPoly) Set(poly *FmpzModPoly) *FmpzModPoly {
-	C.fmpz_mod_poly_set(&z.i[0], &poly.i[0], &z.ctx.i[0])
+	C.fmpzmod_poly_set(&z.i[0], &poly.i[0], &z.ctx.i[0])
 	return z
 }
 
@@ -144,7 +331,7 @@ func (z *FmpzModPoly) String() string {
 	}()
 
 	var x C.char = 'x'
-	if pp := C.fmpz_mod_poly_fprint_pretty(ms, &z.i[0], &x, &z.ctx.i[0]); pp <= 0 {
+	if pp := C.fmpzmod_poly_fprint_pretty(ms, &z.i[0], &x, &z.ctx.i[0]); pp <= 0 {
 		// Positive value on success.
 		return ""
 	}
@@ -171,7 +358,7 @@ func (z *FmpzModPoly) StringSimple() string {
 		C.free(unsafe.Pointer(buf))
 	}()
 
-	if pp := C.fmpz_mod_poly_fprint(ms, &z.i[0], &z.ctx.i[0]); pp <= 0 {
+	if pp := C.fmpzmod_poly_fprint(ms, &z.i[0], &z.ctx.i[0]); pp <= 0 {
 		// Positive value on success.
 		return ""
 	}
@@ -185,18 +372,18 @@ func (z *FmpzModPoly) StringSimple() string {
 
 // Zero sets z to the zero polynomial and returns z.
 func (z *FmpzModPoly) Zero() *FmpzModPoly {
-	C.fmpz_mod_poly_zero(&z.i[0], &z.ctx.i[0])
+	C.fmpzmod_poly_zero(&z.i[0], &z.ctx.i[0])
 	return z
 }
 
 // FitLength sets the number of coefficiets in z to l.
 func (z *FmpzModPoly) FitLength(l int) {
-	C.fmpz_mod_poly_fit_length(&z.i[0], C.slong(l), &z.ctx.i[0])
+	C.fmpzmod_poly_fit_length(&z.i[0], C.slong(l), &z.ctx.i[0])
 }
 
 // SetCoeff sets the c'th coefficient of z to x where x is an Fmpz and returns z.
 func (z *FmpzModPoly) SetCoeff(c int, x *Fmpz) *FmpzModPoly {
-	C.fmpz_mod_poly_set_coeff_fmpz(&z.i[0], C.slong(c), &x.i[0], &z.ctx.i[0])
+	C.fmpzmod_poly_set_coeff_fmpz(&z.i[0], C.slong(c), &x.i[0], &z.ctx.i[0])
 	return z
 }
 
@@ -207,14 +394,14 @@ func (z *FmpzModPoly) GetMod() *Fmpz {
 
 // Len returns the length of the poly z.
 func (z *FmpzModPoly) Len() int {
-	return int(C.fmpz_mod_poly_length(&z.i[0], &z.ctx.i[0]))
+	return int(C.fmpzmod_poly_length(&z.i[0], &z.ctx.i[0]))
 }
 
 // GetCoeff gets the c'th coefficient of z and returns an Fmpz.
 func (z *FmpzModPoly) GetCoeff(c int) *Fmpz {
 	r := new(Fmpz)
 	r.doinit()
-	C.fmpz_mod_poly_get_coeff_fmpz(&r.i[0], &z.i[0], C.slong(c), &z.ctx.i[0])
+	C.fmpzmod_poly_get_coeff_fmpz(&r.i[0], &z.i[0], C.slong(c), &z.ctx.i[0])
 	return r
 }
 
@@ -224,7 +411,7 @@ func (z *FmpzModPoly) GetCoeffs() []*Fmpz {
 	for i := 0; i < z.Len(); i++ {
 		r := new(Fmpz)
 		r.doinit()
-		C.fmpz_mod_poly_get_coeff_fmpz(&r.i[0], &z.i[0], C.slong(i), &z.ctx.i[0])
+		C.fmpzmod_poly_get_coeff_fmpz(&r.i[0], &z.i[0], C.slong(i), &z.ctx.i[0])
 		coefficients = append(coefficients, r)
 	}
 	return coefficients
@@ -232,61 +419,61 @@ func (z *FmpzModPoly) GetCoeffs() []*Fmpz {
 
 // SetCoeffUI sets the c'th coefficient of z to x where x is an uint and returns z.
 func (z *FmpzModPoly) SetCoeffUI(c int, x uint) *FmpzModPoly {
-	C.fmpz_mod_poly_set_coeff_ui(&z.i[0], C.slong(c), C.ulong(x), &z.ctx.i[0])
+	C.fmpzmod_poly_set_coeff_ui(&z.i[0], C.slong(c), C.ulong(x), &z.ctx.i[0])
 	return z
 }
 
 // Neg sets z to the negative of p and returns z.
 func (z *FmpzModPoly) Neg(p *FmpzModPoly) *FmpzModPoly {
-	C.fmpz_mod_poly_neg(&z.i[0], &p.i[0], &z.ctx.i[0])
+	C.fmpzmod_poly_neg(&z.i[0], &p.i[0], &z.ctx.i[0])
 	return z
 }
 
 // GCD sets z = gcd(a, b) and returns
 func (z *FmpzModPoly) GCD(a, b *FmpzModPoly) *FmpzModPoly {
-	C.fmpz_mod_poly_gcd(&z.i[0], &a.i[0], &b.i[0], &z.ctx.i[0])
+	C.fmpzmod_poly_gcd(&z.i[0], &a.i[0], &b.i[0], &z.ctx.i[0])
 	return z
 }
 
 // Equal returns true if z is equal to p otherwise false.
 func (z *FmpzModPoly) Equal(p *FmpzModPoly) bool {
-	r := int(C.fmpz_mod_poly_equal(&z.i[0], &p.i[0], &z.ctx.i[0]))
+	r := int(C.fmpzmod_poly_equal(&z.i[0], &p.i[0], &z.ctx.i[0]))
 	return r != 0
 }
 
 // Add sets z = a + b and returns z.
 func (z *FmpzModPoly) Add(a, b *FmpzModPoly) *FmpzModPoly {
-	C.fmpz_mod_poly_add(&z.i[0], &a.i[0], &b.i[0], &z.ctx.i[0])
+	C.fmpzmod_poly_add(&z.i[0], &a.i[0], &b.i[0], &z.ctx.i[0])
 	return z
 }
 
 // Sub sets z = a - b and returns z.
 func (z *FmpzModPoly) Sub(a, b *FmpzModPoly) *FmpzModPoly {
-	C.fmpz_mod_poly_sub(&z.i[0], &a.i[0], &b.i[0], &z.ctx.i[0])
+	C.fmpzmod_poly_sub(&z.i[0], &a.i[0], &b.i[0], &z.ctx.i[0])
 	return z
 }
 
 // Mul sets z = a * b and returns z.
 func (z *FmpzModPoly) Mul(a, b *FmpzModPoly) *FmpzModPoly {
-	C.fmpz_mod_poly_mul(&z.i[0], &a.i[0], &b.i[0], &z.ctx.i[0])
+	C.fmpzmod_poly_mul(&z.i[0], &a.i[0], &b.i[0], &z.ctx.i[0])
 	return z
 }
 
 // MulScalar sets z = a * x where x is an Fmpz.
 func (z *FmpzModPoly) MulScalar(a *FmpzModPoly, x *Fmpz) *FmpzModPoly {
-	C.fmpz_mod_poly_scalar_mul_fmpz(&z.i[0], &a.i[0], &x.i[0], &z.ctx.i[0])
+	C.fmpzmod_poly_scalar_mul_fmpz(&z.i[0], &a.i[0], &x.i[0], &z.ctx.i[0])
 	return z
 }
 
 // DivScalar sets z = a / x where x is an Fmpz.
 func (z *FmpzModPoly) DivScalar(a *FmpzModPoly, x *Fmpz) *FmpzModPoly {
-	C.fmpz_mod_poly_scalar_div_fmpz(&z.i[0], &a.i[0], &x.i[0], &z.ctx.i[0])
+	C.fmpzmod_poly_scalar_div_fmpz(&z.i[0], &a.i[0], &x.i[0], &z.ctx.i[0])
 	return z
 }
 
 // Pow sets z to m^e and returns z.
 func (z *FmpzModPoly) Pow(m *FmpzModPoly, e int) *FmpzModPoly {
-	C.fmpz_mod_poly_pow(&z.i[0], &m.i[0], C.ulong(e), &z.ctx.i[0])
+	C.fmpzmod_poly_pow(&z.i[0], &m.i[0], C.ulong(e), &z.ctx.i[0])
 	return z
 }
 
@@ -294,6 +481,6 @@ func (z *FmpzModPoly) Pow(m *FmpzModPoly, e int) *FmpzModPoly {
 func (z *FmpzModPoly) DivRem(m *FmpzModPoly) (*FmpzModPoly, *FmpzModPoly) {
 	q := NewFmpzModPoly(z.ctx)
 	r := NewFmpzModPoly(z.ctx)
-	C.fmpz_mod_poly_divrem(&q.i[0], &r.i[0], &z.i[0], &m.i[0], &z.ctx.i[0])
+	C.fmpzmod_poly_divrem(&q.i[0], &r.i[0], &z.i[0], &m.i[0], &z.ctx.i[0])
 	return q, r
 }

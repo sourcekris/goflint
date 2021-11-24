@@ -2,7 +2,29 @@ package goflint
 
 /*
 #cgo LDFLAGS: -lflint -lgmp
-#include <flint/fmpz_mod.h>
+
+#if __FLINT_RELEASE >= 20503
+	// Use modern libflint.
+	#include <flint/fmpz_mod.h>
+#else
+	// libflint 2.5.2 or below.
+	// Sketch out a skeleton type and constructor.
+	#include <flint/fmpz.h>
+	typedef struct fmpz_mod_ctx {
+		fmpz_t n;
+	} fmpz_mod_ctx_struct;
+	typedef fmpz_mod_ctx_struct fmpz_mod_ctx_t[1];
+
+	void fmpz_mod_ctx_init(fmpz_mod_ctx_t ctx, const fmpz_t n)
+	{
+		fmpz_init_set(ctx->n, n);
+	}
+
+	void fmpz_mod_ctx_clear(fmpz_mod_ctx_t ctx)
+	{
+    	fmpz_clear(ctx->n);
+	}
+#endif
 
 */
 import "C"
