@@ -99,6 +99,12 @@ package goflint
 	#include <flint/fmpz.h>
 	typedef struct fmpz_mod_ctx {
 		fmpz_t n;
+		void (* add_fxn)(fmpz_t, const fmpz_t, const fmpz_t, const struct fmpz_mod_ctx *);
+		void (* sub_fxn)(fmpz_t, const fmpz_t, const fmpz_t, const struct fmpz_mod_ctx *);
+		void (* mul_fxn)(fmpz_t, const fmpz_t, const fmpz_t, const struct fmpz_mod_ctx *);
+		nmod_t mod;
+		ulong n_limbs[3];
+		ulong ninv_limbs[3];
 	} fmpz_mod_ctx_struct;
 	typedef fmpz_mod_ctx_struct fmpz_mod_ctx_t[1];
 
