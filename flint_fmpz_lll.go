@@ -1,11 +1,10 @@
 package goflint
 
 /*
-#cgo LDFLAGS: -lflint -lgmp
+#cgo windows CFLAGS: -Ic:/cygwin64/usr/local/include
+#cgo windows LDFLAGS: -Lc:/cygwin64/usr/local/lib -lflint-16
+#cgo linux LDFLAGS: -lflint
 #include <flint/fmpz_lll.h>
-
-// Macros
-
 */
 import "C"
 

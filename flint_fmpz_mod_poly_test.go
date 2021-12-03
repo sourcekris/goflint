@@ -2,44 +2,44 @@ package goflint
 
 import "testing"
 
-func TestFmpzModPolyString(t *testing.T) {
-	for _, tc := range []struct {
-		name string
-		m    *FmpzModPoly
-		want string
-	}{
-		{
-			name: "f(x)=5x^3+2x+1 in (Z/6Z)[x]",
-			m:    NewFmpzModPoly(NewFmpzModCtx(NewFmpz(6))).SetCoeffUI(0, 1).SetCoeffUI(1, 2).SetCoeffUI(2, 0).SetCoeffUI(3, 5),
-			want: "5*x^3+2*x+1",
-		},
-	} {
-		got := tc.m.String()
-		if got != tc.want {
-			t.Errorf("String() %s want / got mismatch: %v / %v", tc.name, tc.want, got)
-		}
-	}
-}
+// func TestFmpzModPolyString(t *testing.T) {
+// 	for _, tc := range []struct {
+// 		name string
+// 		m    *FmpzModPoly
+// 		want string
+// 	}{
+// 		{
+// 			name: "f(x)=5x^3+2x+1 in (Z/6Z)[x]",
+// 			m:    NewFmpzModPoly(NewFmpzModCtx(NewFmpz(6))).SetCoeffUI(0, 1).SetCoeffUI(1, 2).SetCoeffUI(2, 0).SetCoeffUI(3, 5),
+// 			want: "5*x^3+2*x+1",
+// 		},
+// 	} {
+// 		got := tc.m.String()
+// 		if got != tc.want {
+// 			t.Errorf("String() %s want / got mismatch: %v / %v", tc.name, tc.want, got)
+// 		}
+// 	}
+// }
 
-func TestFmpzModPolyStringSimple(t *testing.T) {
-	for _, tc := range []struct {
-		name string
-		m    *FmpzModPoly
-		want string
-	}{
-		{
-			name: "f(x)=5x^3+2x+1 in (Z/6Z)[x]",
-			m:    NewFmpzModPoly(NewFmpzModCtx(NewFmpz(6))).SetCoeffUI(0, 1).SetCoeffUI(1, 2).SetCoeffUI(2, 0).SetCoeffUI(3, 5),
-			want: "4 6  1 2 0 5",
-		},
-	} {
+// func TestFmpzModPolyStringSimple(t *testing.T) {
+// 	for _, tc := range []struct {
+// 		name string
+// 		m    *FmpzModPoly
+// 		want string
+// 	}{
+// 		{
+// 			name: "f(x)=5x^3+2x+1 in (Z/6Z)[x]",
+// 			m:    NewFmpzModPoly(NewFmpzModCtx(NewFmpz(6))).SetCoeffUI(0, 1).SetCoeffUI(1, 2).SetCoeffUI(2, 0).SetCoeffUI(3, 5),
+// 			want: "4 6  1 2 0 5",
+// 		},
+// 	} {
 
-		got := tc.m.StringSimple()
-		if got != tc.want {
-			t.Errorf("StringSimple() %s want / got mismatch: %v / %v", tc.name, tc.want, got)
-		}
-	}
-}
+// 		got := tc.m.StringSimple()
+// 		if got != tc.want {
+// 			t.Errorf("StringSimple() %s want / got mismatch: %v / %v", tc.name, tc.want, got)
+// 		}
+// 	}
+// }
 
 func TestFmpzModPolySetString(t *testing.T) {
 	for _, tc := range []struct {

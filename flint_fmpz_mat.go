@@ -1,7 +1,10 @@
 package goflint
 
 /*
-#cgo LDFLAGS: -lflint -lgmp
+#cgo windows CFLAGS: -Ic:/cygwin64/usr/local/include
+#cgo windows LDFLAGS: -Lc:/cygwin64/usr/local/lib -lflint-16
+#cgo linux LDFLAGS: -lflint
+#cgo LDFLAGS: -lgmp
 #include <flint/flint.h>
 #include <flint/fmpz.h>
 #include <flint/fmpz_mat.h>
@@ -10,7 +13,6 @@ package goflint
 #include <stdlib.h>
 
 // Macros
-
 fmpz fmpzmat_get_val(fmpz_mat_t mat, slong pos) {
 	return mat->entries[pos];
 }
@@ -25,7 +27,6 @@ import "C"
 import (
 	"errors"
 	"runtime"
-	"unsafe"
 )
 
 // FmpzMat is a matrix of Fmpz.
@@ -101,31 +102,31 @@ func NewFmpzMatNF(rows, cols int) *FmpzMat {
 	return m
 }
 
-func (m *FmpzMat) String() string {
-	// Create a FILE * memstream.
-	var buf *C.char
-	var bufSize C.size_t
-	ms := C.open_memstream(&buf, &bufSize)
-	if ms == nil {
-		return ""
-	}
-	defer func() {
-		C.fclose(ms)
-		C.free(unsafe.Pointer(buf))
-	}()
+// func (m *FmpzMat) String() string {
+// 	// Create a FILE * memstream.
+// 	var buf *C.char
+// 	var bufSize C.size_t
+// 	ms := C.open_memstream(&buf, &bufSize)
+// 	if ms == nil {
+// 		return ""
+// 	}
+// 	defer func() {
+// 		C.fclose(ms)
+// 		C.free(unsafe.Pointer(buf))
+// 	}()
 
-	if pp := C.fmpz_mat_fprint_pretty(ms, &m.i[0]); pp <= 0 {
-		// Positive value on success.
-		return ""
-	}
+// 	if pp := C.fmpz_mat_fprint_pretty(ms, &m.i[0]); pp <= 0 {
+// 		// Positive value on success.
+// 		return ""
+// 	}
 
-	if rc := C.fflush(ms); rc != 0 {
-		// log.Warningf("fflush returned %d", rc)
-		return ""
-	}
+// 	if rc := C.fflush(ms); rc != 0 {
+// 		// log.Warningf("fflush returned %d", rc)
+// 		return ""
+// 	}
 
-	return C.GoString(buf)
-}
+// 	return C.GoString(buf)
+// }
 
 // Zero sets all values of matrix m to zero and returns m.
 func (m *FmpzMat) Zero() *FmpzMat {

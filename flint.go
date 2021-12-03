@@ -7,7 +7,10 @@
 package goflint
 
 /*
-#cgo LDFLAGS: -lflint -lgmp
+#cgo windows CFLAGS: -Ic:/cygwin64/usr/local/include
+#cgo windows LDFLAGS: -Lc:/cygwin64/usr/local/lib -lflint-16
+#cgo linux LDFLAGS: -lflint
+#cgo LDFLAGS: -lgmp
 #include <flint/arith.h>
 #include <flint/flint.h>
 #include <flint/fmpz.h>
@@ -15,9 +18,6 @@ package goflint
 #include <flint/nmod_poly.h>
 #include <gmp.h>
 #include <stdlib.h>
-
-// Macros
-
 */
 import "C"
 
@@ -160,7 +160,7 @@ func (r *FlintRandT) flintRandTDoinit() {
 // SetUint64 sets z to x and returns z.
 func (z *Fmpz) SetUint64(x uint64) *Fmpz {
 	z.doinit()
-	y := C.ulong(x)
+	y := C.ulonglong(x)
 	C.fmpz_set_ui(&z.i[0], y)
 	return z
 }
@@ -1039,7 +1039,7 @@ func (z *Fmpz) IsProbabPrimePseudosquare() int {
 // decaying probability of finding a factor which has been missed (if p+1 or p−1 is not smooth for
 // any prime factors p of n then the function will not ever succeed).
 func (z *Fmpz) WilliamsPP1(n *Fmpz, b1, b2, c int) int {
-	return int(C.fmpz_factor_pp1(&z.i[0], &n.i[0], C.ulong(b1), C.ulong(b2), C.ulong(c)))
+	return int(C.fmpz_factor_pp1(&z.i[0], &n.i[0], C.ulonglong(b1), C.ulonglong(b2), C.ulonglong(c)))
 }
 
 // LucasChain Given V0 = 2, V1 = A compute Vm, Vm+1 (mod n) from the recurrences Vj = AVj−1 −

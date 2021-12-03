@@ -1,7 +1,10 @@
 package goflint
 
 /*
-#cgo LDFLAGS: -lflint -lgmp
+#cgo windows CFLAGS: -Ic:/cygwin64/usr/local/include
+#cgo windows LDFLAGS: -Lc:/cygwin64/usr/local/lib -lflint-16
+#cgo linux LDFLAGS: -lflint
+#cgo LDFLAGS: -lgmp
 
 #if __FLINT_RELEASE >= 20503
 	// Use modern libflint.

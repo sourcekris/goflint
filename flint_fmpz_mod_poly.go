@@ -1,7 +1,9 @@
 package goflint
 
 /*
-#cgo LDFLAGS: -lflint
+#cgo windows CFLAGS: -Ic:/cygwin64/usr/local/include
+#cgo windows LDFLAGS: -Lc:/cygwin64/usr/local/lib -lflint-16
+#cgo linux LDFLAGS: -lflint
 #include <flint/fmpz_mod_poly.h>
 
 #if __FLINT_RELEASE >= 20503
@@ -205,7 +207,6 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
-	"unsafe"
 )
 
 // FmpzModPoly type represents elements of Z/nZ[x] for a fixed modulus n.
@@ -322,59 +323,59 @@ func SetString(poly string) (*FmpzModPoly, error) {
 	return res, nil
 }
 
-// String returns a string representation of the polynomial.
-func (z *FmpzModPoly) String() string {
-	// Create a FILE * memstream.
-	var buf *C.char
-	var bufSize C.size_t
-	ms := C.open_memstream(&buf, &bufSize)
-	if ms == nil {
-		return ""
-	}
-	defer func() {
-		C.fclose(ms)
-		C.free(unsafe.Pointer(buf))
-	}()
+// // String returns a string representation of the polynomial.
+// func (z *FmpzModPoly) String() string {
+// 	// Create a FILE * memstream.
+// 	var buf *C.char
+// 	var bufSize C.size_t
+// 	ms := C.open_memstream(&buf, &bufSize)
+// 	if ms == nil {
+// 		return ""
+// 	}
+// 	defer func() {
+// 		C.fclose(ms)
+// 		C.free(unsafe.Pointer(buf))
+// 	}()
 
-	var x C.char = 'x'
-	if pp := C.fmpzmod_poly_fprint_pretty(ms, &z.i[0], &x, &z.ctx.i[0]); pp <= 0 {
-		// Positive value on success.
-		return ""
-	}
+// 	var x C.char = 'x'
+// 	if pp := C.fmpzmod_poly_fprint_pretty(ms, &z.i[0], &x, &z.ctx.i[0]); pp <= 0 {
+// 		// Positive value on success.
+// 		return ""
+// 	}
 
-	if rc := C.fflush(ms); rc != 0 {
-		return ""
-	}
+// 	if rc := C.fflush(ms); rc != 0 {
+// 		return ""
+// 	}
 
-	return C.GoString(buf)
-}
+// 	return C.GoString(buf)
+// }
 
-// StringSimple returns a simple string representation of the polynomials length, modulus and
-// coefficients. e.g. f(x)=5x^3+2x+1  in (Z/6Z)[x] is "4 6  1 2 0 5"
-func (z *FmpzModPoly) StringSimple() string {
-	// Create a FILE * memstream.
-	var buf *C.char
-	var bufSize C.size_t
-	ms := C.open_memstream(&buf, &bufSize)
-	if ms == nil {
-		return ""
-	}
-	defer func() {
-		C.fclose(ms)
-		C.free(unsafe.Pointer(buf))
-	}()
+// // StringSimple returns a simple string representation of the polynomials length, modulus and
+// // coefficients. e.g. f(x)=5x^3+2x+1  in (Z/6Z)[x] is "4 6  1 2 0 5"
+// func (z *FmpzModPoly) StringSimple() string {
+// 	// Create a FILE * memstream.
+// 	var buf *C.char
+// 	var bufSize C.size_t
+// 	ms := C.open_memstream(&buf, &bufSize)
+// 	if ms == nil {
+// 		return ""
+// 	}
+// 	defer func() {
+// 		C.fclose(ms)
+// 		C.free(unsafe.Pointer(buf))
+// 	}()
 
-	if pp := C.fmpzmod_poly_fprint(ms, &z.i[0], &z.ctx.i[0]); pp <= 0 {
-		// Positive value on success.
-		return ""
-	}
+// 	if pp := C.fmpzmod_poly_fprint(ms, &z.i[0], &z.ctx.i[0]); pp <= 0 {
+// 		// Positive value on success.
+// 		return ""
+// 	}
 
-	if rc := C.fflush(ms); rc != 0 {
-		return ""
-	}
+// 	if rc := C.fflush(ms); rc != 0 {
+// 		return ""
+// 	}
 
-	return C.GoString(buf)
-}
+// 	return C.GoString(buf)
+// }
 
 // Zero sets z to the zero polynomial and returns z.
 func (z *FmpzModPoly) Zero() *FmpzModPoly {
@@ -425,7 +426,7 @@ func (z *FmpzModPoly) GetCoeffs() []*Fmpz {
 
 // SetCoeffUI sets the c'th coefficient of z to x where x is an uint and returns z.
 func (z *FmpzModPoly) SetCoeffUI(c int, x uint) *FmpzModPoly {
-	C.fmpzmod_poly_set_coeff_ui(&z.i[0], C.slong(c), C.ulong(x), &z.ctx.i[0])
+	C.fmpzmod_poly_set_coeff_ui(&z.i[0], C.slong(c), C.ulonglong(x), &z.ctx.i[0])
 	return z
 }
 
@@ -479,7 +480,7 @@ func (z *FmpzModPoly) DivScalar(a *FmpzModPoly, x *Fmpz) *FmpzModPoly {
 
 // Pow sets z to m^e and returns z.
 func (z *FmpzModPoly) Pow(m *FmpzModPoly, e int) *FmpzModPoly {
-	C.fmpzmod_poly_pow(&z.i[0], &m.i[0], C.ulong(e), &z.ctx.i[0])
+	C.fmpzmod_poly_pow(&z.i[0], &m.i[0], C.ulonglong(e), &z.ctx.i[0])
 	return z
 }
 

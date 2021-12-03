@@ -1,7 +1,9 @@
 package goflint
 
 /*
-#cgo LDFLAGS: -lflint -lgmp
+#cgo windows CFLAGS: -Ic:/cygwin64/usr/local/include
+#cgo windows LDFLAGS: -Lc:/cygwin64/usr/local/lib -Lc:/cygwin64/usr/lib -lflint-16
+#cgo linux LDFLAGS: -lflint
 #include <flint/flint.h>
 #include <flint/fmpz.h>
 #include <flint/fmpz_poly.h>
@@ -9,7 +11,6 @@ package goflint
 #include <gmp.h>
 #include <stdlib.h>
 
-// Macros
 fmpz_poly_struct fmpz_poly_factor_get_poly(fmpz_poly_factor_t fac, slong i) {
 	return fac->p[i];
 }
@@ -25,7 +26,6 @@ slong fmpz_poly_factor_get_num(fmpz_poly_factor_t fac) {
 slong fmpz_poly_factor_get_exp(fmpz_poly_factor_t fac, slong i) {
 	return fac->exp[i];
 }
-
 */
 import "C"
 
@@ -34,7 +34,6 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
-	"unsafe"
 )
 
 // FmpzPoly type represents a univariate polynomial over the integers.
@@ -179,58 +178,58 @@ func FmpzPolySetString(poly string) (*FmpzPoly, error) {
 }
 
 // String returns a string representation of the polynomial.
-func (z *FmpzPoly) String() string {
-	// Create a FILE * memstream.
-	var buf *C.char
-	var bufSize C.size_t
-	ms := C.open_memstream(&buf, &bufSize)
-	if ms == nil {
-		return ""
-	}
-	defer func() {
-		C.fclose(ms)
-		C.free(unsafe.Pointer(buf))
-	}()
+// func (z *FmpzPoly) String() string {
+// 	// Create a FILE * memstream.
+// 	var buf *C.char
+// 	var bufSize C.size_t
+// 	ms := C.open_memstream(&buf, &bufSize)
+// 	if ms == nil {
+// 		return ""
+// 	}
+// 	defer func() {
+// 		C.fclose(ms)
+// 		C.free(unsafe.Pointer(buf))
+// 	}()
 
-	var x C.char = 'x'
-	if pp := C.fmpz_poly_fprint_pretty(ms, &z.i[0], &x); pp <= 0 {
-		// Positive value on success.
-		return ""
-	}
+// 	var x C.char = 'x'
+// 	if pp := C.fmpz_poly_fprint_pretty(ms, &z.i[0], &x); pp <= 0 {
+// 		// Positive value on success.
+// 		return ""
+// 	}
 
-	if rc := C.fflush(ms); rc != 0 {
-		return ""
-	}
+// 	if rc := C.fflush(ms); rc != 0 {
+// 		return ""
+// 	}
 
-	return C.GoString(buf)
-}
+// 	return C.GoString(buf)
+// }
 
 // StringSimple returns a simple string representation of the polynomials length and
 // coefficients. e.g. f(x)=5x^3+2x+1  is "4  1 2 0 5"
-func (z *FmpzPoly) StringSimple() string {
-	// Create a FILE * memstream.
-	var buf *C.char
-	var bufSize C.size_t
-	ms := C.open_memstream(&buf, &bufSize)
-	if ms == nil {
-		return ""
-	}
-	defer func() {
-		C.fclose(ms)
-		C.free(unsafe.Pointer(buf))
-	}()
+// func (z *FmpzPoly) StringSimple() string {
+// 	// Create a FILE * memstream.
+// 	var buf *C.char
+// 	var bufSize C.size_t
+// 	ms := C.open_memstream(&buf, &bufSize)
+// 	if ms == nil {
+// 		return ""
+// 	}
+// 	defer func() {
+// 		C.fclose(ms)
+// 		C.free(unsafe.Pointer(buf))
+// 	}()
 
-	if pp := C.fmpz_poly_fprint(ms, &z.i[0]); pp <= 0 {
-		// Positive value on success.
-		return ""
-	}
+// 	if pp := C.fmpz_poly_fprint(ms, &z.i[0]); pp <= 0 {
+// 		// Positive value on success.
+// 		return ""
+// 	}
 
-	if rc := C.fflush(ms); rc != 0 {
-		return ""
-	}
+// 	if rc := C.fflush(ms); rc != 0 {
+// 		return ""
+// 	}
 
-	return C.GoString(buf)
-}
+// 	return C.GoString(buf)
+// }
 
 // Print prints the FmpzPolyFactor to stdout.
 func (f *FmpzPolyFactor) Print() {
@@ -282,7 +281,7 @@ func (z *FmpzPoly) GetCoeffs() []*Fmpz {
 // SetCoeffUI sets the c'th coefficient of z to x where x is an uint and returns z.
 func (z *FmpzPoly) SetCoeffUI(c int, x uint) *FmpzPoly {
 	z.fmpzPolyDoinit()
-	C.fmpz_poly_set_coeff_ui(&z.i[0], C.slong(c), C.ulong(x))
+	C.fmpz_poly_set_coeff_ui(&z.i[0], C.slong(c), C.ulonglong(x))
 	return z
 }
 
@@ -345,7 +344,7 @@ func (z *FmpzPoly) DivScalar(a *FmpzPoly, x *Fmpz) *FmpzPoly {
 // Pow sets z to m^e and returns z.
 func (z *FmpzPoly) Pow(m *FmpzPoly, e int) *FmpzPoly {
 	z.fmpzPolyDoinit()
-	C.fmpz_poly_pow(&z.i[0], &m.i[0], C.ulong(e))
+	C.fmpz_poly_pow(&z.i[0], &m.i[0], C.ulonglong(e))
 	return z
 }
 

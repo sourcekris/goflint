@@ -1,7 +1,9 @@
 package goflint
 
 /*
-#cgo LDFLAGS: -lflint -lgmp
+#cgo windows CFLAGS: -Ic:/cygwin64/usr/local/include
+#cgo windows LDFLAGS: -Lc:/cygwin64/usr/local/lib -lflint-16
+#cgo linux LDFLAGS: -lflint
 #include <flint/flint.h>
 #include <flint/fmpz.h>
 #include <flint/fmpq.h>
@@ -69,7 +71,7 @@ func (q *Fmpq) String() string {
 // NewFmpq allocates and returns a new Fmpq set to p / q.
 func NewFmpq(p, q int64) *Fmpq {
 	x := C.slong(p)
-	y := C.ulong(q)
+	y := C.ulonglong(q)
 	z := new(Fmpq)
 	z.fmpqDoinit()
 	C.fmpq_set_si(&z.i[0], x, y)
