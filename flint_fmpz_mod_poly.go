@@ -1,7 +1,6 @@
 package goflint
 
 /*
-#cgo LDFLAGS: -lflint
 #include <flint/fmpz_mod_poly.h>
 
 #if __FLINT_RELEASE >= 20503

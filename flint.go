@@ -8,8 +8,8 @@ package goflint
 
 /*
 #cgo darwin CPPFLAGS: -I/opt/homebrew/include
-#cgo darwin LDFLAGS: -L/opt/homebrew/lib
-#cgo LDFLAGS: -lflint -lgmp
+#cgo darwin LDFLAGS: /opt/homebrew/lib/libflint.a /opt/homebrew/lib/libgmp.a /opt/homebrew/lib/libmpfr.a
+#cgo linux LDFLAGS: -lflint -lgmp
 #include <flint/arith.h>
 #include <flint/flint.h>
 #include <flint/fmpz.h>

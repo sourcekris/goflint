@@ -1,7 +1,6 @@
 package goflint
 
 /*
-#cgo LDFLAGS: -lflint -lgmp
 #include <flint/flint.h>
 #include <flint/fmpz.h>
 #include <flint/fmpq.h>
