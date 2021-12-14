@@ -7,6 +7,8 @@
 package goflint
 
 /*
+#cgo darwin CPPFLAGS: -I/opt/homebrew/include
+#cgo darwin LDFLAGS: -L/opt/homebrew/lib
 #cgo LDFLAGS: -lflint -lgmp
 #include <flint/arith.h>
 #include <flint/flint.h>

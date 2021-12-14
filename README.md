@@ -232,8 +232,16 @@ fmt.Println(a.String())
 
 ## Install
 
-Install the golang and the FLINT library. On Ubuntu (tested on 20.04LTS):
-* `apt install golang libflint-dev`
+Install the golang and the FLINT library. 
+
+ * On Ubuntu (tested on 20.04LTS):
+   ```shell
+   $ apt install golang libflint-dev`
+   ```
+ * On MacOS (tested on Monterey 12.1 M1)
+   ```shell
+   $ brew install flint
+   ```
 
 Use go to install the library:
 * `go get github.com/sourcekris/goflint`
