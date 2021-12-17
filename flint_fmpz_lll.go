@@ -1,7 +1,6 @@
 package goflint
 
 /*
-#cgo LDFLAGS: -lflint -lgmp
 #include <flint/fmpz_lll.h>
 
 // Macros

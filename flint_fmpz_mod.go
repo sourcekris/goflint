@@ -1,7 +1,6 @@
 package goflint
 
 /*
-#cgo LDFLAGS: -lflint -lgmp
 
 #if __FLINT_RELEASE >= 20503
 	// Use modern libflint.
