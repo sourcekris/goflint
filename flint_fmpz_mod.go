@@ -1,7 +1,7 @@
 package goflint
 
 /*
-
+#include <flint/fmpz.h>
 #if __FLINT_RELEASE >= 20503
 	// Use modern libflint.
 	#include <flint/fmpz_mod.h>
@@ -30,7 +30,6 @@ package goflint
     	fmpz_clear(ctx->n);
 	}
 #endif
-
 */
 import "C"
 

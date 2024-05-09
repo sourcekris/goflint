@@ -2,6 +2,7 @@ package goflint
 
 /*
 #include <flint/fmpz_mod_poly.h>
+#include <stdlib.h>
 
 #if __FLINT_RELEASE >= 20503
 	// Wrappers directly wired to the modern libflint versions.
