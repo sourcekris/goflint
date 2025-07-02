@@ -10,12 +10,12 @@ package goflint
 #cgo darwin CPPFLAGS: -I/opt/homebrew/include
 #cgo darwin LDFLAGS: -L/opt/homebrew/lib
 #cgo LDFLAGS: -lflint -lgmp
+#include <gmp.h>
 #include <flint/arith.h>
 #include <flint/flint.h>
 #include <flint/fmpz.h>
 #include <flint/fmpq.h>
 #include <flint/nmod_poly.h>
-#include <gmp.h>
 #include <stdlib.h>
 
 // Macros
