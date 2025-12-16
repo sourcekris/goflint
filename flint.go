@@ -18,6 +18,71 @@ package goflint
 #include <flint/nmod_poly.h>
 #include <stdlib.h>
 
+// Helper functions for FLINT 2/3 compatibility
+static void compat_fmpz_set_mpz(fmpz_t f, const mpz_t m) {
+    #if __FLINT_RELEASE >= 30000
+        // FLINT 3: Use direct access
+        fmpz_set_mpz(f, m);
+    #else
+        // FLINT 2: Manual implementation
+        if (mpz_sgn(m) == 0) {
+            fmpz_zero(f);
+        } else {
+            size_t size = mpz_size(m);
+            if (size == 1) {
+                mp_limb_t val = mpz_getlimbn(m, 0);
+                if (val <= COEFF_MAX) {
+                    if (mpz_sgn(m) > 0)
+                        *f = val;
+                    else
+                        *f = -val;
+                    return;
+                }
+            }
+            __mpz_struct * mf = _fmpz_promote(f);
+            mpz_set(mf, m);
+        }
+    #endif
+}
+
+static void compat_fmpz_get_mpz(mpz_t m, const fmpz_t f) {
+    #if __FLINT_RELEASE >= 30000
+        // FLINT 3: Use direct access
+        fmpz_get_mpz(m, f);
+    #else
+        // FLINT 2: Manual implementation
+        if (!COEFF_IS_MPZ(*f)) {
+            if (*f >= 0)
+                mpz_set_ui(m, *f);
+            else
+                mpz_set_si(m, *f);
+        } else {
+            mpz_set(m, COEFF_TO_PTR(*f));
+        }
+    #endif
+}
+
+// Compatibility wrappers for random functions
+static void compat_flint_randinit(flint_rand_t state) {
+    #if __FLINT_RELEASE >= 30000
+        // FLINT 3: Use new function name
+        flint_rand_init(state);
+    #else
+        // FLINT 2: Use old function name
+        flint_randinit(state);
+    #endif
+}
+
+static void compat_flint_randclear(flint_rand_t state) {
+    #if __FLINT_RELEASE >= 30000
+        // FLINT 3: Use new function name
+        flint_rand_clear(state);
+    #else
+        // FLINT 2: Use old function name
+        flint_randclear(state);
+    #endif
+}
+
 // Macros
 
 */
@@ -101,7 +166,7 @@ func nmodPolyFinalize(z *NmodPoly) {
 func flintRandTFinalize(r *FlintRandT) {
 	if r.init {
 		runtime.SetFinalizer(r, nil)
-		C.flint_randclear(&r.i[0])
+		C.compat_flint_randclear(&r.i[0])
 		r.init = false
 	}
 }
@@ -151,7 +216,7 @@ func (r *FlintRandT) flintRandTDoinit() {
 		return
 	}
 	r.init = true
-	C.flint_randinit(&r.i[0])
+	C.compat_flint_randinit(&r.i[0])
 	runtime.SetFinalizer(r, flintRandTFinalize)
 }
 
@@ -441,7 +506,7 @@ func (z *Fmpz) SetMpz(x *Mpz) {
 	x.mpzDoinit()
 	z.doinit()
 
-	C.fmpz_set_mpz(&z.i[0], &x.i[0])
+	C.compat_fmpz_set_mpz(&z.i[0], &x.i[0])
 }
 
 // GetMpz transform x into an Mpz z.
@@ -449,7 +514,7 @@ func (z *Mpz) GetMpz(x *Fmpz) {
 	z.mpzDoinit()
 	x.doinit()
 
-	C.fmpz_get_mpz(&z.i[0], &x.i[0])
+	C.compat_fmpz_get_mpz(&z.i[0], &x.i[0])
 }
 
 // SetBytes interprets buf as the bytes of a big-endian unsigned
