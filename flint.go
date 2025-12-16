@@ -46,7 +46,7 @@ static void compat_fmpz_set_mpz(fmpz_t f, const mpz_t m) {
 }
 
 static void compat_fmpz_get_mpz(mpz_t m, const fmpz_t f) {
-    #if __FLINT_RELEASE >= 30000
+    #if __FLINT_RELEASE >= 34000
         // FLINT 3: Use direct access
         fmpz_get_mpz(m, f);
     #else
@@ -64,7 +64,7 @@ static void compat_fmpz_get_mpz(mpz_t m, const fmpz_t f) {
 
 // Compatibility wrappers for random functions
 static void compat_flint_randinit(flint_rand_t state) {
-    #if __FLINT_RELEASE >= 30000
+    #if __FLINT_RELEASE >= 34000
         // FLINT 3: Use new function name
         flint_rand_init(state);
     #else
@@ -289,9 +289,10 @@ func (z *Fmpz) Set(x *Fmpz) *Fmpz {
  */
 
 // Cmp compares z and y and returns:
-//   -1 if z <  y
-//    0 if z == y
-//   +1 if z >  y
+//
+//	-1 if z <  y
+//	 0 if z == y
+//	+1 if z >  y
 func (z *Fmpz) Cmp(y *Fmpz) (r int) {
 	z.doinit()
 	y.doinit()
@@ -305,9 +306,10 @@ func (z *Fmpz) Cmp(y *Fmpz) (r int) {
 }
 
 // Cmp compares Mpz z and y and returns:
-//   -1 if z <  y
-//    0 if z == y
-//   +1 if z >  y
+//
+//	-1 if z <  y
+//	 0 if z == y
+//	+1 if z >  y
 func (z *Mpz) Cmp(y *Mpz) (r int) {
 	z.mpzDoinit()
 	y.mpzDoinit()
@@ -417,10 +419,9 @@ func (z *Fmpz) Xor(a, b *Fmpz) *Fmpz {
 
 // Sign returns:
 //
-//  -1 if x <  0
-//   0 if x == 0
-//  +1 if x >  0
-//
+//	-1 if x <  0
+//	 0 if x == 0
+//	+1 if x >  0
 func (z *Fmpz) Sign() int {
 	z.doinit()
 	return int(C.fmpz_sgn(&z.i[0]))
@@ -477,9 +478,8 @@ func (z *Fmpz) Uint64() (y uint64) {
 //
 // The base argument must be 0 or a value from 2 through MaxBase. If the base
 // is 0, the string prefix determines the actual conversion base. A prefix of
-// ``0x'' or ``0X'' selects base 16; the ``0'' prefix selects base 8, and a
-// ``0b'' or ``0B'' prefix selects base 2. Otherwise the selected base is 10.
-//
+// “0x” or “0X” selects base 16; the “0” prefix selects base 8, and a
+// “0b” or “0B” prefix selects base 2. Otherwise the selected base is 10.
 func (z *Fmpz) SetString(s string, base int) (*Fmpz, bool) {
 	z.doinit()
 	if base != 0 && (base < 2 || base > 36) {
@@ -705,12 +705,11 @@ func (z *Fmpz) Quo(x, y *Fmpz) *Fmpz {
 //
 // QuoRem implements T-division and modulus (like Go):
 //
-//  q = x/y      with the result truncated to zero
-//  r = x - y*q
+//	q = x/y      with the result truncated to zero
+//	r = x - y*q
 //
-// (See Daan Leijen, ``Division and Modulus for Computer Scientists''.)
+// (See Daan Leijen, “Division and Modulus for Computer Scientists”.)
 // See DivMod for Euclidean division and modulus (unlike Go).
-//
 func (z *Fmpz) QuoRem(x, y, r *Fmpz) (*Fmpz, *Fmpz) {
 	x.doinit()
 	y.doinit()
@@ -794,15 +793,14 @@ func (z *Fmpz) ModRational(x *Fmpq, n *Fmpz) int {
 //
 // DivMod implements Euclidean division and modulus (unlike Go):
 //
-//  q = x div y  such that
-//  m = x - y*q  with 0 <= m < |q|
+//	q = x div y  such that
+//	m = x - y*q  with 0 <= m < |q|
 //
-// (See Raymond T. Boute, ``The Euclidean definition of the functions
-// div and mod''. ACM Transactions on Programming Languages and
+// (See Raymond T. Boute, “The Euclidean definition of the functions
+// div and mod”. ACM Transactions on Programming Languages and
 // Systems (TOPLAS), 14(2):127-144, New York, NY, USA, 4/1992.
 // ACM press.)
 // See QuoRem for T-division and modulus (like Go).
-//
 func (z *Fmpz) DivMod(x, y, m *Fmpz) (*Fmpz, *Fmpz) {
 	x.doinit()
 	y.doinit()

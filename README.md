@@ -1,8 +1,10 @@
 ## goflint
 
-Golang wrapper for [FLINT2](http://www.flintlib.org) functions that I find useful. 
+Golang wrapper for [FLINT](http://www.flintlib.org) functions that I find useful for use upstream
+in [goRsaTool](https://github.com/sourcekris/goRsaTool).
 
-This project is heavily influenced by and in the same pattern as Golang's [GMP wrapper](http://golang.org/misc/cgo/gmp/gmp.go), which seemed appropriate since FLINT uses a similar API to GMP.
+This supports FLINT2 and FLINT3 library versions but due to API changes over time has not been
+exhaustively integration tested.
 
 ## Features
 
@@ -248,7 +250,7 @@ Use go to install the library:
 
 ## License
 
-As this contains a great deal of code copied from the Go source it is licenced identically to the Go source itself - see the LICENSE file for details.
+Apache 2.0. See the LICENSE file for details.
 
 ## Note About Prior Art
 
@@ -261,4 +263,7 @@ I am also heavily influenced to do this by nick [at] craig-wood.com due to this 
 ## Authors
 
 * Kris Hunt
-* [The Go team](http://golang.org/AUTHORS)
+
+## Contributors
+
+* https://github.com/x9xhack
