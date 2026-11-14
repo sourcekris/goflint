@@ -9,6 +9,8 @@ package goflint
 /*
 #cgo darwin CPPFLAGS: -I/opt/homebrew/include
 #cgo darwin LDFLAGS: -L/opt/homebrew/lib
+#cgo windows CPPFLAGS: -IC:/msys64/ucrt64/include
+#cgo windows LDFLAGS: -LC:/msys64/ucrt64/lib
 #cgo LDFLAGS: -lflint -lgmp
 #include <gmp.h>
 #include <flint/arith.h>
@@ -16,55 +18,54 @@ package goflint
 #include <flint/fmpz.h>
 #include <flint/fmpq.h>
 #include <flint/nmod_poly.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 // Helper functions for FLINT 2/3 compatibility
 static void compat_fmpz_set_mpz(fmpz_t f, const mpz_t m) {
-    #if __FLINT_RELEASE >= 30000
-        // FLINT 3: Use direct access
-        fmpz_set_mpz(f, m);
-    #else
-        // FLINT 2: Manual implementation
-        if (mpz_sgn(m) == 0) {
-            fmpz_zero(f);
-        } else {
-            size_t size = mpz_size(m);
-            if (size == 1) {
-                mp_limb_t val = mpz_getlimbn(m, 0);
-                if (val <= COEFF_MAX) {
-                    if (mpz_sgn(m) > 0)
-                        *f = val;
-                    else
-                        *f = -val;
-                    return;
-                }
-            }
-            __mpz_struct * mf = _fmpz_promote(f);
-            mpz_set(mf, m);
-        }
-    #endif
+    fmpz_set_mpz(f, m);
 }
 
 static void compat_fmpz_get_mpz(mpz_t m, const fmpz_t f) {
-    #if __FLINT_RELEASE >= 34000
-        // FLINT 3: Use direct access
-        fmpz_get_mpz(m, f);
-    #else
-        // FLINT 2: Manual implementation
-        if (!COEFF_IS_MPZ(*f)) {
-            if (*f >= 0)
-                mpz_set_ui(m, *f);
-            else
-                mpz_set_si(m, *f);
-        } else {
-            mpz_set(m, COEFF_TO_PTR(*f));
-        }
-    #endif
+    fmpz_get_mpz(m, f);
+}
+
+static void compat_mpz_set_si64(mpz_t rop, int64_t x) {
+    if (x >= 0) {
+        uint64_t ux = (uint64_t)x;
+        mpz_import(rop, 1, 1, sizeof(uint64_t), 0, 0, &ux);
+    } else {
+        uint64_t ux = (uint64_t)(-(x + 1)) + 1;
+        mpz_import(rop, 1, 1, sizeof(uint64_t), 0, 0, &ux);
+        mpz_neg(rop, rop);
+    }
+}
+
+// Wrappers using uint64_t to avoid cmd/cgo mapping FLINT's "ulong" typedef
+// to 32-bit "unsigned long" on 64-bit Windows (LLP64).
+static void compat_nmod_poly_init(nmod_poly_t poly, uint64_t n) {
+    nmod_poly_init(poly, (ulong)n);
+}
+
+static void compat_fmpz_set_ui(fmpz_t f, uint64_t val) {
+    fmpz_set_ui(f, (ulong)val);
+}
+
+static uint64_t compat_fmpz_get_ui(const fmpz_t f) {
+    return (uint64_t)fmpz_get_ui(f);
+}
+
+static void compat_fmpz_pow_ui(fmpz_t f, const fmpz_t g, uint64_t exp) {
+    fmpz_pow_ui(f, g, (ulong)exp);
+}
+
+static int compat_fmpz_tstbit(const fmpz_t f, uint64_t i) {
+    return fmpz_tstbit(f, (ulong)i);
 }
 
 // Compatibility wrappers for random functions
 static void compat_flint_randinit(flint_rand_t state) {
-    #if __FLINT_RELEASE >= 34000
+    #if __FLINT_RELEASE >= 30000
         // FLINT 3: Use new function name
         flint_rand_init(state);
     #else
@@ -121,9 +122,9 @@ type NmodPoly struct {
 	init bool
 }
 
-// MpLimb type is a mp_limb_t which is a type alias for ulong which in go is a uint64.
+// MpLimb type is a mp_limb_t which is a 64-bit unsigned limb on 64-bit platforms.
 type MpLimb struct {
-	i C.mp_limb_t
+	i C.uint64_t
 }
 
 // FlintRandT keeps state for Fmpz random number generation.
@@ -207,7 +208,7 @@ func (z *NmodPoly) nmodPolyDoinit(n *MpLimb) {
 		return
 	}
 	z.init = true
-	C.nmod_poly_init(&z.i[0], n.i)
+	C.compat_nmod_poly_init(&z.i[0], n.i)
 	runtime.SetFinalizer(z, nmodPolyFinalize)
 }
 
@@ -227,8 +228,7 @@ func (r *FlintRandT) flintRandTDoinit() {
 // SetUint64 sets z to x and returns z.
 func (z *Fmpz) SetUint64(x uint64) *Fmpz {
 	z.doinit()
-	y := C.ulong(x)
-	C.fmpz_set_ui(&z.i[0], y)
+	C.compat_fmpz_set_ui(&z.i[0], C.uint64_t(x))
 	return z
 }
 
@@ -252,8 +252,7 @@ func (z *Fmpz) SetInt64NF(x int64) *Fmpz {
 // SetMpzInt64 sets z to x and returns z.
 func (z *Mpz) SetMpzInt64(x int64) *Mpz {
 	z.mpzDoinit()
-	y := C.long(x)
-	C.mpz_set_si(&z.i[0], y)
+	C.compat_mpz_set_si64(&z.i[0], C.int64_t(x))
 	return z
 }
 
@@ -274,7 +273,7 @@ func NewMpz(x int64) *Mpz {
 
 // NewMpLimb returns a new MpLimb type from a uint64.
 func NewMpLimb(x uint64) *MpLimb {
-	return &MpLimb{C.mp_limb_t(x)}
+	return &MpLimb{C.uint64_t(x)}
 }
 
 // Set sets z to x and returns z.
@@ -440,7 +439,7 @@ func (z *Fmpz) GetInt() int {
 // GetUInt returns the value of the Fmpz type as a uint type if possible.
 func (z *Fmpz) GetUInt() uint {
 	z.doinit()
-	return uint(C.fmpz_get_ui(&z.i[0]))
+	return uint(C.compat_fmpz_get_ui(&z.i[0]))
 }
 
 // Int64 returns the int64 representation of z.
@@ -466,7 +465,7 @@ func (z *Fmpz) Uint64() (y uint64) {
 		return
 	}
 	if z.BitLen() <= 64 {
-		return uint64(C.fmpz_get_ui(&z.i[0]))
+		return uint64(C.compat_fmpz_get_ui(&z.i[0]))
 	}
 
 	return
@@ -877,7 +876,7 @@ func (z *Fmpz) Exp(x, y, m *Fmpz) *Fmpz {
 		return z.SetInt64(1)
 	}
 	if m == nil || m.Sign() == 0 {
-		C.fmpz_pow_ui(&z.i[0], &x.i[0], C.fmpz_get_ui(&y.i[0]))
+		C.compat_fmpz_pow_ui(&z.i[0], &x.i[0], C.compat_fmpz_get_ui(&y.i[0]))
 	} else {
 		m.doinit()
 		C.fmpz_powm(&z.i[0], &x.i[0], &y.i[0], &m.i[0])
@@ -894,7 +893,7 @@ func (z *Fmpz) ExpXY(x, y *Fmpz) *Fmpz {
 		return z.SetInt64(1)
 	}
 
-	C.fmpz_pow_ui(&z.i[0], &x.i[0], C.fmpz_get_ui(&y.i[0]))
+	C.compat_fmpz_pow_ui(&z.i[0], &x.i[0], C.compat_fmpz_get_ui(&y.i[0]))
 
 	return z
 }
@@ -907,7 +906,7 @@ func (z *Fmpz) ExpXI(x *Fmpz, y int) *Fmpz {
 		return z.SetInt64(1)
 	}
 
-	C.fmpz_pow_ui(&z.i[0], &x.i[0], C.mp_limb_t(y))
+	C.compat_fmpz_pow_ui(&z.i[0], &x.i[0], C.uint64_t(y))
 
 	return z
 }
@@ -922,7 +921,7 @@ func (z *Fmpz) ExpXIM(x *Fmpz, i int, m *Fmpz) *Fmpz {
 		return z.SetInt64(1)
 	}
 	if m == nil || m.Sign() == 0 {
-		C.fmpz_pow_ui(&z.i[0], &x.i[0], C.fmpz_get_ui(&y.i[0]))
+		C.compat_fmpz_pow_ui(&z.i[0], &x.i[0], C.compat_fmpz_get_ui(&y.i[0]))
 	} else {
 		m.doinit()
 		C.fmpz_powm(&z.i[0], &x.i[0], &y.i[0], &m.i[0])
@@ -938,7 +937,7 @@ func (z *Fmpz) ExpZ(x *Fmpz) *Fmpz {
 		return z.SetInt64(1)
 	}
 
-	C.fmpz_pow_ui(&z.i[0], &z.i[0], C.fmpz_get_ui(&x.i[0]))
+	C.compat_fmpz_pow_ui(&z.i[0], &z.i[0], C.compat_fmpz_get_ui(&x.i[0]))
 
 	return z
 }
@@ -950,7 +949,7 @@ func (z *Fmpz) ExpI(x int) *Fmpz {
 		return z.SetInt64(1)
 	}
 
-	C.fmpz_pow_ui(&z.i[0], &z.i[0], C.mp_limb_t(x))
+	C.compat_fmpz_pow_ui(&z.i[0], &z.i[0], C.uint64_t(x))
 
 	return z
 }
@@ -1117,7 +1116,7 @@ func (z *Fmpz) Bits() int {
 // TstBit tests bit index i of z and return 0 or 1, accordingly.
 func (z *Fmpz) TstBit(i int) int {
 	z.doinit()
-	return int(C.fmpz_tstbit(&z.i[0], C.mp_limb_t(i)))
+	return int(C.compat_fmpz_tstbit(&z.i[0], C.uint64_t(i)))
 }
 
 // Random number generation.

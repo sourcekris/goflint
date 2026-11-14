@@ -290,15 +290,30 @@ Install the golang and the FLINT library.
 
  * On Ubuntu (tested on 20.04LTS):
    ```shell
-   $ apt install golang libflint-dev`
+   $ apt install golang libflint-dev
    ```
  * On MacOS (tested on Monterey 12.1 M1)
    ```shell
    $ brew install flint
    ```
+ * On Windows (native 64-bit via MSYS2 UCRT64):
+   1. Install [MSYS2](https://www.msys2.org/) (default path `C:\msys64`), e.g. using `winget`:
+      ```powershell
+      winget install -e --id MSYS2.MSYS2
+      ```
+   2. Install the 64-bit MinGW-w64 UCRT GCC toolchain and FLINT (which also installs GMP and MPFR):
+      ```powershell
+      C:\msys64\usr\bin\bash.exe -lc "pacman -S --noconfirm --needed mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-flint"
+      ```
+   3. Ensure `C:\msys64\ucrt64\bin` is in your Windows `PATH` (so `cgo` can find `gcc.exe` and the runtime DLLs):
+      ```powershell
+      $env:PATH = "C:\msys64\ucrt64\bin;" + $env:PATH
+      ```
+      *(Note: `flint.go` already includes `#cgo windows` directives for `C:/msys64/ucrt64/include` and `C:/msys64/ucrt64/lib`. If MSYS2 is installed in a non-default location, set `CGO_CPPFLAGS` and `CGO_LDFLAGS` accordingly.)*
 
-Use go to install the library:
+Use go to install or test the library:
 * `go get github.com/sourcekris/goflint`
+* `go test -v ./...`
 
 ## License
 

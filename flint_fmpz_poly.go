@@ -6,15 +6,24 @@ package goflint
 #include <flint/fmpz_poly.h>
 #include <flint/fmpz_poly_factor.h>
 #include <gmp.h>
+#include <stdint.h>
 #include <stdlib.h>
 
-// Macros
-fmpz_poly_struct fmpz_poly_factor_get_poly(fmpz_poly_factor_t fac, slong i) {
-	return fac->p[i];
+static void compat_fmpz_poly_set_coeff_ui(fmpz_poly_t poly, slong n, uint64_t x) {
+	fmpz_poly_set_coeff_ui(poly, n, (ulong)x);
 }
 
-fmpz fmpz_poly_factor_get_coeff(fmpz_poly_factor_t fac) {
-	return fac->c;
+static void compat_fmpz_poly_pow(fmpz_poly_t rop, const fmpz_poly_t poly, uint64_t e) {
+	fmpz_poly_pow(rop, poly, (ulong)e);
+}
+
+// Macros
+void fmpz_poly_factor_get_poly(fmpz_poly_t rop, const fmpz_poly_factor_t fac, slong i) {
+	fmpz_poly_set(rop, fac->p + i);
+}
+
+void fmpz_poly_factor_get_coeff(fmpz_t rop, const fmpz_poly_factor_t fac) {
+	fmpz_set(rop, &fac->c);
 }
 
 slong fmpz_poly_factor_get_num(fmpz_poly_factor_t fac) {
@@ -179,56 +188,30 @@ func FmpzPolySetString(poly string) (*FmpzPoly, error) {
 
 // String returns a string representation of the polynomial.
 func (z *FmpzPoly) String() string {
-	// Create a FILE * memstream.
-	var buf *C.char
-	var bufSize C.size_t
-	ms := C.open_memstream(&buf, &bufSize)
-	if ms == nil {
+	z.fmpzPolyDoinit()
+	x := C.CString("x")
+	defer C.free(unsafe.Pointer(x))
+
+	p := C.fmpz_poly_get_str_pretty(&z.i[0], x)
+	if p == nil {
 		return ""
 	}
-	defer func() {
-		C.fclose(ms)
-		C.free(unsafe.Pointer(buf))
-	}()
+	defer C.flint_free(unsafe.Pointer(p))
 
-	var x C.char = 'x'
-	if pp := C.fmpz_poly_fprint_pretty(ms, &z.i[0], &x); pp <= 0 {
-		// Positive value on success.
-		return ""
-	}
-
-	if rc := C.fflush(ms); rc != 0 {
-		return ""
-	}
-
-	return C.GoString(buf)
+	return C.GoString(p)
 }
 
 // StringSimple returns a simple string representation of the polynomials length and
 // coefficients. e.g. f(x)=5x^3+2x+1  is "4  1 2 0 5"
 func (z *FmpzPoly) StringSimple() string {
-	// Create a FILE * memstream.
-	var buf *C.char
-	var bufSize C.size_t
-	ms := C.open_memstream(&buf, &bufSize)
-	if ms == nil {
+	z.fmpzPolyDoinit()
+	p := C.fmpz_poly_get_str(&z.i[0])
+	if p == nil {
 		return ""
 	}
-	defer func() {
-		C.fclose(ms)
-		C.free(unsafe.Pointer(buf))
-	}()
+	defer C.flint_free(unsafe.Pointer(p))
 
-	if pp := C.fmpz_poly_fprint(ms, &z.i[0]); pp <= 0 {
-		// Positive value on success.
-		return ""
-	}
-
-	if rc := C.fflush(ms); rc != 0 {
-		return ""
-	}
-
-	return C.GoString(buf)
+	return C.GoString(p)
 }
 
 // Print prints the FmpzPolyFactor to stdout.
@@ -281,7 +264,7 @@ func (z *FmpzPoly) GetCoeffs() []*Fmpz {
 // SetCoeffUI sets the c'th coefficient of z to x where x is an uint and returns z.
 func (z *FmpzPoly) SetCoeffUI(c int, x uint) *FmpzPoly {
 	z.fmpzPolyDoinit()
-	C.fmpz_poly_set_coeff_ui(&z.i[0], C.slong(c), C.ulong(x))
+	C.compat_fmpz_poly_set_coeff_ui(&z.i[0], C.slong(c), C.uint64_t(x))
 	return z
 }
 
@@ -344,7 +327,7 @@ func (z *FmpzPoly) DivScalar(a *FmpzPoly, x *Fmpz) *FmpzPoly {
 // Pow sets z to m^e and returns z.
 func (z *FmpzPoly) Pow(m *FmpzPoly, e int) *FmpzPoly {
 	z.fmpzPolyDoinit()
-	C.fmpz_poly_pow(&z.i[0], &m.i[0], C.ulong(e))
+	C.compat_fmpz_poly_pow(&z.i[0], &m.i[0], C.uint64_t(e))
 	return z
 }
 
@@ -372,17 +355,15 @@ func (z *FmpzPoly) Factor() *FmpzPolyFactor {
 func (f *FmpzPolyFactor) GetPoly(n int) *FmpzPoly {
 	f.fmpzPolyFactorDoinit()
 	p := NewFmpzPoly()
-	p.i[0] = C.fmpz_poly_factor_get_poly(&f.i[0], C.slong(n))
+	C.fmpz_poly_factor_get_poly(&p.i[0], &f.i[0], C.slong(n))
 	return p
 }
 
-// GetPoly gets the nth polynomial factor from a FmpzPolyFactor and returns it.
+// GetPolyNF gets the nth polynomial factor from a FmpzPolyFactor and returns it.
 func (f *FmpzPolyFactor) GetPolyNF(n int) *FmpzPoly {
 	f.fmpzPolyFactorDoinit()
 	p := NewFmpzPolyNF()
-	// This is quite sketchy, if we call free on this it crashes so I use NewFmpzPolyNF to avoid
-	// that.
-	p.i[0] = C.fmpz_poly_factor_get_poly(&f.i[0], C.slong(n))
+	C.fmpz_poly_factor_get_poly(&p.i[0], &f.i[0], C.slong(n))
 	return p
 }
 
@@ -397,7 +378,7 @@ func (f *FmpzPolyFactor) GetCoeff() *Fmpz {
 	f.fmpzPolyFactorDoinit()
 	z := new(Fmpz)
 	z.doinit()
-	z.i[0] = C.fmpz_poly_factor_get_coeff(&f.i[0])
+	C.fmpz_poly_factor_get_coeff(&z.i[0], &f.i[0])
 	return z
 }
 

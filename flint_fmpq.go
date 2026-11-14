@@ -5,9 +5,14 @@ package goflint
 #include <flint/fmpz.h>
 #include <flint/fmpq.h>
 #include <gmp.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 // Macros
+
+static void compat_fmpq_set_si(fmpq_t rop, slong p, uint64_t q) {
+    fmpq_set_si(rop, p, (ulong)q);
+}
 
 fmpz *_fmpq_numref(fmpq_t op) {
     return fmpq_numref(op);
@@ -68,10 +73,10 @@ func (q *Fmpq) String() string {
 // NewFmpq allocates and returns a new Fmpq set to p / q.
 func NewFmpq(p, q int64) *Fmpq {
 	x := C.slong(p)
-	y := C.ulong(q)
+	y := C.uint64_t(q)
 	z := new(Fmpq)
 	z.fmpqDoinit()
-	C.fmpq_set_si(&z.i[0], x, y)
+	C.compat_fmpq_set_si(&z.i[0], x, y)
 	return z
 }
 

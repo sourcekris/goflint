@@ -1,8 +1,14 @@
 package goflint
 
 /*
+#include <flint/fmpz_poly.h>
 #include <flint/fmpz_mod_poly.h>
+#include <stdint.h>
 #include <stdlib.h>
+
+char * fmpzmod_poly_get_str_pretty(const fmpz_mod_poly_t poly, const char * x) {
+	return _fmpz_poly_get_str_pretty(poly->coeffs, poly->length, x);
+}
 
 #if __FLINT_RELEASE >= 20503
 	// Wrappers directly wired to the modern libflint versions.
@@ -50,8 +56,8 @@ package goflint
 		fmpz_mod_poly_get_coeff_fmpz(x, poly, n, ctx);
     }
 
-	void fmpzmod_poly_set_coeff_ui(fmpz_mod_poly_t poly, slong n, ulong x, const fmpz_mod_ctx_t ctx) {
-		fmpz_mod_poly_set_coeff_ui(poly, n, x, ctx);
+	void fmpzmod_poly_set_coeff_ui(fmpz_mod_poly_t poly, slong n, uint64_t x, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_set_coeff_ui(poly, n, (ulong)x, ctx);
 	}
 
 	void fmpzmod_poly_neg(fmpz_mod_poly_t res, const fmpz_mod_poly_t poly, const fmpz_mod_ctx_t ctx) {
@@ -86,8 +92,8 @@ package goflint
 		fmpz_mod_poly_scalar_div_fmpz(res, poly, x, ctx);
 	}
 
-	void fmpzmod_poly_pow(fmpz_mod_poly_t rop, const fmpz_mod_poly_t op, ulong e, const fmpz_mod_ctx_t ctx) {
-		fmpz_mod_poly_pow(rop, op, e, ctx);
+	void fmpzmod_poly_pow(fmpz_mod_poly_t rop, const fmpz_mod_poly_t op, uint64_t e, const fmpz_mod_ctx_t ctx) {
+		fmpz_mod_poly_pow(rop, op, (ulong)e, ctx);
 	}
 
 	void fmpzmod_poly_divrem(fmpz_mod_poly_t Q, fmpz_mod_poly_t R, const fmpz_mod_poly_t A, const fmpz_mod_poly_t B, const fmpz_mod_ctx_t ctx) {
@@ -324,56 +330,32 @@ func SetString(poly string) (*FmpzModPoly, error) {
 
 // String returns a string representation of the polynomial.
 func (z *FmpzModPoly) String() string {
-	// Create a FILE * memstream.
-	var buf *C.char
-	var bufSize C.size_t
-	ms := C.open_memstream(&buf, &bufSize)
-	if ms == nil {
+	x := C.CString("x")
+	defer C.free(unsafe.Pointer(x))
+
+	p := C.fmpzmod_poly_get_str_pretty(&z.i[0], x)
+	if p == nil {
 		return ""
 	}
-	defer func() {
-		C.fclose(ms)
-		C.free(unsafe.Pointer(buf))
-	}()
+	defer C.flint_free(unsafe.Pointer(p))
 
-	var x C.char = 'x'
-	if pp := C.fmpzmod_poly_fprint_pretty(ms, &z.i[0], &x, &z.ctx.i[0]); pp <= 0 {
-		// Positive value on success.
-		return ""
-	}
-
-	if rc := C.fflush(ms); rc != 0 {
-		return ""
-	}
-
-	return C.GoString(buf)
+	return C.GoString(p)
 }
 
 // StringSimple returns a simple string representation of the polynomials length, modulus and
 // coefficients. e.g. f(x)=5x^3+2x+1  in (Z/6Z)[x] is "4 6  1 2 0 5"
 func (z *FmpzModPoly) StringSimple() string {
-	// Create a FILE * memstream.
-	var buf *C.char
-	var bufSize C.size_t
-	ms := C.open_memstream(&buf, &bufSize)
-	if ms == nil {
-		return ""
+	l := z.Len()
+	mod := z.GetMod().String()
+	if l == 0 {
+		return fmt.Sprintf("0 %s", mod)
 	}
-	defer func() {
-		C.fclose(ms)
-		C.free(unsafe.Pointer(buf))
-	}()
-
-	if pp := C.fmpzmod_poly_fprint(ms, &z.i[0], &z.ctx.i[0]); pp <= 0 {
-		// Positive value on success.
-		return ""
+	var b strings.Builder
+	fmt.Fprintf(&b, "%d %s ", l, mod)
+	for i := 0; i < l; i++ {
+		fmt.Fprintf(&b, " %s", z.GetCoeff(i).String())
 	}
-
-	if rc := C.fflush(ms); rc != 0 {
-		return ""
-	}
-
-	return C.GoString(buf)
+	return b.String()
 }
 
 // Zero sets z to the zero polynomial and returns z.
@@ -425,7 +407,7 @@ func (z *FmpzModPoly) GetCoeffs() []*Fmpz {
 
 // SetCoeffUI sets the c'th coefficient of z to x where x is an uint and returns z.
 func (z *FmpzModPoly) SetCoeffUI(c int, x uint) *FmpzModPoly {
-	C.fmpzmod_poly_set_coeff_ui(&z.i[0], C.slong(c), C.ulong(x), &z.ctx.i[0])
+	C.fmpzmod_poly_set_coeff_ui(&z.i[0], C.slong(c), C.uint64_t(x), &z.ctx.i[0])
 	return z
 }
 
@@ -479,7 +461,7 @@ func (z *FmpzModPoly) DivScalar(a *FmpzModPoly, x *Fmpz) *FmpzModPoly {
 
 // Pow sets z to m^e and returns z.
 func (z *FmpzModPoly) Pow(m *FmpzModPoly, e int) *FmpzModPoly {
-	C.fmpzmod_poly_pow(&z.i[0], &m.i[0], C.ulong(e), &z.ctx.i[0])
+	C.fmpzmod_poly_pow(&z.i[0], &m.i[0], C.uint64_t(e), &z.ctx.i[0])
 	return z
 }
 

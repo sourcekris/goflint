@@ -15,7 +15,7 @@ fmpz fmpzmat_get_val(fmpz_mat_t mat, slong pos) {
 }
 
 void fmpzmat_set_val(fmpz_mat_t mat, fmpz_t val, slong pos) {
-	mat->entries[pos] = *val;
+	fmpz_set(mat->entries + pos, val);
 }
 
 */
@@ -24,7 +24,7 @@ import "C"
 import (
 	"errors"
 	"runtime"
-	"unsafe"
+	"strings"
 )
 
 // FmpzMat is a matrix of Fmpz.
@@ -101,29 +101,23 @@ func NewFmpzMatNF(rows, cols int) *FmpzMat {
 }
 
 func (m *FmpzMat) String() string {
-	// Create a FILE * memstream.
-	var buf *C.char
-	var bufSize C.size_t
-	ms := C.open_memstream(&buf, &bufSize)
-	if ms == nil {
+	if !m.init {
 		return ""
 	}
-	defer func() {
-		C.fclose(ms)
-		C.free(unsafe.Pointer(buf))
-	}()
-
-	if pp := C.fmpz_mat_fprint_pretty(ms, &m.i[0]); pp <= 0 {
-		// Positive value on success.
-		return ""
+	var b strings.Builder
+	b.WriteString("[")
+	for i := 0; i < m.rows; i++ {
+		b.WriteString("[")
+		for j := 0; j < m.cols; j++ {
+			b.WriteString(m.Entry(j, i).String())
+			if j+1 < m.cols {
+				b.WriteString(" ")
+			}
+		}
+		b.WriteString("]\n")
 	}
-
-	if rc := C.fflush(ms); rc != 0 {
-		// log.Warningf("fflush returned %d", rc)
-		return ""
-	}
-
-	return C.GoString(buf)
+	b.WriteString("]")
+	return b.String()
 }
 
 // Zero sets all values of matrix m to zero and returns m.
@@ -152,7 +146,7 @@ func (m *FmpzMat) NumCols() int {
 func (m *FmpzMat) Entry(x, y int) *Fmpz {
 	z := new(Fmpz)
 	z.doinit()
-	z.i[0] = *C.fmpz_mat_entry(&m.i[0], C.slong(y), C.slong(x))
+	C.fmpz_set(&z.i[0], C.fmpz_mat_entry(&m.i[0], C.slong(y), C.slong(x)))
 	return z
 }
 
