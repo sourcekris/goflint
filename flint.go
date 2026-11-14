@@ -65,21 +65,21 @@ static int compat_fmpz_tstbit(const fmpz_t f, uint64_t i) {
 
 // Compatibility wrappers for random functions
 static void compat_flint_randinit(flint_rand_t state) {
-    #if __FLINT_RELEASE >= 30000
-        // FLINT 3: Use new function name
+    #if __FLINT_RELEASE >= 30200
+        // FLINT 3.2+: Use new function name
         flint_rand_init(state);
     #else
-        // FLINT 2: Use old function name
+        // FLINT < 3.2: Use old function name
         flint_randinit(state);
     #endif
 }
 
 static void compat_flint_randclear(flint_rand_t state) {
-    #if __FLINT_RELEASE >= 30000
-        // FLINT 3: Use new function name
+    #if __FLINT_RELEASE >= 30200
+        // FLINT 3.2+: Use new function name
         flint_rand_clear(state);
     #else
-        // FLINT 2: Use old function name
+        // FLINT < 3.2: Use old function name
         flint_randclear(state);
     #endif
 }
